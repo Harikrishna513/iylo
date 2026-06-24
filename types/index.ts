@@ -6,7 +6,21 @@ export type Category =
   | "desserts"
   | "gift-boxes"
   | "retail"
-  | "seasonal";
+  | "seasonal"
+  | "weekend-boxes";
+
+export type ProductBadge =
+  | "New"
+  | "Bestseller"
+  | "Limited Edition"
+  | "Signature"
+  | "Gift Favorite"
+  | "Weekend Only"
+  | "Pre-Order"
+  | "Saturday Special"
+  | "Most Popular"
+  | "Premium"
+  | "PAN India";
 
 export interface Product {
   id: string;
@@ -17,11 +31,22 @@ export interface Product {
   category: Category;
   image: string;
   images?: string[];
-  badge?: string;
+  video?: string;
+  badge?: ProductBadge | string;
   isLimited?: boolean;
   isPreOrder?: boolean;
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  isAvailableToday?: boolean;
+  shipsPanIndia?: boolean;
+  preparationTime?: string;
   rating?: number;
   reviewCount?: number;
+  ingredients?: string[];
+  allergens?: string[];
+  storageInstructions?: string;
+  relatedProductIds?: string[];
+  frequentlyBoughtWith?: string[];
 }
 
 export interface Bundle {
@@ -44,7 +69,9 @@ export interface Workshop {
   location: string;
   price: number;
   spots: number;
+  capacity: number;
   image: string;
+  gallery?: string[];
 }
 
 export interface Announcement {
@@ -54,6 +81,7 @@ export interface Announcement {
   date: string;
   image: string;
   tag: string;
+  type?: "popup" | "banner" | "closure" | "event";
 }
 
 export interface Testimonial {
@@ -63,6 +91,7 @@ export interface Testimonial {
   content: string;
   rating: number;
   image: string;
+  source?: "google" | "instagram" | "customer";
 }
 
 export interface GalleryItem {
@@ -71,11 +100,13 @@ export interface GalleryItem {
   src: string;
   alt: string;
   span?: "wide" | "tall" | "normal";
+  category?: "kitchen" | "bread" | "cake" | "events" | "workshop";
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  giftWrap?: boolean;
 }
 
 export interface GiftingOption {
@@ -85,3 +116,52 @@ export interface GiftingOption {
   image: string;
   cta: string;
 }
+
+export interface DeliverySlot {
+  date: string;
+  label: string;
+  slots: TimeSlot[];
+}
+
+export interface TimeSlot {
+  id: string;
+  label: string;
+  available: boolean;
+  cutoffHour: number;
+}
+
+export interface DeliveryZone {
+  id: string;
+  name: string;
+  pincodes: string[];
+  fee: number;
+  estimatedMinutes: number;
+}
+
+export interface CheckoutFormData {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  pincode: string;
+  deliveryMethod: "delivery" | "pickup" | "retail-shipping";
+  deliveryDate: string;
+  deliverySlot: string;
+  coupon: string;
+  giftWrap: boolean;
+  notes: string;
+  company?: string;
+  gst?: string;
+}
+
+export type CheckoutStep =
+  | "cart"
+  | "login"
+  | "method"
+  | "location"
+  | "date"
+  | "address"
+  | "coupon"
+  | "payment"
+  | "confirmation";

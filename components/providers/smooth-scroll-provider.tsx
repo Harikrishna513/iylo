@@ -25,18 +25,18 @@ export function SmoothScrollProvider({
     lenisRef.current = lenis;
     lenis.on("scroll", ScrollTrigger.update);
 
+    let frameId = 0;
     const raf = (time: number) => {
-      lenis.raf(time * 1000);
+      lenis.raf(time);
+      frameId = requestAnimationFrame(raf);
     };
-
-    gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
+    frameId = requestAnimationFrame(raf);
 
     ScrollTrigger.refresh();
 
     return () => {
+      cancelAnimationFrame(frameId);
       lenis.destroy();
-      gsap.ticker.remove(raf);
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);

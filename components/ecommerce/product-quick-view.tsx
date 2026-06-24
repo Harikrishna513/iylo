@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Star, ShoppingBag } from "lucide-react";
@@ -89,6 +90,13 @@ export function ProductQuickView() {
                 <ShoppingBag className="h-4 w-4" />
                 Add to Cart
               </Button>
+              <Link
+                href={`/products/${selectedProduct.id}`}
+                onClick={closeQuickView}
+                className="mt-3 text-center text-xs uppercase tracking-widest text-ivory/50 transition-colors hover:text-gold"
+              >
+                View Full Details →
+              </Link>
             </div>
           </div>
         )}

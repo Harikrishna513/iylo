@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Building2, Gift, UtensilsCrossed } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
 import { Button } from "@/components/ui/button";
+import { ProductImages as img } from "@/lib/product-images";
 
 const services = [
   {
@@ -24,11 +26,29 @@ const services = [
 ];
 
 export function CorporateSection() {
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    company: "",
+    name: "",
+    email: "",
+    phone: "",
+    gst: "",
+    eventSize: "",
+    deliveryDate: "",
+    budget: "",
+    requirements: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
   return (
     <section id="corporate" className="relative overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1513885535751-8b9238b07123?w=1920&q=80"
+          src={img.luxuryGiftHamper}
           alt="Corporate gifting"
           fill
           sizes="100vw"
@@ -66,10 +86,51 @@ export function CorporateSection() {
           ))}
         </div>
 
-        <Reveal className="mt-12">
-          <Button variant="gold" size="lg">
-            Enquire Now
-          </Button>
+        <Reveal className="mt-16">
+          <div className="glass max-w-2xl p-8">
+            <h3 className="editorial-heading text-2xl text-ivory">Corporate Enquiry</h3>
+            <p className="mt-2 text-sm text-ivory/50">GST invoices available for Bangalore businesses.</p>
+            {submitted ? (
+              <p className="mt-8 text-gold">Thank you. Our team will reach out within 24 hours.</p>
+            ) : (
+              <form onSubmit={handleSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
+                {[
+                  { key: "company", label: "Company", type: "text" },
+                  { key: "name", label: "Contact Name", type: "text" },
+                  { key: "email", label: "Email", type: "email" },
+                  { key: "phone", label: "Phone", type: "tel" },
+                  { key: "gst", label: "GST Number", type: "text" },
+                  { key: "eventSize", label: "Event Size", type: "text" },
+                  { key: "deliveryDate", label: "Delivery Date", type: "date" },
+                  { key: "budget", label: "Budget (₹)", type: "text" },
+                ].map((field) => (
+                  <div key={field.key}>
+                    <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted">{field.label}</label>
+                    <input
+                      required={field.key !== "gst"}
+                      type={field.type}
+                      value={form[field.key as keyof typeof form]}
+                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                      className="w-full border border-ivory/20 bg-transparent px-3 py-2 text-sm text-ivory outline-none focus:border-gold"
+                    />
+                  </div>
+                ))}
+                <div className="sm:col-span-2">
+                  <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted">Requirements</label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={form.requirements}
+                    onChange={(e) => setForm({ ...form, requirements: e.target.value })}
+                    className="w-full resize-none border border-ivory/20 bg-transparent px-3 py-2 text-sm text-ivory outline-none focus:border-gold"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Button type="submit" variant="gold">Submit Enquiry</Button>
+                </div>
+              </form>
+            )}
+          </div>
         </Reveal>
       </div>
     </section>

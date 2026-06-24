@@ -1,54 +1,93 @@
-import { Product, Bundle, Workshop, Announcement, Testimonial, GalleryItem, GiftingOption } from "@/types";
+import {
+  Product,
+  Bundle,
+  Workshop,
+  Announcement,
+  Testimonial,
+  GalleryItem,
+  GiftingOption,
+} from "@/types";
+import { ProductImages as img } from "@/lib/product-images";
 
 export const categories = [
   { id: "cakes", label: "Cakes" },
-  { id: "breads", label: "Breads" },
   { id: "cookies", label: "Cookies" },
+  { id: "breads", label: "Breads" },
   { id: "pastries", label: "Pastries" },
   { id: "desserts", label: "Desserts" },
   { id: "gift-boxes", label: "Gift Boxes" },
   { id: "retail", label: "Retail Products" },
   { id: "seasonal", label: "Seasonal Specials" },
+  { id: "weekend-boxes", label: "Weekend Boxes" },
+  { id: "workshops", label: "Workshops", href: "#workshops" },
 ] as const;
+
+const baseIngredients = {
+  bread: ["Organic stone-ground flour", "Filtered water", "Himalayan pink salt", "Wild yeast starter"],
+  cake: ["Valrhona chocolate", "French butter", "Farm eggs", "Madagascar vanilla"],
+};
 
 export const products: Product[] = [
   {
     id: "sourdough-boule",
     name: "Heritage Sourdough Boule",
     description: "48-hour fermented, crackling crust, open crumb",
-    longDescription: "Our signature sourdough begins with a 12-year-old starter, fed daily with organic stone-ground flour. Each boule undergoes a 48-hour cold fermentation for depth of flavor and that perfect, crackling crust.",
+    longDescription:
+      "Our signature sourdough begins with a 12-year-old starter, fed daily with organic stone-ground flour from a Karnataka mill. Each boule undergoes a 48-hour cold fermentation for depth of flavour and that perfect, crackling crust — the kind that echoes through Indiranagar on Saturday mornings.",
     price: 450,
     category: "breads",
-    image: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=800&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=800&q=80",
-      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
-    ],
+    image: img.sourdoughLoaf,
+    images: [img.sourdoughLoaf, img.sourdoughLoafAlt],
     badge: "Bestseller",
+    isBestSeller: true,
+    isAvailableToday: true,
+    preparationTime: "Baked fresh daily by 7 AM",
     rating: 4.9,
     reviewCount: 128,
+    ingredients: baseIngredients.bread,
+    allergens: ["Gluten"],
+    storageInstructions: "Store in a bread bag at room temperature for 3 days. Slice and freeze for up to 2 weeks.",
+    relatedProductIds: ["brioche-loaf", "almond-croissant"],
+    frequentlyBoughtWith: ["artisan-granola", "lavender-shortbread"],
   },
   {
     id: "chocolate-layer-cake",
     name: "Midnight Chocolate Layer Cake",
     description: "Valrhona dark chocolate, salted caramel, gold leaf",
-    longDescription: "Six layers of Valrhona Guanaja dark chocolate sponge, filled with salted caramel ganache and finished with edible gold leaf. A celebration centerpiece.",
+    longDescription:
+      "Six layers of Valrhona Guanaja dark chocolate sponge, filled with salted caramel ganache and finished with edible gold leaf. A celebration centrepiece crafted for Bangalore's finest occasions.",
     price: 2800,
     category: "cakes",
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80",
+    image: img.dutchTruffleCake,
     badge: "Signature",
+    isAvailableToday: true,
+    preparationTime: "24 hours advance notice",
     rating: 5.0,
     reviewCount: 89,
+    ingredients: [...baseIngredients.cake, "Edible gold leaf", "Sea salt caramel"],
+    allergens: ["Gluten", "Dairy", "Eggs"],
+    storageInstructions: "Refrigerate and consume within 48 hours. Bring to room temperature before serving.",
+    relatedProductIds: ["red-velvet-cupcake", "celebration-gift-box"],
+    frequentlyBoughtWith: ["tiramisu-jar", "raspberry-tart"],
   },
   {
     id: "almond-croissant",
     name: "Almond Croissant",
     description: "Twice-baked, frangipane, toasted almonds",
+    longDescription:
+      "Laminated with French butter over three days, twice-baked with house-made frangipane and finished with toasted almonds. A morning ritual for our Indiranagar regulars.",
     price: 320,
     category: "pastries",
-    image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&q=80",
+    image: img.butterCroissant,
+    isAvailableToday: true,
+    preparationTime: "Ready by 8 AM",
     rating: 4.8,
     reviewCount: 256,
+    ingredients: ["French butter", "Almond flour", "Toasted almonds", "Frangipane"],
+    allergens: ["Gluten", "Dairy", "Nuts", "Eggs"],
+    storageInstructions: "Best enjoyed fresh. Store at room temperature for up to 24 hours.",
+    relatedProductIds: ["raspberry-tart", "matcha-financier"],
+    frequentlyBoughtWith: ["sourdough-boule"],
   },
   {
     id: "lavender-shortbread",
@@ -56,9 +95,18 @@ export const products: Product[] = [
     description: "French butter, dried lavender, raw sugar",
     price: 580,
     category: "cookies",
-    image: "https://images.unsplash.com/photo-1558961363-fa8aad7c7fd2?w=800&q=80",
+    image: img.butterCookies,
+    isNew: true,
+    badge: "New",
+    isAvailableToday: true,
+    preparationTime: "Ready by 9 AM",
     rating: 4.7,
     reviewCount: 64,
+    ingredients: ["French butter", "Dried lavender", "Raw sugar", "Organic flour"],
+    allergens: ["Gluten", "Dairy"],
+    storageInstructions: "Store in an airtight tin for up to 2 weeks.",
+    relatedProductIds: ["matcha-financier", "artisan-granola"],
+    frequentlyBoughtWith: ["tiramisu-jar"],
   },
   {
     id: "tiramisu-jar",
@@ -66,9 +114,16 @@ export const products: Product[] = [
     description: "Mascarpone, espresso-soaked ladyfingers, cocoa",
     price: 420,
     category: "desserts",
-    image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80",
+    image: img.tiramisuCup,
+    isAvailableToday: true,
+    preparationTime: "Made fresh daily",
     rating: 4.9,
     reviewCount: 112,
+    ingredients: ["Mascarpone", "Espresso", "Ladyfingers", "Dutch cocoa"],
+    allergens: ["Gluten", "Dairy", "Eggs"],
+    storageInstructions: "Refrigerate and consume within 3 days.",
+    relatedProductIds: ["matcha-financier", "red-velvet-cupcake"],
+    frequentlyBoughtWith: ["lavender-shortbread"],
   },
   {
     id: "celebration-gift-box",
@@ -76,10 +131,14 @@ export const products: Product[] = [
     description: "Curated selection of our finest bakes",
     price: 3500,
     category: "gift-boxes",
-    image: "https://images.unsplash.com/photo-1549465220-1a0b9238e5d0?w=800&q=80",
+    image: img.luxuryGiftHamper,
     badge: "Gift Favorite",
+    isAvailableToday: true,
+    preparationTime: "24 hours advance notice",
     rating: 5.0,
     reviewCount: 45,
+    relatedProductIds: ["chocolate-layer-cake", "artisan-granola"],
+    frequentlyBoughtWith: ["lavender-shortbread", "matcha-financier"],
   },
   {
     id: "artisan-granola",
@@ -87,22 +146,36 @@ export const products: Product[] = [
     description: "Maple, pecans, dried cranberries, coconut",
     price: 680,
     category: "retail",
-    image: "https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?w=800&q=80",
+    image: img.almondRocks,
+    badge: "PAN India",
+    shipsPanIndia: true,
+    preparationTime: "Ships in 2–4 business days",
     rating: 4.6,
     reviewCount: 38,
+    ingredients: ["Rolled oats", "Maple syrup", "Pecans", "Dried cranberries", "Coconut"],
+    allergens: ["Nuts", "Gluten"],
+    storageInstructions: "Store in a cool, dry place for up to 6 weeks.",
+    relatedProductIds: ["lavender-shortbread", "matcha-financier"],
+    frequentlyBoughtWith: ["sourdough-boule"],
   },
   {
     id: "festive-stollen",
-    name: "Festive Stollen",
+    name: "Monsoon Spice Stollen",
     description: "Marzipan-filled, aged rum, candied citrus",
     price: 1200,
     category: "seasonal",
-    image: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800&q=80",
+    image: img.carrotCake,
     badge: "Limited Edition",
     isLimited: true,
     isPreOrder: true,
+    preparationTime: "Pre-order 48 hours ahead",
     rating: 4.9,
     reviewCount: 27,
+    ingredients: ["Marzipan", "Aged rum", "Candied citrus", "Warm spices"],
+    allergens: ["Gluten", "Dairy", "Nuts", "Eggs"],
+    storageInstructions: "Wrap tightly and store for up to 2 weeks. Flavours deepen with age.",
+    relatedProductIds: ["celebration-gift-box"],
+    frequentlyBoughtWith: ["lavender-shortbread"],
   },
   {
     id: "brioche-loaf",
@@ -110,9 +183,16 @@ export const products: Product[] = [
     description: "Enriched with French butter and farm eggs",
     price: 520,
     category: "breads",
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+    image: img.briocheLoaf,
+    isAvailableToday: true,
+    preparationTime: "Baked fresh daily",
     rating: 4.8,
     reviewCount: 94,
+    ingredients: ["French butter", "Farm eggs", "Organic flour", "Milk"],
+    allergens: ["Gluten", "Dairy", "Eggs"],
+    storageInstructions: "Best within 2 days. Excellent for French toast when slightly stale.",
+    relatedProductIds: ["sourdough-boule"],
+    frequentlyBoughtWith: ["almond-croissant"],
   },
   {
     id: "raspberry-tart",
@@ -120,9 +200,16 @@ export const products: Product[] = [
     description: "Almond cream, fresh raspberries, pistachio",
     price: 380,
     category: "pastries",
-    image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80",
+    image: img.strawberryTart,
+    isAvailableToday: true,
+    preparationTime: "Ready by 10 AM",
     rating: 4.9,
     reviewCount: 73,
+    ingredients: ["Almond cream", "Fresh raspberries", "Pistachio", "Butter pastry"],
+    allergens: ["Gluten", "Dairy", "Nuts", "Eggs"],
+    storageInstructions: "Refrigerate and consume within 24 hours.",
+    relatedProductIds: ["almond-croissant", "tiramisu-jar"],
+    frequentlyBoughtWith: ["matcha-financier"],
   },
   {
     id: "red-velvet-cupcake",
@@ -130,9 +217,17 @@ export const products: Product[] = [
     description: "Cream cheese frosting, Madagascar vanilla",
     price: 180,
     category: "cakes",
-    image: "https://images.unsplash.com/photo-1614707267537-b85aac4ced06?w=800&q=80",
+    image: img.redVelvetCupcake,
+    isBestSeller: true,
+    isAvailableToday: true,
+    preparationTime: "Ready by 9 AM",
     rating: 4.7,
     reviewCount: 156,
+    ingredients: ["Cocoa", "Buttermilk", "Cream cheese", "Madagascar vanilla"],
+    allergens: ["Gluten", "Dairy", "Eggs"],
+    storageInstructions: "Refrigerate and consume within 48 hours.",
+    relatedProductIds: ["chocolate-layer-cake"],
+    frequentlyBoughtWith: ["tiramisu-jar"],
   },
   {
     id: "matcha-financier",
@@ -140,9 +235,71 @@ export const products: Product[] = [
     description: "Uji matcha, brown butter, almond flour",
     price: 240,
     category: "cookies",
-    image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&q=80",
+    image: img.egglessHazelnutCookies,
+    isNew: true,
+    badge: "New",
+    isAvailableToday: true,
+    preparationTime: "Ready by 9 AM",
     rating: 4.8,
     reviewCount: 42,
+    ingredients: ["Uji matcha", "Brown butter", "Almond flour", "Egg whites"],
+    allergens: ["Nuts", "Dairy", "Eggs", "Gluten"],
+    storageInstructions: "Store in an airtight container for up to 5 days.",
+    relatedProductIds: ["lavender-shortbread", "tiramisu-jar"],
+    frequentlyBoughtWith: ["artisan-granola"],
+  },
+];
+
+export const todaysSpecials: Product[] = [
+  {
+    id: "today-burnt-basque",
+    name: "Burnt Basque Cheesecake",
+    description: "Caramelised top, creamy centre, berry compote",
+    price: 680,
+    category: "desserts",
+    image: img.nyCheesecake,
+    badge: "Today's Special",
+    isAvailableToday: true,
+    isLimited: true,
+    preparationTime: "Only 12 portions daily",
+    rating: 5.0,
+    reviewCount: 134,
+    ingredients: ["Cream cheese", "Farm eggs", "Fresh berries"],
+    allergens: ["Dairy", "Eggs", "Gluten"],
+    storageInstructions: "Refrigerate and consume within 48 hours.",
+  },
+  {
+    id: "today-cardamom-bun",
+    name: "Cardamom Morning Bun",
+    description: "Kerala cardamom, orange zest, pearl sugar",
+    price: 260,
+    category: "pastries",
+    image: img.cinnamonSwirl,
+    badge: "Fresh Today",
+    isAvailableToday: true,
+    preparationTime: "Baked at 7 AM",
+    rating: 4.9,
+    reviewCount: 87,
+    ingredients: ["Kerala cardamom", "Orange zest", "Pearl sugar", "French butter"],
+    allergens: ["Gluten", "Dairy", "Eggs"],
+    storageInstructions: "Best enjoyed warm on the day of purchase.",
+  },
+  {
+    id: "today-filter-coffee-tart",
+    name: "Filter Coffee Tart",
+    description: "Coorg coffee ganache, jaggery caramel, cocoa nib",
+    price: 340,
+    category: "desserts",
+    image: img.cappuccinoCake,
+    badge: "Bangalore Exclusive",
+    isAvailableToday: true,
+    isLimited: true,
+    preparationTime: "Only 8 portions daily",
+    rating: 4.9,
+    reviewCount: 56,
+    ingredients: ["Coorg coffee", "Jaggery caramel", "Cocoa nibs", "Butter pastry"],
+    allergens: ["Gluten", "Dairy", "Eggs"],
+    storageInstructions: "Refrigerate and consume within 24 hours.",
   },
 ];
 
@@ -153,12 +310,17 @@ export const weekendSpecials: Product[] = [
     description: "Brown butter, cream cheese glaze, pecan crumble",
     price: 280,
     category: "pastries",
-    image: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800&q=80",
+    image: img.cinnamonSwirl,
     badge: "Weekend Only",
     isLimited: true,
     isPreOrder: true,
+    isAvailableToday: false,
+    preparationTime: "Pre-order by Friday 6 PM",
     rating: 4.9,
     reviewCount: 203,
+    ingredients: ["Brown butter", "Cinnamon", "Cream cheese", "Pecans"],
+    allergens: ["Gluten", "Dairy", "Nuts", "Eggs"],
+    storageInstructions: "Best enjoyed warm. Reheat at 160°C for 5 minutes.",
   },
   {
     id: "weekend-focaccia",
@@ -166,23 +328,31 @@ export const weekendSpecials: Product[] = [
     description: "Olive oil, fresh rosemary, Maldon salt",
     price: 380,
     category: "breads",
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+    image: img.multigrainLoaf,
     badge: "Saturday Special",
     isLimited: true,
+    isAvailableToday: false,
+    preparationTime: "Available Saturday mornings",
     rating: 4.8,
     reviewCount: 87,
+    ingredients: ["Olive oil", "Fresh rosemary", "Maldon salt", "Sourdough base"],
+    allergens: ["Gluten"],
+    storageInstructions: "Best within 2 days. Excellent for sandwiches.",
   },
   {
-    id: "weekend-cheesecake",
-    name: "Burnt Basque Cheesecake",
-    description: "Caramelized top, creamy center, berry compote",
-    price: 680,
-    category: "desserts",
-    image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80",
-    badge: "Pre-Order",
+    id: "weekend-brunch-box",
+    name: "Indiranagar Brunch Box",
+    description: "Sourdough, pastries, granola, house jam",
+    price: 2200,
+    category: "weekend-boxes",
+    image: img.indulgenceHamper,
+    badge: "Weekend Box",
     isPreOrder: true,
+    preparationTime: "Pre-order by Friday 8 PM",
     rating: 5.0,
-    reviewCount: 134,
+    reviewCount: 67,
+    relatedProductIds: ["sourdough-boule", "almond-croissant"],
+    frequentlyBoughtWith: ["artisan-granola"],
   },
 ];
 
@@ -190,20 +360,20 @@ export const bundles: Bundle[] = [
   {
     id: "breakfast-box",
     name: "Breakfast Box",
-    description: "Start your morning with artisan breads, pastries, and house-made preserves",
+    description: "Start your Bangalore morning with artisan breads, pastries, and house-made preserves",
     price: 1800,
     originalPrice: 2200,
-    image: "https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=800&q=80",
+    image: img.luxuryGiftHamper,
     items: ["Sourdough Boule", "Croissant x2", "Granola Jar", "Seasonal Jam"],
     badge: "Most Popular",
   },
   {
     id: "celebration-box",
     name: "Celebration Box",
-    description: "Perfect for birthdays, anniversaries, and special moments",
+    description: "Perfect for birthdays, anniversaries, and special moments across Bangalore",
     price: 4500,
     originalPrice: 5200,
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80",
+    image: img.dutchTruffleCake,
     items: ["Chocolate Layer Cake", "Macarons x6", "Champagne Truffles", "Gift Card"],
     badge: "Premium",
   },
@@ -213,41 +383,54 @@ export const bundles: Bundle[] = [
     description: "Elegantly packaged for corporate and personal gifting",
     price: 3200,
     originalPrice: 3800,
-    image: "https://images.unsplash.com/photo-1549465220-1a0b9238e5d0?w=800&q=80",
+    image: img.luxuryGiftHamper,
     items: ["Assorted Cookies", "Shortbread Tin", "Artisan Tea", "Branded Ribbon"],
   },
   {
     id: "family-box",
     name: "Family Box",
-    description: "A generous spread for Sunday brunches and family gatherings",
+    description: "A generous spread for Sunday brunches in Indiranagar and beyond",
     price: 2800,
     originalPrice: 3400,
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+    image: img.indulgenceHamper,
     items: ["Brioche Loaf", "Pastries x4", "Brownies x6", "Fresh Fruit Tart"],
   },
 ];
+
+export const retailProducts: Product[] = products.filter((p) => p.shipsPanIndia);
 
 export const giftingOptions: GiftingOption[] = [
   {
     id: "corporate",
     title: "Corporate Gifting",
-    description: "Elevate your brand with bespoke hampers, branded packaging, and bulk ordering for clients and teams.",
-    image: "https://images.unsplash.com/photo-1513885535751-8b9238b07123?w=800&q=80",
+    description:
+      "Elevate your brand with bespoke hampers, branded packaging, GST invoices, and bulk ordering for Bangalore teams and clients.",
+    image: img.luxuryGiftHamper,
     cta: "Enquire for Corporate",
   },
   {
     id: "festive",
-    title: "Festive Gifting",
-    description: "Curated seasonal collections for Diwali, Christmas, and every celebration in between.",
-    image: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800&q=80",
+    title: "Festival Hampers",
+    description:
+      "Curated seasonal collections for Diwali, Christmas, Ugadi, and every celebration across Karnataka.",
+    image: img.carrotCake,
     cta: "Explore Festive",
   },
   {
     id: "celebration",
-    title: "Celebration Gifting",
-    description: "Birthdays, weddings, baby showers — handcrafted gifts that speak from the heart.",
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80",
+    title: "Birthday & Wedding",
+    description:
+      "Birthdays, weddings, baby showers — handcrafted gifts that speak from the heart.",
+    image: img.tieredCake,
     cta: "Shop Celebrations",
+  },
+  {
+    id: "custom",
+    title: "Custom Packaging",
+    description:
+      "Personalised ribbons, message cards, and premium boxes tailored to your occasion.",
+    image: img.premiumGiftHamper,
+    cta: "Request Custom",
   },
 ];
 
@@ -255,13 +438,16 @@ export const workshops: Workshop[] = [
   {
     id: "sourdough-masterclass",
     title: "Sourdough Masterclass",
-    description: "Learn the art of sourdough from starter to scoring. Take home your own starter and a freshly baked loaf.",
+    description:
+      "Learn the art of sourdough from starter to scoring. Take home your own starter and a freshly baked loaf.",
     date: "June 28, 2026",
     time: "10:00 AM – 2:00 PM",
-    location: "IYLO Bake House Studio",
+    location: "IYLO Bake House Studio, Indiranagar",
     price: 3500,
-    spots: 8,
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+    spots: 3,
+    capacity: 8,
+    image: img.sourdoughLoaf,
+    gallery: [img.sourdoughLoaf, img.briocheLoaf],
   },
   {
     id: "pastry-fundamentals",
@@ -269,10 +455,11 @@ export const workshops: Workshop[] = [
     description: "Master laminated dough, croissants, and danishes with our head pastry chef.",
     date: "July 5, 2026",
     time: "9:00 AM – 1:00 PM",
-    location: "IYLO Bake House Studio",
+    location: "IYLO Bake House Studio, Indiranagar",
     price: 4200,
-    spots: 6,
-    image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&q=80",
+    spots: 2,
+    capacity: 6,
+    image: img.butterCroissant,
   },
   {
     id: "cake-decorating",
@@ -280,37 +467,50 @@ export const workshops: Workshop[] = [
     description: "Buttercream techniques, piping, and modern minimalist cake design.",
     date: "July 12, 2026",
     time: "11:00 AM – 3:00 PM",
-    location: "IYLO Bake House Studio",
+    location: "IYLO Bake House Studio, Indiranagar",
     price: 3800,
-    spots: 10,
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80",
+    spots: 5,
+    capacity: 10,
+    image: img.dutchTruffleCake,
   },
 ];
 
 export const announcements: Announcement[] = [
   {
-    id: "summer-popup",
-    title: "Summer Pop-Up at Lodhi Art District",
-    description: "Join us for a weekend of ice cream sandwiches, cold brew, and limited-edition pastries.",
-    date: "July 18–19, 2026",
-    image: "https://images.unsplash.com/photo-1563729784474-d77ddba9334e?w=800&q=80",
-    tag: "Pop-Up Event",
+    id: "weekend-preorder",
+    title: "Weekend Boxes — Pre-order Now",
+    description: "Order by Friday 8 PM for Saturday pickup or Sunday delivery across Bangalore.",
+    date: "Every Week",
+    image: img.luxuryGiftHamper,
+    tag: "Weekend Special",
+    type: "banner",
   },
   {
     id: "monsoon-launch",
     title: "Monsoon Collection Launch",
-    description: "Warm spices, chai-infused bakes, and comfort desserts for rainy days.",
+    description: "Warm spices, filter coffee bakes, and comfort desserts for Bangalore's rainy days.",
     date: "August 1, 2026",
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+    image: img.mangoCreamCake,
     tag: "Seasonal Launch",
+    type: "popup",
   },
   {
-    id: "collab-artisan-coffee",
-    title: "Collaboration with Blue Tokai",
-    description: "Exclusive coffee-pastry pairing menu available at both locations.",
+    id: "third-wave-collab",
+    title: "Collaboration with Third Wave Coffee",
+    description: "Exclusive coffee-pastry pairing menu at our Indiranagar studio.",
     date: "Ongoing",
-    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80",
+    image: img.cappuccino,
     tag: "Collaboration",
+    type: "event",
+  },
+  {
+    id: "ganesh-chaturthi",
+    title: "Ganesh Chaturthi Pre-Orders Open",
+    description: "Modak-inspired pastries and festive hampers. Pre-order by August 25.",
+    date: "September 2026",
+    image: img.mothersDayHamper,
+    tag: "Festival Menu",
+    type: "banner",
   },
 ];
 
@@ -318,65 +518,154 @@ export const testimonials: Testimonial[] = [
   {
     id: "1",
     name: "Priya Sharma",
-    role: "Food Blogger",
-    content: "IYLO has redefined what artisan baking means in India. Every bite tells a story of patience, passion, and perfection.",
+    role: "Food Blogger, Bangalore",
+    content:
+      "IYLO has redefined what artisan baking means in Bangalore. Every bite tells a story of patience, passion, and perfection.",
     rating: 5,
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+    image: img.categoryDelicacies,
+    source: "google",
   },
   {
     id: "2",
     name: "Arjun Mehta",
-    role: "Corporate Client",
-    content: "We've been ordering corporate hampers for three years. The presentation and quality never fail to impress our clients.",
+    role: "Corporate Client, Koramangala",
+    content:
+      "We've been ordering corporate hampers for three years. The presentation and quality never fail to impress our clients across Bangalore.",
     rating: 5,
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
+    image: img.categoryHamperGifting,
+    source: "google",
   },
   {
     id: "3",
     name: "Ananya Reddy",
-    role: "Regular Customer",
-    content: "The sourdough boule is life-changing. I drive across the city every Saturday just for their weekend specials.",
+    role: "Regular Customer, Indiranagar",
+    content:
+      "The sourdough boule is life-changing. I cycle across Indiranagar every Saturday just for their weekend specials.",
     rating: 5,
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+    image: img.sourdoughLoaf,
+    source: "customer",
   },
   {
     id: "4",
     name: "Rahul Kapoor",
-    role: "Event Planner",
-    content: "Their celebration cakes are showstoppers. I've featured IYLO at over a dozen weddings — always flawless.",
+    role: "Event Planner, Whitefield",
+    content:
+      "Their celebration cakes are showstoppers. I've featured IYLO at over a dozen weddings in Bangalore — always flawless.",
     rating: 5,
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
+    image: img.tieredCake,
+    source: "google",
   },
 ];
 
 export const galleryItems: GalleryItem[] = [
-  { id: "1", type: "image", src: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&q=80", alt: "Fresh bread", span: "tall" },
-  { id: "2", type: "image", src: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&q=80", alt: "Croissants", span: "normal" },
-  { id: "3", type: "image", src: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80", alt: "Chocolate cake", span: "wide" },
-  { id: "4", type: "image", src: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=600&q=80", alt: "Pastries", span: "normal" },
-  { id: "5", type: "image", src: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=600&q=80", alt: "Cinnamon rolls", span: "normal" },
-  { id: "6", type: "image", src: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&q=80", alt: "Fruit tart", span: "tall" },
-  { id: "7", type: "image", src: "https://images.unsplash.com/photo-1549465220-1a0b9238e5d0?w=600&q=80", alt: "Gift box", span: "normal" },
-  { id: "8", type: "image", src: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&q=80", alt: "Cookies", span: "wide" },
+  { id: "1", type: "image", src: img.sourdoughLoaf, alt: "Fresh bread from our Indiranagar oven", span: "tall", category: "bread" },
+  { id: "2", type: "image", src: img.butterCroissant, alt: "Laminated croissants", span: "normal", category: "kitchen" },
+  { id: "3", type: "image", src: img.dutchTruffleCake, alt: "Chocolate layer cake decoration", span: "wide", category: "cake" },
+  { id: "4", type: "image", src: img.multigrainLoaf, alt: "Weekend pastries", span: "normal", category: "bread" },
+  { id: "5", type: "image", src: img.cinnamonSwirl, alt: "Cinnamon rolls", span: "normal", category: "kitchen" },
+  { id: "6", type: "image", src: img.strawberryTart, alt: "Raspberry tart finishing", span: "tall", category: "cake" },
+  { id: "7", type: "image", src: img.luxuryGiftHamper, alt: "Gift box packaging", span: "normal", category: "events" },
+  { id: "8", type: "image", src: img.chocolateChipCookie, alt: "Cookie assortment", span: "wide", category: "kitchen" },
+];
+
+export const videoGallery = [
+  {
+    id: "v1",
+    title: "Morning Bake",
+    src: img.bannerHomeDesktop,
+    thumbnail: img.bannerHomeMobile,
+    category: "kitchen" as const,
+  },
+  {
+    id: "v2",
+    title: "Sourdough Scoring",
+    src: img.sourdoughLoaf,
+    thumbnail: img.sourdoughLoafAlt,
+    category: "bread" as const,
+  },
+  {
+    id: "v3",
+    title: "Cake Decoration",
+    src: img.dutchTruffleCake,
+    thumbnail: img.dutchTruffleCakeAlt,
+    category: "cake" as const,
+  },
+];
+
+export const instagramPosts = [
+  { id: "ig1", image: img.butterCroissant, alt: "Fresh croissants" },
+  { id: "ig2", image: img.dutchTruffleCake, alt: "Chocolate cake" },
+  { id: "ig3", image: img.sourdoughLoaf, alt: "Artisan bread" },
+  { id: "ig4", image: img.lemonTart, alt: "Fruit tart" },
+  { id: "ig5", image: img.premiumGiftHamper, alt: "Gift packaging" },
+  { id: "ig6", image: img.assortedBrownies6, alt: "Weekend special" },
+];
+
+export const popularSearches = [
+  "Sourdough",
+  "Birthday cake",
+  "Corporate gifting",
+  "Weekend box",
+  "Almond croissant",
+  "Gift hamper",
 ];
 
 export const timelineEvents = [
-  { year: "2018", title: "The Beginning", description: "IYLO started as a home kitchen experiment with a single sourdough starter." },
-  { year: "2019", title: "First Pop-Up", description: "Sold out our first farmers market pop-up in under two hours." },
-  { year: "2021", title: "Flagship Store", description: "Opened our artisan bake house in South Delhi." },
-  { year: "2023", title: "Workshop Studio", description: "Launched baking masterclasses and corporate gifting." },
-  { year: "2026", title: "Today", description: "Serving thousands of customers with handcrafted bakes daily." },
+  { year: "2018", title: "The Beginning", description: "IYLO started as a home kitchen experiment in Indiranagar with a single sourdough starter." },
+  { year: "2019", title: "First Pop-Up", description: "Sold out our first farmers market pop-up at Church Street in under two hours." },
+  { year: "2021", title: "Flagship Store", description: "Opened our artisan bake house on 12th Main, Indiranagar." },
+  { year: "2023", title: "Workshop Studio", description: "Launched baking masterclasses and corporate gifting across Bangalore." },
+  { year: "2026", title: "Today", description: "Serving thousands of Bangalore customers with handcrafted bakes daily." },
 ];
+
+export const founderMessage = {
+  name: "Ananya Iyer",
+  title: "Founder & Head Baker",
+  image: img.heroHome,
+  quote:
+    "We opened IYLO because Bangalore deserved a bakery that treats every loaf like a love letter — patient, intentional, and made to be shared around a table.",
+};
 
 export const contactInfo = {
   phone: "+91 98765 43210",
   whatsapp: "+919876543210",
   email: "hello@iylobakehouse.com",
   instagram: "@iylobakehouse",
-  address: "12, Hauz Khas Village, New Delhi 110016",
+  address: "42, 12th Main Road, Indiranagar, Bangalore 560038",
   timings: {
     weekdays: "8:00 AM – 8:00 PM",
     weekends: "7:00 AM – 9:00 PM",
   },
-  mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3505.150987654321!2d77.1947!3d28.5535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDMzJzEyLjYiTiA3N8KwMTEnNDAuOSJF!5e0!3m2!1sen!2sin!4v1234567890",
+  mapEmbed:
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.013258879!2d77.6412!3d12.9716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU4JzE3LjgiTiA3N8KwMzgnMjguMyJF!5e0!3m2!1sen!2sin!4v1234567890",
 };
+
+export function getProductById(id: string): Product | undefined {
+  return [...products, ...todaysSpecials, ...weekendSpecials, ...retailProducts].find(
+    (p) => p.id === id
+  );
+}
+
+export function getProductsByCategory(category: string): Product[] {
+  return products.filter((p) => p.category === category);
+}
+
+export function getAllProducts(): Product[] {
+  const seen = new Set<string>();
+  return [...products, ...todaysSpecials, ...weekendSpecials].filter((p) => {
+    if (seen.has(p.id)) return false;
+    seen.add(p.id);
+    return true;
+  });
+}
+
+export function searchProducts(query: string): Product[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return [];
+  return getAllProducts().filter(
+    (p) =>
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.category.replace("-", " ").includes(q)
+  );
+}

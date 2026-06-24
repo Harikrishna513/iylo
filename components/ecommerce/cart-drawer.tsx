@@ -3,13 +3,15 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
-import { useCartStore } from "@/store/cart-store";
+import { useCartStore, FREE_DELIVERY_THRESHOLD } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
+import { getAmountForFreeDelivery } from "@/lib/delivery";
 import { Button } from "@/components/ui/button";
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, updateQuantity, removeItem, subtotal, openCheckout } =
     useCartStore();
+  const freeDeliveryRemaining = getAmountForFreeDelivery(subtotal());
 
   return (
     <AnimatePresence>
@@ -111,8 +113,13 @@ export function CartDrawer() {
                   <span className="text-lg text-gold">{formatPrice(subtotal())}</span>
                 </div>
                 <p className="mb-6 text-xs text-ivory/40">
-                  Delivery calculated at checkout. Free delivery on orders above ₹2,000.
+                  Delivery calculated at checkout. Free delivery on orders above {formatPrice(FREE_DELIVERY_THRESHOLD)}.
                 </p>
+                {freeDeliveryRemaining > 0 && (
+                  <p className="mb-4 border border-gold/20 bg-gold/5 px-3 py-2 text-xs text-gold">
+                    Spend {formatPrice(freeDeliveryRemaining)} more for free delivery across Bangalore.
+                  </p>
+                )}
                 <Button
                   variant="gold"
                   className="w-full"

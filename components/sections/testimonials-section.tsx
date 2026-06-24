@@ -24,15 +24,18 @@ export function TestimonialsSection() {
   }, [next]);
 
   return (
-    <section className="section-padding bg-ivory text-black">
+    <section id="reviews" className="section-padding bg-ivory text-black">
       <div className="mx-auto max-w-4xl">
         <Reveal className="mb-16 text-center">
           <p className="text-[10px] uppercase tracking-[0.4em] text-brown">
             Kind Words
           </p>
           <h2 className="editorial-heading mt-4 text-4xl text-black md:text-6xl">
-            Customer Love
+            Google Reviews
           </h2>
+          <p className="mx-auto mt-4 max-w-md text-sm text-black/50">
+            Loved by food lovers, event planners, and families across Bangalore
+          </p>
         </Reveal>
 
         <div className="relative">
@@ -74,6 +77,9 @@ export function TestimonialsSection() {
                   <p className="text-sm text-black/50">
                     {testimonials[current].role}
                   </p>
+                  {testimonials[current].source === "google" && (
+                    <p className="text-[10px] uppercase tracking-widest text-brown/60">Google Review</p>
+                  )}
                 </div>
               </div>
             </motion.div>

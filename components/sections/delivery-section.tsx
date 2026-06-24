@@ -8,13 +8,13 @@ const deliveryOptions = [
     icon: Truck,
     title: "Home Delivery",
     description:
-      "Fresh bakes delivered to your doorstep across Delhi NCR. Same-day delivery on orders before 2 PM.",
+      "Fresh bakes delivered across Indiranagar, Koramangala, HSR, Whitefield, and central Bangalore. Same-day on orders before 2 PM.",
   },
   {
     icon: Store,
     title: "Store Pickup",
     description:
-      "Order online and collect from our Hauz Khas bake house. Skip the queue, savor the aroma.",
+      "Order online and collect from our Indiranagar bake house on 12th Main. Skip the queue, savour the aroma.",
   },
   {
     icon: Package,
@@ -26,7 +26,7 @@ const deliveryOptions = [
 
 export function DeliverySection() {
   return (
-    <section className="section-padding bg-black">
+    <section id="delivery" className="section-padding bg-black">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-16 text-center">
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold">

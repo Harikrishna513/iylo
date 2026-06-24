@@ -1,13 +1,21 @@
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
+import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { FloatingCTA } from "@/components/layout/floating-cta";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import { AnnouncementPopup } from "@/components/layout/announcement-popup";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { CartDrawer } from "@/components/ecommerce/cart-drawer";
 import { ProductQuickView } from "@/components/ecommerce/product-quick-view";
 import { CheckoutModal } from "@/components/ecommerce/checkout-modal";
+import { SearchModal } from "@/components/ecommerce/search-modal";
+import { WishlistDrawer } from "@/components/ecommerce/wishlist-drawer";
+import { bakerySchema, faqSchema } from "@/lib/seo";
+import { getGoogleReviewsSchema } from "@/lib/google-reviews-schema";
+import { ProductImages as img } from "@/lib/product-images";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -24,29 +32,31 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "IYLO Bake House | Handcrafted Artisan Bakes",
+  title: "IYLO Bake House | Handcrafted Artisan Bakes · Bangalore",
   description:
-    "Freshly baked artisan breads, pastries, cakes and desserts made with exceptional ingredients. Order online for delivery or pickup in New Delhi.",
+    "Freshly baked artisan breads, pastries, cakes and desserts made with exceptional ingredients. Order online for delivery or pickup in Indiranagar, Bangalore.",
   keywords: [
-    "artisan bakery",
-    "sourdough bread",
-    "luxury bakery Delhi",
+    "artisan bakery Bangalore",
+    "sourdough bread Indiranagar",
+    "luxury bakery Bangalore",
     "IYLO Bake House",
     "handcrafted pastries",
-    "corporate gifting",
+    "corporate gifting Bangalore",
+    "weekend bakery box",
   ],
   authors: [{ name: "IYLO Bake House" }],
+  metadataBase: new URL("https://iylobakehouse.com"),
   openGraph: {
     title: "IYLO Bake House | Handcrafted Bakes Worth Waiting For",
     description:
-      "Artisan breads, pastries, cakes and desserts made with exceptional ingredients and delivered with care.",
+      "Artisan breads, pastries, cakes and desserts made with exceptional ingredients in Indiranagar, Bangalore.",
     url: "https://iylobakehouse.com",
     siteName: "IYLO Bake House",
     locale: "en_IN",
     type: "website",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&q=80",
+        url: img.bannerHomeDesktop1200,
         width: 1200,
         height: 630,
         alt: "IYLO Bake House artisan bread",
@@ -57,50 +67,16 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "IYLO Bake House | Handcrafted Artisan Bakes",
     description:
-      "Freshly baked artisan breads, pastries, cakes and desserts in New Delhi.",
-    images: [
-      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&q=80",
-    ],
+      "Freshly baked artisan breads, pastries, cakes and desserts in Bangalore.",
+    images: [img.bannerHomeDesktop1200],
   },
   robots: {
     index: true,
     follow: true,
   },
-};
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Bakery",
-  name: "IYLO Bake House",
-  description:
-    "Artisan bakery specializing in handcrafted breads, pastries, cakes and desserts.",
-  url: "https://iylobakehouse.com",
-  telephone: "+91-98765-43210",
-  email: "hello@iylobakehouse.com",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "12, Hauz Khas Village",
-    addressLocality: "New Delhi",
-    postalCode: "110016",
-    addressCountry: "IN",
+  alternates: {
+    canonical: "https://iylobakehouse.com",
   },
-  openingHoursSpecification: [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      opens: "08:00",
-      closes: "20:00",
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Saturday", "Sunday"],
-      opens: "07:00",
-      closes: "21:00",
-    },
-  ],
-  priceRange: "₹₹₹",
-  servesCuisine: "Bakery",
-  image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&q=80",
 };
 
 export default function RootLayout({
@@ -113,18 +89,31 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(bakerySchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(getGoogleReviewsSchema()) }}
         />
       </head>
       <body className="bg-black font-body antialiased">
         <SmoothScrollProvider>
+          <AnnouncementBar />
           <Header />
           <main>{children}</main>
           <Footer />
           <FloatingCTA />
+          <MobileBottomNav />
           <CartDrawer />
           <ProductQuickView />
           <CheckoutModal />
+          <SearchModal />
+          <WishlistDrawer />
+          <AnnouncementPopup />
         </SmoothScrollProvider>
       </body>
     </html>

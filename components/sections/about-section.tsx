@@ -4,8 +4,9 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { timelineEvents } from "@/data/products";
+import { timelineEvents, founderMessage } from "@/data/products";
 import { Reveal } from "@/components/animations/reveal";
+import { ProductImages as img } from "@/lib/product-images";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,12 +49,12 @@ export function AboutSection() {
             <p className="mt-8 text-sm leading-relaxed text-ivory/60">
               IYLO began with a simple belief: that bread, when made with
               patience and purpose, can be transformative. What started as a
-              home kitchen experiment has grown into one of Delhi&apos;s most
-              beloved artisan bake houses.
+              home kitchen experiment in Indiranagar has grown into one of
+              Bangalore&apos;s most beloved artisan bake houses.
             </p>
             <p className="mt-4 text-sm leading-relaxed text-ivory/60">
               Founded by pastry chef Ananya Iyer, IYLO combines French
-              technique with Indian sensibilities — sourcing local grains,
+              technique with Indian sensibilities — sourcing grains from Karnataka mills,
               celebrating seasonal produce, and honoring the slow craft of
               fermentation.
             </p>
@@ -78,7 +79,7 @@ export function AboutSection() {
           <div className="relative">
             <div className="relative aspect-[3/4] overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80"
+                src={img.bannerHomeDesktop}
                 alt="Artisan baking process"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -87,7 +88,7 @@ export function AboutSection() {
             </div>
             <div className="absolute -bottom-8 -left-8 hidden h-48 w-48 overflow-hidden border-4 border-black md:block">
               <Image
-                src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&q=80"
+                src={img.sourdoughLoaf}
                 alt="Fresh bread"
                 fill
                 sizes="192px"
@@ -95,6 +96,39 @@ export function AboutSection() {
               />
             </div>
           </div>
+        </div>
+
+        <div className="mt-24 grid gap-12 border-t border-ivory/10 pt-24 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <h3 className="editorial-heading mb-6 text-2xl text-ivory">Founder&apos;s Message</h3>
+            <blockquote className="editorial-heading text-xl leading-relaxed text-ivory/80 md:text-2xl">
+              &ldquo;{founderMessage.quote}&rdquo;
+            </blockquote>
+            <p className="mt-6 text-sm text-gold">{founderMessage.name}</p>
+            <p className="text-xs text-muted">{founderMessage.title}</p>
+          </div>
+          <div className="relative aspect-square overflow-hidden">
+            <Image
+              src={founderMessage.image}
+              alt={founderMessage.name}
+              fill
+              className="object-cover"
+              sizes="400px"
+            />
+          </div>
+        </div>
+
+        <div className="mt-24 grid gap-8 md:grid-cols-3">
+          {[
+            { title: "Mission", text: "To bring world-class artisan baking to Bangalore with warmth, integrity, and uncompromising quality." },
+            { title: "Ingredients", text: "Organic stone-ground flour, French butter, farm eggs, and seasonal produce from trusted Karnataka suppliers." },
+            { title: "Craftsmanship", text: "Every loaf, pastry, and cake is shaped by hand — slow fermentation, precise lamination, and patient finishing." },
+          ].map((item) => (
+            <div key={item.title} className="border border-ivory/10 p-6">
+              <h4 className="text-xs uppercase tracking-widest text-gold">{item.title}</h4>
+              <p className="mt-4 text-sm leading-relaxed text-ivory/60">{item.text}</p>
+            </div>
+          ))}
         </div>
 
         <div ref={timelineRef} className="mt-24 border-t border-ivory/10 pt-24">

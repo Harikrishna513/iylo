@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import { MapPin, Clock } from "lucide-react";
+import { BAKERY_LOCATION } from "@/lib/delivery";
 import { contactInfo } from "@/data/products";
 import { Reveal } from "@/components/animations/reveal";
 import { Button } from "@/components/ui/button";
+import { ProductImages as img } from "@/lib/product-images";
 
 export function StoreSection() {
   return (
-    <section className="section-padding bg-brown/10">
+    <section id="store" className="section-padding bg-brown/10">
       <div className="mx-auto max-w-7xl">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
@@ -19,8 +21,8 @@ export function StoreSection() {
               Store Experience
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-ivory/70">
-              We would love to meet you and have you experience the smells of
-              our fresh bakes.
+              We would love to welcome you to our bakery and let you experience
+              the aroma of our fresh bakes on 12th Main, Indiranagar.
             </p>
             <div className="mt-8 space-y-4 text-sm text-ivory/50">
               <div className="flex items-start gap-3">
@@ -34,16 +36,19 @@ export function StoreSection() {
                   <p>Sat–Sun: {contactInfo.timings.weekends}</p>
                 </div>
               </div>
+              <p className="text-xs text-muted">Parking: {BAKERY_LOCATION.parking}</p>
             </div>
-            <Button variant="gold" size="sm" className="mt-8">
-              Get Directions
+            <Button variant="gold" size="sm" className="mt-8" asChild>
+              <a href={BAKERY_LOCATION.directions} target="_blank" rel="noopener noreferrer">
+                Get Directions
+              </a>
             </Button>
           </Reveal>
 
           <Reveal direction="left" className="grid grid-cols-2 gap-4">
             <div className="relative aspect-[3/4] overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-155691122-e4b2c8b5d516?w=600&q=80"
+                src={img.bannerDesktopHorizontal}
                 alt="Bakery interior"
                 fill
                 sizes="(max-width: 768px) 50vw, 25vw"
@@ -52,7 +57,7 @@ export function StoreSection() {
             </div>
             <div className="relative mt-8 aspect-[3/4] overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1600326145552-327f74bfc560?w=600&q=80"
+                src={img.butterCroissant}
                 alt="Fresh pastries display"
                 fill
                 sizes="(max-width: 768px) 50vw, 25vw"
