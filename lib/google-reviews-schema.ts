@@ -8,9 +8,9 @@ export function getGoogleReviewsSchema() {
     image: googleBusiness.profileImage,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "42, 12th Main Road, Indiranagar",
+      streetAddress: "No. 476/65, 7th Main, 33rd Cross, 4th Block, Jayanagar",
       addressLocality: "Bangalore",
-      postalCode: "560038",
+      postalCode: "560011",
       addressRegion: "Karnataka",
       addressCountry: "IN",
     },

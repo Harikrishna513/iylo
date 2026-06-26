@@ -17,7 +17,7 @@ export default function AdminPage() {
         <div className="mb-12 flex items-center justify-between">
           <div>
             <h1 className="editorial-heading text-4xl text-ivory">Dashboard</h1>
-            <p className="mt-2 text-sm text-muted">IYLO Bake House · Indiranagar, Bangalore</p>
+            <p className="mt-2 text-sm text-muted">IYLO Bakehouse · Jayanagar, Bangalore</p>
           </div>
           <Link href="/" className="text-xs uppercase tracking-widest text-gold hover:underline">
             ← Back to Site

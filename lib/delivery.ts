@@ -2,9 +2,9 @@ import { DeliveryZone } from "@/types";
 
 export const DELIVERY_ZONES: DeliveryZone[] = [
   {
-    id: "indiranagar",
-    name: "Indiranagar & Surroundings",
-    pincodes: ["560038", "560008", "560075", "560034"],
+    id: "jayanagar-local",
+    name: "Jayanagar & Surroundings",
+    pincodes: ["560011", "560041", "560076", "560070", "560034"],
     fee: 49,
     estimatedMinutes: 45,
   },
@@ -38,7 +38,8 @@ export const DELIVERY_ZONES: DeliveryZone[] = [
   },
 ];
 
-export const FREE_DELIVERY_THRESHOLD = 2000;
+export const FREE_DELIVERY_THRESHOLD = 999;
+export const MIN_ORDER_AMOUNT = 499;
 export const DEFAULT_DELIVERY_FEE = 99;
 
 export function findDeliveryZone(pincode: string): DeliveryZone | null {
@@ -60,9 +61,10 @@ export function getAmountForFreeDelivery(subtotal: number): number {
 }
 
 export const BAKERY_LOCATION = {
-  lat: 12.9716,
-  lng: 77.6412,
-  address: "42, 12th Main Road, Indiranagar, Bangalore 560038",
-  parking: "Street parking available on 12th Main. Valet on weekends.",
-  directions: "https://maps.google.com/?q=IYLO+Bake+House+Indiranagar+Bangalore",
+  lat: 12.9308,
+  lng: 77.5838,
+  address: "No. 476/65, 7th Main, 33rd Cross, 4th Block, Jayanagar, Bangalore – 560011",
+  landmark: "Next to Ajfan Dates and Nuts, Jayanagar, 4th Block",
+  parking: "Street parking available near 4th Block, Jayanagar.",
+  directions: "https://maps.app.goo.gl/yJ5Ypo7Tm168wiHr7",
 };

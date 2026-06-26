@@ -9,18 +9,18 @@ import {
 } from "@/types";
 import { ProductImages as img } from "@/lib/product-images";
 
-export const categories = [
-  { id: "cakes", label: "Cakes" },
-  { id: "cookies", label: "Cookies" },
-  { id: "breads", label: "Breads" },
-  { id: "pastries", label: "Pastries" },
-  { id: "desserts", label: "Desserts" },
-  { id: "gift-boxes", label: "Gift Boxes" },
-  { id: "retail", label: "Retail Products" },
-  { id: "seasonal", label: "Seasonal Specials" },
-  { id: "weekend-boxes", label: "Weekend Boxes" },
-  { id: "workshops", label: "Workshops", href: "#workshops" },
-] as const;
+import {
+  BRAND_STORY,
+  GOOGLE_MAPS_URL,
+  PICKUP_HOURS,
+  PICKUP_MESSAGE,
+  PRODUCT_CATEGORIES,
+  STORE_ADDRESS,
+  STORE_HOURS,
+  STORE_LANDMARK,
+} from "@/data/site-content";
+
+export const categories = PRODUCT_CATEGORIES;
 
 const baseIngredients = {
   bread: ["Organic stone-ground flour", "Filtered water", "Himalayan pink salt", "Wild yeast starter"],
@@ -33,7 +33,7 @@ export const products: Product[] = [
     name: "Heritage Sourdough Boule",
     description: "48-hour fermented, crackling crust, open crumb",
     longDescription:
-      "Our signature sourdough begins with a 12-year-old starter, fed daily with organic stone-ground flour from a Karnataka mill. Each boule undergoes a 48-hour cold fermentation for depth of flavour and that perfect, crackling crust — the kind that echoes through Indiranagar on Saturday mornings.",
+      "Our signature sourdough begins with a 12-year-old starter, fed daily with organic stone-ground flour from a Karnataka mill. Each boule undergoes a 48-hour cold fermentation for depth of flavour and that perfect, crackling crust — the kind that echoes through Jayanagar on Saturday mornings.",
     price: 450,
     category: "breads",
     image: img.sourdoughLoaf,
@@ -75,7 +75,7 @@ export const products: Product[] = [
     name: "Almond Croissant",
     description: "Twice-baked, frangipane, toasted almonds",
     longDescription:
-      "Laminated with French butter over three days, twice-baked with house-made frangipane and finished with toasted almonds. A morning ritual for our Indiranagar regulars.",
+      "Laminated with French butter over three days, twice-baked with house-made frangipane and finished with toasted almonds. A morning ritual for our Jayanagar regulars.",
     price: 320,
     category: "pastries",
     image: img.butterCroissant,
@@ -341,7 +341,7 @@ export const weekendSpecials: Product[] = [
   },
   {
     id: "weekend-brunch-box",
-    name: "Indiranagar Brunch Box",
+    name: "Jayanagar Brunch Box",
     description: "Sourdough, pastries, granola, house jam",
     price: 2200,
     category: "weekend-boxes",
@@ -389,7 +389,7 @@ export const bundles: Bundle[] = [
   {
     id: "family-box",
     name: "Family Box",
-    description: "A generous spread for Sunday brunches in Indiranagar and beyond",
+    description: "A generous spread for Sunday brunches in Jayanagar and beyond",
     price: 2800,
     originalPrice: 3400,
     image: img.indulgenceHamper,
@@ -442,7 +442,7 @@ export const workshops: Workshop[] = [
       "Learn the art of sourdough from starter to scoring. Take home your own starter and a freshly baked loaf.",
     date: "June 28, 2026",
     time: "10:00 AM – 2:00 PM",
-    location: "IYLO Bake House Studio, Indiranagar",
+    location: "IYLO Bake House Studio, Jayanagar",
     price: 3500,
     spots: 3,
     capacity: 8,
@@ -455,7 +455,7 @@ export const workshops: Workshop[] = [
     description: "Master laminated dough, croissants, and danishes with our head pastry chef.",
     date: "July 5, 2026",
     time: "9:00 AM – 1:00 PM",
-    location: "IYLO Bake House Studio, Indiranagar",
+    location: "IYLO Bake House Studio, Jayanagar",
     price: 4200,
     spots: 2,
     capacity: 6,
@@ -467,7 +467,7 @@ export const workshops: Workshop[] = [
     description: "Buttercream techniques, piping, and modern minimalist cake design.",
     date: "July 12, 2026",
     time: "11:00 AM – 3:00 PM",
-    location: "IYLO Bake House Studio, Indiranagar",
+    location: "IYLO Bake House Studio, Jayanagar",
     price: 3800,
     spots: 5,
     capacity: 10,
@@ -497,7 +497,7 @@ export const announcements: Announcement[] = [
   {
     id: "third-wave-collab",
     title: "Collaboration with Third Wave Coffee",
-    description: "Exclusive coffee-pastry pairing menu at our Indiranagar studio.",
+    description: "Exclusive coffee-pastry pairing menu at our Jayanagar studio.",
     date: "Ongoing",
     image: img.cappuccino,
     tag: "Collaboration",
@@ -538,9 +538,9 @@ export const testimonials: Testimonial[] = [
   {
     id: "3",
     name: "Ananya Reddy",
-    role: "Regular Customer, Indiranagar",
+    role: "Regular Customer, Jayanagar",
     content:
-      "The sourdough boule is life-changing. I cycle across Indiranagar every Saturday just for their weekend specials.",
+      "The sourdough boule is life-changing. I cycle across Jayanagar every Saturday just for their weekend specials.",
     rating: 5,
     image: img.sourdoughLoaf,
     source: "customer",
@@ -558,7 +558,7 @@ export const testimonials: Testimonial[] = [
 ];
 
 export const galleryItems: GalleryItem[] = [
-  { id: "1", type: "image", src: img.sourdoughLoaf, alt: "Fresh bread from our Indiranagar oven", span: "tall", category: "bread" },
+  { id: "1", type: "image", src: img.sourdoughLoaf, alt: "Fresh bread from our Jayanagar oven", span: "tall", category: "bread" },
   { id: "2", type: "image", src: img.butterCroissant, alt: "Laminated croissants", span: "normal", category: "kitchen" },
   { id: "3", type: "image", src: img.dutchTruffleCake, alt: "Chocolate layer cake decoration", span: "wide", category: "cake" },
   { id: "4", type: "image", src: img.multigrainLoaf, alt: "Weekend pastries", span: "normal", category: "bread" },
@@ -611,33 +611,46 @@ export const popularSearches = [
 ];
 
 export const timelineEvents = [
-  { year: "2018", title: "The Beginning", description: "IYLO started as a home kitchen experiment in Indiranagar with a single sourdough starter." },
-  { year: "2019", title: "First Pop-Up", description: "Sold out our first farmers market pop-up at Church Street in under two hours." },
-  { year: "2021", title: "Flagship Store", description: "Opened our artisan bake house on 12th Main, Indiranagar." },
-  { year: "2023", title: "Workshop Studio", description: "Launched baking masterclasses and corporate gifting across Bangalore." },
-  { year: "2026", title: "Today", description: "Serving thousands of Bangalore customers with handcrafted bakes daily." },
+  {
+    year: "Origins",
+    title: "A Grandmother's Kitchen",
+    description: BRAND_STORY.origin,
+  },
+  {
+    year: "Today",
+    title: "What Makes Us Different",
+    description: BRAND_STORY.differentiator,
+  },
+  {
+    year: "Vision",
+    title: "Community Through Food",
+    description: BRAND_STORY.values,
+  },
 ];
 
 export const founderMessage = {
-  name: "Ananya Iyer",
-  title: "Founder & Head Baker",
+  name: "Founder, IYLO Bakehouse",
+  title: "Baker & Dreamer",
   image: img.heroHome,
-  quote:
-    "We opened IYLO because Bangalore deserved a bakery that treats every loaf like a love letter — patient, intentional, and made to be shared around a table.",
+  quote: BRAND_STORY.origin,
 };
 
 export const contactInfo = {
-  phone: "+91 98765 43210",
-  whatsapp: "+919876543210",
-  email: "hello@iylobakehouse.com",
-  instagram: "@iylobakehouse",
-  address: "42, 12th Main Road, Indiranagar, Bangalore 560038",
+  phone: "",
+  whatsapp: "",
+  email: "",
+  instagram: "",
+  address: STORE_ADDRESS,
+  landmark: STORE_LANDMARK,
+  storeHours: STORE_HOURS,
+  pickupHours: PICKUP_HOURS,
+  pickupMessage: PICKUP_MESSAGE,
+  mapLink: GOOGLE_MAPS_URL,
   timings: {
-    weekdays: "8:00 AM – 8:00 PM",
-    weekends: "7:00 AM – 9:00 PM",
+    weekdays: "Wed–Fri: 11:00 AM – 8:00 PM",
+    weekends: "Sat–Sun: 10:00 AM – 8:00 PM · Mon–Tue: Closed",
   },
-  mapEmbed:
-    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.013258879!2d77.6412!3d12.9716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU4JzE3LjgiTiA3N8KwMzgnMjguMyJF!5e0!3m2!1sen!2sin!4v1234567890",
+  mapEmbed: GOOGLE_MAPS_URL,
 };
 
 export function getProductById(id: string): Product | undefined {

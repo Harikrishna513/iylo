@@ -121,7 +121,7 @@ export function CheckoutModal() {
           <div className="space-y-4">
             {[
               { value: "delivery" as const, icon: Truck, label: "Home Delivery", desc: "Across Bangalore" },
-              { value: "pickup" as const, icon: Store, label: "Store Pickup", desc: "Indiranagar bake house" },
+              { value: "pickup" as const, icon: Store, label: "Store Pickup", desc: "Jayanagar bakehouse" },
               { value: "retail-shipping" as const, icon: Package, label: "PAN India Shipping", desc: "Retail products only" },
             ].map((opt) => (
               <button
@@ -180,7 +180,7 @@ export function CheckoutModal() {
                   <>
                     <p className="text-sm text-ivory">Delivery unavailable for this pincode</p>
                     <p className="mt-2 text-xs text-ivory/60">
-                      We&apos;d love to welcome you for pickup at our Indiranagar bakery, or choose PAN India shipping for retail products.
+                      We&apos;d love to welcome you for pickup at our Jayanagar bakery, or choose PAN India shipping for retail products.
                     </p>
                     <div className="mt-4 flex gap-2">
                       <Button size="sm" variant="outline" onClick={() => { updateCheckoutForm({ deliveryMethod: "pickup" }); setCheckoutStep("date"); }}>
@@ -376,7 +376,7 @@ export function CheckoutModal() {
               Your order has been received. We&apos;ll send confirmation to {checkoutForm.email || "your email"} shortly.
             </p>
             {checkoutForm.deliveryMethod === "pickup" && (
-              <p className="mt-4 text-xs text-gold">See you at our Indiranagar bake house!</p>
+              <p className="mt-4 text-xs text-gold">See you at our Jayanagar bakehouse!</p>
             )}
           </motion.div>
         );

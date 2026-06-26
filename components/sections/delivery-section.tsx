@@ -2,25 +2,25 @@
 
 import { Truck, Store, Package, Sparkles } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
+import { FREE_DELIVERY_ABOVE, MIN_ORDER_AMOUNT, PICKUP_HOURS } from "@/data/site-content";
 
 const deliveryOptions = [
   {
     icon: Truck,
     title: "Home Delivery",
     description:
-      "Fresh bakes delivered across Indiranagar, Koramangala, HSR, Whitefield, and central Bangalore. Same-day on orders before 2 PM.",
+      "Fresh bakes delivered across Bangalore. Delivery charges are calculated based on distance. Minimum order ₹499.",
   },
   {
     icon: Store,
     title: "Store Pickup",
-    description:
-      "Order online and collect from our Indiranagar bake house on 12th Main. Skip the queue, savour the aroma.",
+    description: `Order online and collect from our Jayanagar bakehouse. Pickup timings: ${PICKUP_HOURS}.`,
   },
   {
     icon: Package,
-    title: "PAN India Shipping",
+    title: "Gifting & Hampers",
     description:
-      "Retail products — granola, cookies, preserves — shipped nationwide with temperature-controlled packaging.",
+      "Celebration cakes, cookies, and curated gift hampers for personal and corporate gifting across Bangalore.",
   },
 ];
 
@@ -38,15 +38,15 @@ export function DeliverySection() {
         </Reveal>
 
         <div className="mb-12 overflow-hidden border border-gold/30 bg-gradient-to-r from-gold/10 via-gold/5 to-gold/10 p-8 text-center md:p-12">
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <Sparkles className="h-5 w-5 text-gold" />
             <p className="editorial-heading text-2xl text-ivory md:text-3xl">
-              Free Delivery on Orders Above ₹2,000
+              Free Delivery on Orders Above ₹{FREE_DELIVERY_ABOVE}
             </p>
             <Sparkles className="h-5 w-5 text-gold" />
           </div>
           <p className="mt-3 text-sm text-ivory/50">
-            Use code <span className="text-gold">IYLOLOVE</span> for 10% off your first order
+            Minimum order ₹{MIN_ORDER_AMOUNT} · Pre-order 1–2 days ahead for select items
           </p>
         </div>
 

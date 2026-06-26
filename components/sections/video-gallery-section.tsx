@@ -13,7 +13,7 @@ export function VideoGallerySection() {
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold">Behind the Scenes</p>
           <h2 className="editorial-heading mt-4 text-4xl text-ivory md:text-6xl">Video Gallery</h2>
           <p className="mx-auto mt-6 max-w-xl text-sm text-ivory/50">
-            Step inside our Indiranagar kitchen — bread making, cake decoration, and the craft behind every bake.
+            Step inside our Jayanagar kitchen — bread making, cake decoration, and the craft behind every bake.
           </p>
         </Reveal>
         <div className="grid gap-6 md:grid-cols-3">

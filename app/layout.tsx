@@ -16,6 +16,7 @@ import { WishlistDrawer } from "@/components/ecommerce/wishlist-drawer";
 import { bakerySchema, faqSchema } from "@/lib/seo";
 import { getGoogleReviewsSchema } from "@/lib/google-reviews-schema";
 import { ProductImages as img } from "@/lib/product-images";
+import { BUSINESS_DESCRIPTION } from "@/data/site-content";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -32,26 +33,25 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "IYLO Bake House | Handcrafted Artisan Bakes · Bangalore",
+  title: "IYLO Bakehouse | Eggless Artisan Bakes · Jayanagar, Bangalore",
   description:
-    "Freshly baked artisan breads, pastries, cakes and desserts made with exceptional ingredients. Order online for delivery or pickup in Indiranagar, Bangalore.",
+    "Contemporary premium bakehouse specialising in eggless sweet and savoury bakes. Order online for delivery or pickup in Jayanagar, Bangalore.",
   keywords: [
-    "artisan bakery Bangalore",
-    "sourdough bread Indiranagar",
-    "luxury bakery Bangalore",
-    "IYLO Bake House",
+    "eggless bakery Bangalore",
+    "celebration cakes Jayanagar",
+    "premium bakery Bangalore",
+    "IYLO Bakehouse",
     "handcrafted pastries",
     "corporate gifting Bangalore",
-    "weekend bakery box",
+    "custom cakes Bangalore",
   ],
   authors: [{ name: "IYLO Bake House" }],
   metadataBase: new URL("https://iylobakehouse.com"),
   openGraph: {
-    title: "IYLO Bake House | Handcrafted Bakes Worth Waiting For",
-    description:
-      "Artisan breads, pastries, cakes and desserts made with exceptional ingredients in Indiranagar, Bangalore.",
+    title: "IYLO Bakehouse | Modern Eggless Baking",
+    description: BUSINESS_DESCRIPTION,
     url: "https://iylobakehouse.com",
-    siteName: "IYLO Bake House",
+    siteName: "IYLO Bakehouse",
     locale: "en_IN",
     type: "website",
     images: [
@@ -65,9 +65,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "IYLO Bake House | Handcrafted Artisan Bakes",
-    description:
-      "Freshly baked artisan breads, pastries, cakes and desserts in Bangalore.",
+    title: "IYLO Bakehouse | Eggless Artisan Bakes",
+    description: BUSINESS_DESCRIPTION,
     images: [img.bannerHomeDesktop1200],
   },
   robots: {

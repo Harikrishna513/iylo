@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import Image from "next/image";
 import gsap from "gsap";
 import { motion } from "framer-motion";
@@ -9,11 +9,20 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Truck, MapPin, Clock } from "lucide-react";
 import { getNextAvailableSlot } from "@/lib/preorder";
 import { ProductImages as img } from "@/lib/product-images";
+import {
+  BUSINESS_DESCRIPTION,
+  FREE_DELIVERY_ABOVE,
+  MIN_ORDER_AMOUNT,
+  PICKUP_MESSAGE,
+  STORE_ADDRESS,
+} from "@/data/site-content";
 
+/* Hero 3D scene — golden/chocolate croissant WebGL animation (disabled per client request)
 const HeroScene = dynamic(
   () => import("@/components/three/hero-scene").then((m) => m.HeroScene),
   { ssr: false, loading: () => null }
 );
+*/
 
 export function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
@@ -81,13 +90,14 @@ export function HeroSection() {
     >
       <div className="hero-overlay absolute inset-0 z-0">
         <Image
-          src={img.heroHome}
-          alt="Artisan bakery in Indiranagar, Bangalore"
+          src={img.bannerHomeDesktop}
+          alt="IYLO Bakehouse — Jayanagar, Bangalore"
           fill
           priority
           className="object-cover"
           sizes="100vw"
         />
+        {/* Background video — disabled; using static hero banner instead
         <video
           autoPlay
           muted
@@ -101,11 +111,12 @@ export function HeroSection() {
             type="video/mp4"
           />
         </video>
+        */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/40" />
       </div>
 
-      <HeroScene />
+      {/* <HeroScene /> — 3D chocolate/gold scroll animation disabled */}
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
@@ -115,7 +126,7 @@ export function HeroSection() {
       >
         <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-gold">
           <span className="h-2 w-2 animate-pulse rounded-full bg-gold" />
-          Fresh Today
+          Eggless Speciality
         </span>
       </motion.div>
 
@@ -123,20 +134,19 @@ export function HeroSection() {
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <span className="hero-badge mb-6 inline-block text-[10px] uppercase tracking-[0.4em] text-gold">
-              Est. 2018 · Indiranagar, Bangalore
+              Jayanagar, Bangalore
             </span>
             <h1
               ref={headlineRef}
               className="editorial-heading text-5xl text-ivory sm:text-6xl md:text-7xl lg:text-8xl"
             >
-              Handcrafted Bakes Worth Waiting For
+              Modern Baking, Made Eggless
             </h1>
             <p
               ref={subRef}
               className="mt-8 max-w-lg text-base leading-relaxed text-ivory/70 md:text-lg"
             >
-              Freshly baked artisan breads, pastries, cakes and desserts — made
-              with exceptional ingredients in the heart of Bangalore.
+              {BUSINESS_DESCRIPTION}
             </p>
             <div ref={ctaRef} className="mt-10 flex flex-wrap gap-4">
               <Button
@@ -162,10 +172,10 @@ export function HeroSection() {
                 size="lg"
                 className="border border-ivory/20"
                 onClick={() =>
-                  document.getElementById("workshops")?.scrollIntoView({ behavior: "smooth" })
+                  document.getElementById("gifting")?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                Book Workshop
+                Gifting
               </Button>
             </div>
           </div>
@@ -177,28 +187,28 @@ export function HeroSection() {
             <Truck className="h-4 w-4 shrink-0 text-gold" />
             <div>
               <p className="text-[10px] uppercase tracking-widest text-muted">Delivery</p>
-              <p className="text-xs text-ivory/80">Available across Bangalore</p>
+              <p className="text-xs text-ivory/80">Across Bangalore · min. ₹{MIN_ORDER_AMOUNT}</p>
             </div>
           </div>
           <div className="glass flex items-center gap-3 px-4 py-3">
             <MapPin className="h-4 w-4 shrink-0 text-gold" />
             <div>
               <p className="text-[10px] uppercase tracking-widest text-muted">Pickup</p>
-              <p className="text-xs text-ivory/80">Available today · Indiranagar</p>
+              <p className="text-xs text-ivory/80">Jayanagar 4th Block</p>
             </div>
           </div>
           <div className="glass flex items-center gap-3 px-4 py-3">
             <Truck className="h-4 w-4 shrink-0 text-gold" />
             <div>
               <p className="text-[10px] uppercase tracking-widest text-muted">Free Delivery</p>
-              <p className="text-xs text-ivory/80">On orders above ₹2,000</p>
+              <p className="text-xs text-ivory/80">On orders above ₹{FREE_DELIVERY_ABOVE}</p>
             </div>
           </div>
           <div className="glass flex items-center gap-3 px-4 py-3">
             <Clock className="h-4 w-4 shrink-0 text-gold" />
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-muted">Weekend Pre-order</p>
-              <p className="text-xs text-ivory/80">Order by Friday 8 PM</p>
+              <p className="text-[10px] uppercase tracking-widest text-muted">Store Hours</p>
+              <p className="text-xs text-ivory/80">Wed–Sun · closed Mon–Tue</p>
             </div>
           </div>
         </div>
@@ -207,6 +217,8 @@ export function HeroSection() {
             {slotMessage}
           </p>
         )}
+        <p className="mt-3 text-center text-xs text-ivory/35 lg:text-left">{PICKUP_MESSAGE}</p>
+        <p className="mt-1 text-center text-[10px] text-ivory/30 lg:text-left">{STORE_ADDRESS}</p>
       </div>
 
       <div className="scroll-indicator absolute bottom-8 left-1/2 z-10 -translate-x-1/2">

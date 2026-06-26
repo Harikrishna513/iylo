@@ -1,6 +1,7 @@
 import { Product } from "@/types";
 import { contactInfo } from "@/data/products";
 import { ProductImages as img } from "@/lib/product-images";
+import { BUSINESS_DESCRIPTION } from "@/data/site-content";
 
 export function getProductSchema(product: Product) {
   return {
@@ -18,7 +19,7 @@ export function getProductSchema(product: Product) {
         : "https://schema.org/InStock",
       seller: {
         "@type": "Organization",
-        name: "IYLO Bake House",
+        name: "IYLO Bakehouse",
       },
     },
     aggregateRating: product.rating
@@ -34,37 +35,36 @@ export function getProductSchema(product: Product) {
 export const bakerySchema = {
   "@context": "https://schema.org",
   "@type": "Bakery",
-  name: "IYLO Bake House",
-  description:
-    "Premium artisan bakery in Indiranagar, Bangalore. Handcrafted breads, pastries, cakes, and desserts.",
+  name: "IYLO Bakehouse",
+  description: BUSINESS_DESCRIPTION,
   url: "https://iylobakehouse.com",
-  telephone: contactInfo.phone,
-  email: contactInfo.email,
+  telephone: contactInfo.phone || undefined,
+  email: contactInfo.email || undefined,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "42, 12th Main Road, Indiranagar",
+    streetAddress: "No. 476/65, 7th Main, 33rd Cross, 4th Block, Jayanagar",
     addressLocality: "Bangalore",
-    postalCode: "560038",
+    postalCode: "560011",
     addressRegion: "Karnataka",
     addressCountry: "IN",
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 12.9716,
-    longitude: 77.6412,
+    latitude: 12.9308,
+    longitude: 77.5838,
   },
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      opens: "08:00",
+      dayOfWeek: ["Wednesday", "Thursday", "Friday"],
+      opens: "11:00",
       closes: "20:00",
     },
     {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Saturday", "Sunday"],
-      opens: "07:00",
-      closes: "21:00",
+      opens: "10:00",
+      closes: "20:00",
     },
   ],
   priceRange: "₹₹₹",
@@ -87,7 +87,7 @@ export const faqSchema = {
       name: "Do you deliver across Bangalore?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes, we deliver across Indiranagar, Koramangala, HSR, Whitefield, Jayanagar, and central Bangalore. Retail products ship PAN India.",
+        text: "Yes, we deliver across Bangalore including Jayanagar and surrounding areas. Delivery charges are calculated based on distance. Free delivery on orders above ₹999.",
       },
     },
     {

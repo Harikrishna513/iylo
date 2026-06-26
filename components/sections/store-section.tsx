@@ -21,19 +21,29 @@ export function StoreSection() {
               Store Experience
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-ivory/70">
-              We would love to welcome you to our bakery and let you experience
-              the aroma of our fresh bakes on 12th Main, Indiranagar.
+              {contactInfo.pickupMessage}
             </p>
             <div className="mt-8 space-y-4 text-sm text-ivory/50">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                <span>{contactInfo.address}</span>
+                <div>
+                  <p>{contactInfo.address}</p>
+                  {contactInfo.landmark && (
+                    <p className="mt-1 text-xs text-muted">Landmark: {contactInfo.landmark}</p>
+                  )}
+                </div>
               </div>
               <div className="flex items-start gap-3">
                 <Clock className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                 <div>
-                  <p>Mon–Fri: {contactInfo.timings.weekdays}</p>
-                  <p>Sat–Sun: {contactInfo.timings.weekends}</p>
+                  <p className="text-[10px] uppercase tracking-widest text-muted">Store Hours</p>
+                  {contactInfo.storeHours.map((row) => (
+                    <p key={row.label} className="mt-1">
+                      {row.label}: {row.value}
+                    </p>
+                  ))}
+                  <p className="mt-3 text-[10px] uppercase tracking-widest text-muted">Pickup</p>
+                  <p>{contactInfo.pickupHours}</p>
                 </div>
               </div>
               <p className="text-xs text-muted">Parking: {BAKERY_LOCATION.parking}</p>
@@ -49,7 +59,7 @@ export function StoreSection() {
             <div className="relative aspect-[3/4] overflow-hidden">
               <Image
                 src={img.bannerDesktopHorizontal}
-                alt="Bakery interior"
+                alt="IYLO Bakehouse store"
                 fill
                 sizes="(max-width: 768px) 50vw, 25vw"
                 className="object-cover"

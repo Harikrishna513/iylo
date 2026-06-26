@@ -16,7 +16,7 @@ export function InstagramFeed() {
             {contactInfo.instagram}
           </h2>
           <p className="mt-4 text-sm text-ivory/50">
-            Follow our daily bakes from Indiranagar
+            Follow our daily bakes from Jayanagar
           </p>
         </Reveal>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">

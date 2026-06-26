@@ -46,14 +46,16 @@ export function Footer() {
                 IYLO
               </span>
               <span className="mt-1 block text-[9px] uppercase tracking-[0.4em] text-muted">
-                Bake House · Indiranagar, Bangalore
+                Bakehouse · Jayanagar, Bangalore
               </span>
             </Link>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-ivory/50">
-              Handcrafted artisan bakes made with exceptional ingredients in the
-              heart of Bangalore. Delivery across the city, retail shipping PAN India.
+              A contemporary premium bakehouse specialising in eggless sweet and savoury creations.
+              Delivery across Bangalore · pickup at Jayanagar.
             </p>
+            {(contactInfo.instagram || contactInfo.whatsapp) && (
             <div className="mt-6 flex gap-4">
+              {contactInfo.instagram && (
               <a
                 href={`https://instagram.com/${contactInfo.instagram.replace("@", "")}`}
                 target="_blank"
@@ -63,6 +65,8 @@ export function Footer() {
               >
                 <InstagramIcon className="h-5 w-5" />
               </a>
+              )}
+              {contactInfo.whatsapp && (
               <a
                 href={`https://wa.me/${contactInfo.whatsapp.replace("+", "")}`}
                 target="_blank"
@@ -71,7 +75,9 @@ export function Footer() {
               >
                 WhatsApp
               </a>
+              )}
             </div>
+            )}
           </div>
 
           <div>

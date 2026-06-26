@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { timelineEvents, founderMessage } from "@/data/products";
 import { Reveal } from "@/components/animations/reveal";
 import { ProductImages as img } from "@/lib/product-images";
+import { BRAND_STORY } from "@/data/site-content";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,22 +48,16 @@ export function AboutSection() {
               About IYLO
             </h2>
             <p className="mt-8 text-sm leading-relaxed text-ivory/60">
-              IYLO began with a simple belief: that bread, when made with
-              patience and purpose, can be transformative. What started as a
-              home kitchen experiment in Indiranagar has grown into one of
-              Bangalore&apos;s most beloved artisan bake houses.
+              {BRAND_STORY.origin}
             </p>
             <p className="mt-4 text-sm leading-relaxed text-ivory/60">
-              Founded by pastry chef Ananya Iyer, IYLO combines French
-              technique with Indian sensibilities — sourcing grains from Karnataka mills,
-              celebrating seasonal produce, and honoring the slow craft of
-              fermentation.
+              {BRAND_STORY.differentiator}
             </p>
             <div className="mt-10 grid grid-cols-3 gap-6 border-t border-ivory/10 pt-10">
               {[
-                { value: "48hr", label: "Sourdough Ferment" },
-                { value: "100%", label: "Natural Ingredients" },
-                { value: "12yr", label: "Starter Heritage" },
+                { value: "100%", label: "Eggless Focus" },
+                { value: "Sweet", label: "& Savoury" },
+                { value: "Community", label: "First" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <p className="editorial-heading text-3xl text-gold md:text-4xl">

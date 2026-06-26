@@ -16,7 +16,7 @@ export function TodaysSpecials() {
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold">Fresh from the Oven</p>
           <h2 className="editorial-heading mt-4 text-4xl text-ivory md:text-6xl">Today&apos;s Specials</h2>
           <p className="mx-auto mt-6 max-w-xl text-sm text-ivory/50">
-            Baked this morning in our Indiranagar kitchen. Limited portions — order before they&apos;re gone.
+            Baked fresh in our Jayanagar kitchen. Limited portions — order before they&apos;re gone.
           </p>
         </Reveal>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

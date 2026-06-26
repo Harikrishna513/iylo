@@ -163,7 +163,7 @@ export function GoogleReviewsSection() {
                 </div>
                 <div>
                   <p className="font-medium text-black">{googleBusiness.name}</p>
-                  <p className="text-xs text-black/40">Indiranagar, Bangalore</p>
+                  <p className="text-xs text-black/40">Jayanagar, Bangalore</p>
                 </div>
               </div>
 
