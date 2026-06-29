@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Star, MapPin, Phone, Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { contactInfo } from "@/data/products";
 import { categories } from "@/data/products";
 
@@ -42,12 +43,7 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block">
-              <span className="editorial-heading text-3xl tracking-[0.15em] text-ivory">
-                IYLO
-              </span>
-              <span className="mt-1 block text-[9px] uppercase tracking-[0.4em] text-muted">
-                Bakehouse · Jayanagar, Bangalore
-              </span>
+              <BrandLogo height={81} />
             </Link>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-ivory/50">
               A contemporary premium bakehouse specialising in eggless sweet and savoury creations.

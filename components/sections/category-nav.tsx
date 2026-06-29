@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { categories } from "@/data/products";
+import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
 
 export function CategoryNav() {
   const [active, setActive] = useState("cakes");
@@ -58,7 +59,10 @@ export function CategoryNav() {
   };
 
   return (
-    <nav className="sticky top-[72px] z-40 border-b border-ivory/10 bg-black/90 backdrop-blur-xl">
+    <nav
+      className="sticky z-40 border-b border-ivory/10 bg-black/90 backdrop-blur-xl"
+      style={{ top: SITE_HEADER_OFFSET_PX }}
+    >
       <div className="relative mx-auto max-w-7xl">
         <div
           ref={scrollRef}

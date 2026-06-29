@@ -16,6 +16,7 @@ import {
   PICKUP_MESSAGE,
   STORE_ADDRESS,
 } from "@/data/site-content";
+import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
 
 /* Hero 3D scene — golden/chocolate croissant WebGL animation (disabled per client request)
 const HeroScene = dynamic(
@@ -87,6 +88,7 @@ export function HeroSection() {
     <section
       ref={containerRef}
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
+      style={{ marginTop: SITE_HEADER_OFFSET_PX, minHeight: `calc(100vh - ${SITE_HEADER_OFFSET_PX}px)` }}
     >
       <div className="hero-overlay absolute inset-0 z-0">
         <Image

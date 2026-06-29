@@ -17,6 +17,7 @@ import { bakerySchema, faqSchema } from "@/lib/seo";
 import { getGoogleReviewsSchema } from "@/lib/google-reviews-schema";
 import { ProductImages as img } from "@/lib/product-images";
 import { BUSINESS_DESCRIPTION } from "@/data/site-content";
+import { BRAND_LOGO } from "@/lib/brand";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -75,6 +76,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://iylobakehouse.com",
+  },
+  icons: {
+    icon: BRAND_LOGO,
+    apple: BRAND_LOGO,
   },
 };
 

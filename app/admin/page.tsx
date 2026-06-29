@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { products, workshops, announcements, contactInfo } from "@/data/products";
+import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
 
 export const metadata = {
   title: "Admin Dashboard | IYLO Bake House",
@@ -12,7 +13,7 @@ export default function AdminPage() {
   const upcomingDeliveries = 18;
 
   return (
-    <div className="min-h-screen bg-black pt-24">
+    <div className="min-h-screen bg-black" style={{ paddingTop: SITE_HEADER_OFFSET_PX }}>
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
         <div className="mb-12 flex items-center justify-between">
           <div>
