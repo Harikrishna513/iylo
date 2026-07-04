@@ -37,7 +37,7 @@ export const googleBusiness: GoogleBusinessInfo = {
   address: STORE_ADDRESS,
   mapsUrl: GOOGLE_MAPS_URL,
   reviewUrl: GOOGLE_MAPS_URL,
-  profileImage: img.heroHome,
+  profileImage: img.iyloHouse,
   ratingDistribution: {
     5: 162,
     4: 18,

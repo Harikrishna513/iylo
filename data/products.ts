@@ -405,7 +405,7 @@ export const timelineEvents = [
 export const founderMessage = {
   name: "Founder, IYLO Bakehouse",
   title: "Baker & Dreamer",
-  image: img.heroHome,
+  image: img.iyloHouse,
   quote: BRAND_STORY.origin,
 };
 

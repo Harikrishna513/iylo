@@ -7,8 +7,8 @@ export function productImage(filename: string): string {
 }
 
 export const ProductImages = {
-  // Hero & banners
-  heroHome: productImage("hero-home.webp"),
+  iyloHouse: productImage("iylo-house.webp"),
+  heroHome: productImage("iylo-house.webp"),
   bannerHomeDesktop: productImage("banner-home-desktop.webp"),
   bannerHomeDesktop1200: productImage("banner-home-desktop-1200.webp"),
   bannerHomeMobile: productImage("banner-home-mobile.webp"),

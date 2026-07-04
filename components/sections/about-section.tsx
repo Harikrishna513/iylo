@@ -102,12 +102,12 @@ export function AboutSection() {
             <p className="mt-6 text-sm text-gold">{founderMessage.name}</p>
             <p className="text-xs text-muted">{founderMessage.title}</p>
           </div>
-          <div className="relative aspect-square overflow-hidden">
+          <div className="relative aspect-square overflow-hidden bg-[#FBF7F1]">
             <Image
               src={founderMessage.image}
-              alt={founderMessage.name}
+              alt="IYLO Bakehouse storefront"
               fill
-              className="object-cover"
+              className="object-contain p-4"
               sizes="400px"
             />
           </div>
