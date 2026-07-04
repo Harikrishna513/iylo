@@ -1,95 +1,192 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
-import { categories } from "@/data/products";
+import { NAV_CATEGORIES, type NavCategoryId } from "@/data/nav-categories";
 import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
 
+const BRAND_ACCENT = "#4A2132";
+const STICKY_TOP_GAP_PX = 16;
+const NAV_HEIGHT_PX = 64;
+const PILL_MAX_WIDTH_PX = 960;
+
 export function CategoryNav() {
-  const [active, setActive] = useState("cakes");
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const indicatorRef = useRef<HTMLDivElement>(null);
-  const buttonsRef = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const [active, setActive] = useState<NavCategoryId>("celebration-cakes");
+  const [isPinned, setIsPinned] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const tabListRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY + 250;
-      for (const cat of categories) {
-        if (cat.id === "workshops") {
-          const el = document.getElementById("workshops");
-          if (el && scrollY >= el.offsetTop && scrollY < el.offsetTop + el.offsetHeight) {
-            setActive("workshops");
-            return;
-          }
-          continue;
-        }
-        const el = document.getElementById(`category-${cat.id}`);
-        if (el) {
-          const { offsetTop, offsetHeight } = el;
-          if (scrollY >= offsetTop && scrollY < offsetTop + offsetHeight) {
-            setActive(cat.id);
-            break;
-          }
-        }
-      }
-    };
+  const stickyTop = SITE_HEADER_OFFSET_PX + STICKY_TOP_GAP_PX;
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const btn = buttonsRef.current.get(active);
-    const indicator = indicatorRef.current;
-    if (btn && indicator && scrollRef.current) {
-      indicator.style.width = `${btn.offsetWidth}px`;
-      indicator.style.transform = `translateX(${btn.offsetLeft - scrollRef.current.scrollLeft}px)`;
-    }
+  const updateIndicator = useCallback(() => {
+    const btn = tabRefs.current.get(active);
+    const list = tabListRef.current;
+    if (!btn || !list) return;
+    setIndicator({
+      left: btn.offsetLeft - list.scrollLeft,
+      width: btn.offsetWidth,
+    });
   }, [active]);
 
-  const scrollToCategory = (id: string) => {
-    if (id === "workshops") {
-      document.getElementById("workshops")?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    updateIndicator();
+    window.addEventListener("resize", updateIndicator);
+    return () => window.removeEventListener("resize", updateIndicator);
+  }, [updateIndicator]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsPinned(!entry.isIntersecting),
+      { threshold: 0, rootMargin: `-${stickyTop}px 0px 0px 0px` }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [stickyTop]);
+
+  useEffect(() => {
+    const sections = NAV_CATEGORIES.map((cat) =>
+      document.getElementById(`category-${cat.id}`)
+    ).filter(Boolean) as HTMLElement[];
+
+    if (sections.length === 0) return;
+
+    const ratios = new Map<string, number>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          ratios.set(entry.target.id, entry.intersectionRatio);
+        });
+
+        let bestId: NavCategoryId = "celebration-cakes";
+        let bestRatio = 0;
+        ratios.forEach((ratio, sectionId) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestId = sectionId.replace("category-", "") as NavCategoryId;
+          }
+        });
+
+        if (bestRatio > 0) setActive(bestId);
+      },
+      {
+        rootMargin: "-35% 0px -45% 0px",
+        threshold: [0, 0.15, 0.35, 0.55, 0.75],
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToCategory = (id: NavCategoryId) => {
+    const el = document.getElementById(`category-${id}`);
+    if (!el) return;
+
+    const offset = stickyTop + NAV_HEIGHT_PX + STICKY_TOP_GAP_PX;
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: "smooth" });
+    setActive(id);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>, id: NavCategoryId, index: number) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      scrollToCategory(id);
       return;
     }
-    const el =
-      document.getElementById(`category-${id}`) ||
-      document.getElementById("menu");
-    el?.scrollIntoView({ behavior: "smooth" });
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      const delta = e.key === "ArrowRight" ? 1 : -1;
+      const next = NAV_CATEGORIES[(index + delta + NAV_CATEGORIES.length) % NAV_CATEGORIES.length];
+      tabRefs.current.get(next.id)?.focus();
+    }
   };
 
   return (
-    <nav
-      className="sticky z-40 border-b border-ivory/10 bg-black/90 backdrop-blur-xl"
-      style={{ top: SITE_HEADER_OFFSET_PX }}
-    >
-      <div className="relative mx-auto max-w-7xl">
-        <div
-          ref={scrollRef}
-          className="hide-scrollbar flex gap-1 overflow-x-auto px-6 py-4 lg:justify-center lg:px-10"
+    <>
+      <div ref={sentinelRef} className="h-px w-full" aria-hidden />
+
+      <div
+        className={cn(
+          "z-40 flex justify-center px-4 transition-all duration-300 sm:px-6",
+          isPinned ? "fixed left-0 right-0" : "relative py-4"
+        )}
+        style={{ top: isPinned ? stickyTop : undefined }}
+      >
+        <nav
+          aria-label="Product categories"
+          className="w-full"
+          style={{ maxWidth: PILL_MAX_WIDTH_PX }}
         >
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              ref={(el) => {
-                if (el) buttonsRef.current.set(cat.id, el);
-              }}
-              onClick={() => scrollToCategory(cat.id)}
-              className={cn(
-                "relative z-10 shrink-0 px-5 py-2.5 text-xs uppercase tracking-[0.15em] transition-colors duration-300",
-                active === cat.id ? "text-black" : "text-ivory/60 hover:text-ivory"
-              )}
-            >
-              {cat.label}
-            </button>
-          ))}
           <div
-            ref={indicatorRef}
-            className="pointer-events-none absolute bottom-4 left-6 h-[calc(100%-2rem)] bg-gold transition-all duration-500 ease-out"
-            style={{ width: 0 }}
-          />
-        </div>
+            className={cn(
+              "relative flex h-16 items-center rounded-full border border-gray-200/90 bg-white p-2",
+              "shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
+            )}
+          >
+            <div
+              ref={tabListRef}
+              className="hide-scrollbar relative flex h-full w-full items-center gap-1 overflow-x-auto"
+              role="tablist"
+              onScroll={updateIndicator}
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute top-1 bottom-1 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out"
+                style={{
+                  left: indicator.left,
+                  width: indicator.width,
+                  opacity: indicator.width > 0 ? 1 : 0,
+                }}
+              />
+
+              {NAV_CATEGORIES.map((cat, index) => {
+                const isActive = active === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    ref={(el) => {
+                      if (el) tabRefs.current.set(cat.id, el);
+                    }}
+                    type="button"
+                    role="tab"
+                    id={`category-tab-${cat.id}`}
+                    aria-selected={isActive}
+                    aria-controls={`category-${cat.id}`}
+                    aria-current={isActive ? "true" : undefined}
+                    onClick={() => scrollToCategory(cat.id)}
+                    onKeyDown={(e) => handleKeyDown(e, cat.id, index)}
+                    className={cn(
+                      "relative z-10 shrink-0 rounded-full px-3 py-2.5 text-xs font-medium transition-colors duration-300 sm:px-4 sm:text-sm",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A2132]/30 focus-visible:ring-offset-2",
+                      isActive
+                        ? "font-semibold"
+                        : "text-gray-500 hover:text-gray-800"
+                    )}
+                    style={{ color: isActive ? BRAND_ACCENT : undefined }}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </nav>
       </div>
-    </nav>
+
+      {isPinned && (
+        <div
+          className="pointer-events-none"
+          style={{ height: NAV_HEIGHT_PX + STICKY_TOP_GAP_PX }}
+          aria-hidden
+        />
+      )}
+    </>
   );
 }

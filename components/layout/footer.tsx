@@ -10,9 +10,7 @@ import { contactInfo } from "@/data/products";
 import { categories } from "@/data/products";
 
 const footerLinks = {
-  shop: categories
-    .filter((c) => c.id !== "workshops")
-    .map((c) => ({ href: `#category-${c.id}`, label: c.label })),
+  shop: categories.map((c) => ({ href: `#category-${c.id}`, label: c.label })),
   care: [
     { href: "#delivery", label: "Delivery" },
     { href: "#store", label: "Pickup" },

@@ -1,10 +1,13 @@
 "use client";
 
-import { todaysSpecials, getProductsByCategory } from "@/data/products";
+import { todaysSpecials, getProductsByCategory, products } from "@/data/products";
+import {
+  NAV_CATEGORY_ORDER,
+  CATEGORY_SECTION_LABELS,
+  type NavCategoryId,
+} from "@/data/nav-categories";
 import { ProductCard } from "@/components/cards/product-card";
 import { Reveal } from "@/components/animations/reveal";
-
-const categoryOrder = ["cakes", "cookies", "breads", "pastries", "desserts", "gift-boxes"] as const;
 
 export function TodaysSpecials() {
   const specials = todaysSpecials;
@@ -41,12 +44,20 @@ export function RegularCollection() {
           </p>
         </Reveal>
 
-        {categoryOrder.map((cat) => {
+        {NAV_CATEGORY_ORDER.map((cat) => {
           const catProducts = getProductsByCategory(cat);
           if (catProducts.length === 0) return null;
           return (
-            <div key={cat} id={`category-${cat}`} className="mb-20 scroll-mt-48">
-              <h3 className="editorial-heading mb-8 text-3xl capitalize text-ivory">{cat.replace("-", " ")}</h3>
+            <div
+              key={cat}
+              id={`category-${cat}`}
+              role="tabpanel"
+              aria-labelledby={`category-tab-${cat}`}
+              className="mb-20 scroll-mt-52"
+            >
+              <h3 className="editorial-heading mb-8 text-3xl text-ivory">
+                {CATEGORY_SECTION_LABELS[cat as NavCategoryId]}
+              </h3>
               <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 {catProducts.map((product, i) => (
                   <ProductCard key={product.id} product={product} index={i} />
@@ -61,7 +72,7 @@ export function RegularCollection() {
 }
 
 export function SeasonalCollection() {
-  const seasonal = getProductsByCategory("seasonal");
+  const seasonal = products.filter((p) => p.badge === "Seasonal" || p.isLimited);
 
   return (
     <section id="seasonal" className="section-padding bg-brown/10">
@@ -73,7 +84,7 @@ export function SeasonalCollection() {
             Inspired by Bangalore&apos;s monsoons, festivals, and the rhythm of the seasons.
           </p>
         </Reveal>
-        <div id="category-seasonal" className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 scroll-mt-48">
+        <div id="category-seasonal" className="grid scroll-mt-52 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {seasonal.map((product, i) => (
             <ProductCard key={product.id} product={product} index={i} variant={i === 0 ? "featured" : "default"} />
           ))}

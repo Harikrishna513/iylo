@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
+  if (price <= 0) return "Price on enquiry";
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",

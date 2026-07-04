@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-// import dynamic from "next/dynamic";
-import Image from "next/image";
 import gsap from "gsap";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Truck, MapPin, Clock } from "lucide-react";
 import { getNextAvailableSlot } from "@/lib/preorder";
-import { ProductImages as img } from "@/lib/product-images";
+import { HeroBackgroundSlider } from "@/components/sections/hero-background-slider";
 import {
   BUSINESS_DESCRIPTION,
   FREE_DELIVERY_ABOVE,
@@ -17,13 +15,10 @@ import {
   STORE_ADDRESS,
 } from "@/data/site-content";
 import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
+import { HERO_SLIDES } from "@/lib/hero-images";
 
-/* Hero 3D scene — golden/chocolate croissant WebGL animation (disabled per client request)
-const HeroScene = dynamic(
-  () => import("@/components/three/hero-scene").then((m) => m.HeroScene),
-  { ssr: false, loading: () => null }
-);
-*/
+const HERO_TEXT_SHADOW =
+  "0 2px 20px rgba(0,0,0,0.65), 0 1px 4px rgba(0,0,0,0.45)";
 
 export function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
@@ -37,10 +32,21 @@ export function HeroSection() {
   }, []);
 
   useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = HERO_SLIDES[0].src;
+    document.head.appendChild(link);
+    return () => {
+      if (link.parentNode) link.parentNode.removeChild(link);
+    };
+  }, []);
+
+  useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.fromTo(
-        ".hero-overlay",
+        ".hero-content",
         { opacity: 0 },
         { opacity: 1, duration: 1.5 }
       )
@@ -87,66 +93,52 @@ export function HeroSection() {
   return (
     <section
       ref={containerRef}
+      data-hero
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
-      style={{ marginTop: SITE_HEADER_OFFSET_PX, minHeight: `calc(100vh - ${SITE_HEADER_OFFSET_PX}px)` }}
+      style={{
+        marginTop: SITE_HEADER_OFFSET_PX,
+        minHeight: `calc(100vh - ${SITE_HEADER_OFFSET_PX}px)`,
+      }}
     >
-      <div className="hero-overlay absolute inset-0 z-0">
-        <Image
-          src={img.bannerHomeDesktop}
-          alt="IYLO Bakehouse — Jayanagar, Bangalore"
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        {/* Background video — disabled; using static hero banner instead
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={img.heroHome}
-          className="absolute inset-0 h-full w-full object-cover"
-        >
-          <source
-            src="https://cdn.coverr.co/videos/coverr-baker-kneading-dough-1576/1080p.mp4"
-            type="video/mp4"
-          />
-        </video>
-        */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/40" />
+      <div className="absolute inset-0 z-0">
+        <HeroBackgroundSlider />
       </div>
-
-      {/* <HeroScene /> — 3D chocolate/gold scroll animation disabled */}
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="hero-badge absolute right-6 top-28 z-20 glass px-4 py-2 md:right-10 md:top-32"
+        className="hero-badge absolute right-6 top-28 z-30 glass px-4 py-2 md:right-10 md:top-32"
       >
-        <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-gold">
+        <span
+          className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-gold"
+          style={{ textShadow: HERO_TEXT_SHADOW }}
+        >
           <span className="h-2 w-2 animate-pulse rounded-full bg-gold" />
           Eggless Speciality
         </span>
       </motion.div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-32 pb-28 lg:px-10">
+      <div className="hero-content relative z-30 mx-auto max-w-7xl px-6 pt-32 pb-28 lg:px-10">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <span className="hero-badge mb-6 inline-block text-[10px] uppercase tracking-[0.4em] text-gold">
+            <span
+              className="hero-badge mb-6 inline-block text-[10px] uppercase tracking-[0.4em] text-gold"
+              style={{ textShadow: HERO_TEXT_SHADOW }}
+            >
               Jayanagar, Bangalore
             </span>
             <h1
               ref={headlineRef}
               className="editorial-heading text-5xl text-ivory sm:text-6xl md:text-7xl lg:text-8xl"
+              style={{ textShadow: HERO_TEXT_SHADOW }}
             >
               Modern Baking, Made Eggless
             </h1>
             <p
               ref={subRef}
-              className="mt-8 max-w-lg text-base leading-relaxed text-ivory/70 md:text-lg"
+              className="mt-8 max-w-lg text-base leading-relaxed text-ivory md:text-lg"
+              style={{ textShadow: HERO_TEXT_SHADOW }}
             >
               {BUSINESS_DESCRIPTION}
             </p>
@@ -215,16 +207,30 @@ export function HeroSection() {
           </div>
         </div>
         {slotMessage && (
-          <p className="mt-4 text-center text-xs text-ivory/40 lg:text-left" suppressHydrationWarning>
+          <p
+            className="mt-4 text-center text-xs text-ivory/70 lg:text-left"
+            style={{ textShadow: HERO_TEXT_SHADOW }}
+            suppressHydrationWarning
+          >
             {slotMessage}
           </p>
         )}
-        <p className="mt-3 text-center text-xs text-ivory/35 lg:text-left">{PICKUP_MESSAGE}</p>
-        <p className="mt-1 text-center text-[10px] text-ivory/30 lg:text-left">{STORE_ADDRESS}</p>
+        <p
+          className="mt-3 text-center text-xs text-ivory/65 lg:text-left"
+          style={{ textShadow: HERO_TEXT_SHADOW }}
+        >
+          {PICKUP_MESSAGE}
+        </p>
+        <p
+          className="mt-1 text-center text-[10px] text-ivory/60 lg:text-left"
+          style={{ textShadow: HERO_TEXT_SHADOW }}
+        >
+          {STORE_ADDRESS}
+        </p>
       </div>
 
-      <div className="scroll-indicator absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
-        <ChevronDown className="h-6 w-6 animate-bounce text-ivory/40" />
+      <div className="scroll-indicator absolute bottom-8 left-1/2 z-30 -translate-x-1/2">
+        <ChevronDown className="h-6 w-6 animate-bounce text-ivory/60" />
       </div>
     </section>
   );

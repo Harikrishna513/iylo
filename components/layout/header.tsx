@@ -3,14 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Menu,
-  X,
-  ShoppingBag,
-  Search,
-  Heart,
-  User,
-} from "lucide-react";
+import { Menu, X, ShoppingBag, Search, Heart, User, } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
@@ -18,7 +11,7 @@ import { useSearchStore } from "@/store/search-store";
 import { contactInfo } from "@/data/products";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
 import { BrandLogo } from "@/components/ui/brand-logo";
-import { NAVBAR_LOGO_HEIGHT } from "@/lib/brand";
+import { NAVBAR_LOGO_HEIGHT, ANNOUNCEMENT_BAR_HEIGHT_PX } from "@/lib/brand";
 
 const navLinks = [
   { href: "#menu", label: "Menu" },
@@ -93,7 +86,10 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed left-0 right-0 top-9 z-50 border-b border-[#4A2132]/10 bg-[#FAFAFA] shadow-sm">
+      <header
+        className="fixed left-0 right-0 z-50 border-b border-[#4A2132]/10 bg-[#FAFAFA] shadow-sm"
+        style={{ top: ANNOUNCEMENT_BAR_HEIGHT_PX }}
+      >
         <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-3 sm:px-6 lg:px-10">
           {/* Left: Hamburger · Search */}
           <div className="flex items-center gap-1 sm:gap-2">

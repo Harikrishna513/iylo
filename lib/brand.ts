@@ -19,3 +19,7 @@ export const SITE_HEADER_OFFSET_PX =
 export function logoWidthForHeight(height: number): number {
   return Math.round(height * LOGO_ASPECT_RATIO);
 }
+
+/** Shared content width — matches hero, header, and sections */
+export const SITE_CONTENT_CLASS =
+  "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10";

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Sparkles,
   Truck,
@@ -9,125 +9,117 @@ import {
   CreditCard,
   Heart,
   Gift,
+  Croissant,
+  type LucideIcon,
 } from "lucide-react";
+import { ANNOUNCEMENT_BAR_HEIGHT_PX, SITE_CONTENT_CLASS } from "@/lib/brand";
 
-const MESSAGES: { icon: React.ElementType; text: string }[] = [
+const MESSAGES: { icon: LucideIcon; text: string }[] = [
   { icon: Truck, text: "Free Delivery on Orders Above ₹999" },
   { icon: Sparkles, text: "Freshly Baked Every Day" },
   { icon: Star, text: "Made with Premium Ingredients" },
-  { icon: ShieldCheck, text: "Cash on Delivery Available Across Bangalore" },
+  { icon: ShieldCheck, text: "Cash on Delivery Across Bengaluru" },
+  { icon: ShieldCheck, text: "CALL OR WHATSAPP +91 81057 60776 TO CUSTOMIZE OR BULK ORDER" },
   { icon: CreditCard, text: "100% Secure Payments" },
   { icon: Heart, text: "Handcrafted with Love Since 2025" },
   { icon: Gift, text: "Perfect Cakes for Every Celebration" },
 ];
 
-const SCROLL_DURATION_S = 40;
-const BG_PRIMARY = "#4A2132";
-const TEXT_PRIMARY = "#F8FAFC";
-const ICON_ACCENT = "#FBF7F3";
-const SEPARATOR_COLOR = "#FBF7F3";
-const SEPARATOR_OPACITY = 0.45;
+const ROTATE_MS = 3200;
+const BG_PRIMARY = "#2B1B12";
+const TEXT_PRIMARY = "#F7EEDD";
+const GOLD = "#E3A73F";
 
 export function AnnouncementBar() {
-  const renderTrack = (variant: "a" | "b") => (
-    <ul
-      className="flex shrink-0 items-center"
-      role="list"
-      aria-hidden={variant === "b" || undefined}
-    >
-      {MESSAGES.map((item, i) => {
-        const Icon = item.icon;
-        return (
-          <li
-            key={`${variant}-${i}`}
-            className="flex items-center gap-2.5 pl-8 sm:pl-12"
-          >
-            <span
-              className="inline-block h-1 w-1 shrink-0 rounded-full"
-              style={{
-                backgroundColor: SEPARATOR_COLOR,
-                opacity: SEPARATOR_OPACITY,
-              }}
-              aria-hidden
-            />
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-            <Icon
-              size={14}
-              className="shrink-0"
-              style={{ color: ICON_ACCENT, opacity: 0.9 }}
-              aria-hidden
-            />
+  useEffect(() => {
+    if (paused) return;
+    timerRef.current = setInterval(() => {
+      setIndex((i) => (i + 1) % MESSAGES.length);
+    }, ROTATE_MS);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [paused]);
 
-            <span
-              className="whitespace-nowrap text-[11px] font-medium tracking-wide sm:text-xs"
-              style={{ color: TEXT_PRIMARY, opacity: 0.95 }}
-            >
-              {item.text}
-            </span>
-          </li>
-        );
-      })}
-    </ul>
-  );
+  const goTo = useCallback((i: number) => setIndex(i), []);
+
+  const Current = MESSAGES[index].icon;
 
   return (
     <div
-      className="fixed left-0 right-0 top-0 z-[60] flex h-9 items-center overflow-hidden"
-      style={{
-        backgroundColor: BG_PRIMARY,
-        boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)",
-      }}
+      className="fixed left-0 right-0 top-0 z-[60] flex items-center border-b border-[#E3A73F]/20"
+      style={{ height: ANNOUNCEMENT_BAR_HEIGHT_PX, backgroundColor: BG_PRIMARY }}
       role="region"
       aria-label="Site announcements"
-      aria-live="polite"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
     >
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-12 sm:w-20"
-        style={{
-          background: `linear-gradient(to right, ${BG_PRIMARY}, transparent)`,
-        }}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-12 sm:w-20"
-        style={{
-          background: `linear-gradient(to left, ${BG_PRIMARY}, transparent)`,
-        }}
-        aria-hidden
-      />
+      <div className={`${SITE_CONTENT_CLASS} flex h-full items-center`}>
+        {/* pinned brand mark */}
+        <div
+          className="flex shrink-0 items-center gap-1.5 border-r pr-3 sm:pr-4"
+          style={{ borderColor: "rgba(247,238,221,0.15)" }}
+        >
+          <Croissant size={13} style={{ color: GOLD }} aria-hidden />
+          <span
+            className="hidden whitespace-nowrap text-[10px] font-semibold uppercase tracking-widest sm:inline"
+            style={{ color: TEXT_PRIMARY, opacity: 0.8 }}
+          >
+            Fresh Today
+          </span>
+        </div>
 
-      <div className="announcement-marquee-track flex h-full w-max items-center">
-        {renderTrack("a")}
-        {renderTrack("b")}
+        {/* rotating message */}
+        <div className="relative flex flex-1 items-center justify-center overflow-hidden px-3">
+          <div
+            key={index}
+            className="announcement-slide flex items-center gap-2"
+            aria-live="polite"
+          >
+            <Current size={13} style={{ color: GOLD }} aria-hidden />
+            <span
+              className="whitespace-nowrap text-[11px] font-medium tracking-wide sm:text-xs"
+              style={{ color: TEXT_PRIMARY }}
+            >
+              {MESSAGES[index].text}
+            </span>
+          </div>
+        </div>
+
+        {/* progress dots */}
+        <div
+          className="hidden shrink-0 items-center gap-1.5 border-l pl-4 sm:flex"
+          style={{ borderColor: "rgba(247,238,221,0.15)" }}
+        >
+          {MESSAGES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Show announcement ${i + 1}`}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: i === index ? "14px" : "5px",
+                backgroundColor: i === index ? GOLD : "rgba(247,238,221,0.35)",
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       <style>{`
-        @keyframes announcement-marquee-scroll {
-          from { transform: translate3d(0, 0, 0); }
-          to   { transform: translate3d(-50%, 0, 0); }
+        @keyframes announcement-slide-in {
+          from { opacity: 0; transform: translateY(4px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-
-        .announcement-marquee-track {
-          animation: announcement-marquee-scroll ${SCROLL_DURATION_S}s linear infinite;
-          will-change: transform;
-          backface-visibility: hidden;
+        .announcement-slide {
+          animation: announcement-slide-in 0.35s ease-out;
         }
-
-        @media (hover: hover) and (pointer: fine) {
-          .announcement-marquee-track:hover {
-            animation-play-state: paused;
-          }
-        }
-
         @media (prefers-reduced-motion: reduce) {
-          .announcement-marquee-track {
-            animation: none !important;
-            transform: translate3d(0, 0, 0);
-          }
-        }
-
-        .announcement-marquee-track {
-          transform: translateZ(0);
+          .announcement-slide { animation: none; }
         }
       `}</style>
     </div>

@@ -1,7 +1,12 @@
 export type Category =
-  | "cakes"
+  | "celebration-cakes"
+  | "viennoiserie"
+  | "cake-slices"
   | "breads"
+  | "tarts"
   | "cookies"
+  | "cheesecakes"
+  | "cakes"
   | "pastries"
   | "desserts"
   | "gift-boxes"
