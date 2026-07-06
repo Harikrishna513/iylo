@@ -22,6 +22,7 @@ const TABLES = [
   "admin_users",
   "site_settings",
   "announcements",
+  "corporate_inquiries",
 ];
 
 async function fetchAllRows(table: string) {

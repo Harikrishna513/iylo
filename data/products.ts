@@ -182,6 +182,8 @@ export const giftingOptions: GiftingOption[] = [
       "Elevate your brand with bespoke hampers, branded packaging, GST invoices, and bulk ordering for Bangalore teams and clients.",
     image: img.giftingCorporate,
     cta: "Enquire for Corporate",
+    scrollTo: "corporate",
+    inquiryType: "corporate",
   },
   // {
   //   id: "festive",
@@ -198,6 +200,7 @@ export const giftingOptions: GiftingOption[] = [
       "Birthdays, weddings, baby showers — handcrafted gifts that speak from the heart.",
     image: img.giftingCelebration,
     cta: "Shop Celebrations",
+    scrollTo: "menu",
   },
   {
     id: "custom",
@@ -206,6 +209,8 @@ export const giftingOptions: GiftingOption[] = [
       "Personalised ribbons, message cards, and premium boxes tailored to your occasion.",
     image: img.giftingCustom,
     cta: "Request Custom",
+    scrollTo: "corporate",
+    inquiryType: "custom",
   },
 ];
 

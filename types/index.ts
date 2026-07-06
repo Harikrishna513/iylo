@@ -123,6 +123,10 @@ export interface GiftingOption {
   description: string;
   image: string;
   cta: string;
+  /** Section id to smooth-scroll to when CTA is clicked */
+  scrollTo?: string;
+  /** Pre-select enquiry form type when scrolling to corporate section */
+  inquiryType?: "corporate" | "custom";
 }
 
 export interface DeliverySlot {

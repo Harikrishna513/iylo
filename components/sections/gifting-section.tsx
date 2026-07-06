@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { giftingOptions } from "@/data/products";
 import { Reveal } from "@/components/animations/reveal";
 import { Button } from "@/components/ui/button";
+import { scrollToSection } from "@/lib/scroll";
 
 export function GiftingSection() {
   return (
@@ -62,6 +63,12 @@ export function GiftingSection() {
                   variant="brown"
                   size="sm"
                   className={`mt-8 ${i % 2 === 1 ? "lg:ml-auto" : ""}`}
+                  type="button"
+                  onClick={() => {
+                    if (option.scrollTo) {
+                      scrollToSection(option.scrollTo, option.inquiryType);
+                    }
+                  }}
                 >
                   {option.cta}
                 </Button>
