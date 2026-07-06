@@ -1,11 +1,6 @@
 import { HeroSection } from "@/components/sections/hero-section";
 import { CategoryNav } from "@/components/sections/category-nav";
-import {
-  TodaysSpecials,
-  RegularCollection,
-  SeasonalCollection,
-} from "@/components/sections/product-collections";
-import { WeekendSpecials } from "@/components/sections/weekend-specials";
+import { CategoryCardsSection } from "@/components/sections/category-cards-section";
 import { GiftingSection } from "@/components/sections/gifting-section";
 import { RetailSection } from "@/components/sections/retail-section";
 import { AboutSection } from "@/components/sections/about-section";
@@ -25,20 +20,17 @@ export default function Home() {
     <>
       <HeroSection />
       <CategoryNav />
-      <TodaysSpecials />
-      <RegularCollection />
-      <SeasonalCollection />
-      <WeekendSpecials />
+      <CategoryCardsSection />
       <GiftingSection />
-      <RetailSection />
+      {/* <RetailSection /> */}
       <AboutSection />
-      <VideoGallerySection />
+      {/*<VideoGallerySection />
       <WorkshopsSection />
-      <AnnouncementsSection />
+      <AnnouncementsSection /> */}
       <CorporateSection />
       <GallerySection />
-      <StoreSection />
-      <DeliverySection />
+      {/* <StoreSection />
+      <DeliverySection /> */}
       <GoogleReviewsSection />
       <InstagramFeed />
       <ContactSection />

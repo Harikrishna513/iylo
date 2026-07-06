@@ -32,6 +32,7 @@ interface CartStore {
   isLoggedIn: boolean;
   deliveryZone: ReturnType<typeof findDeliveryZone>;
   couponDiscount: number;
+  discountAmount: number;
   addItem: (product: Product, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -48,7 +49,7 @@ interface CartStore {
   updateCheckoutForm: (data: Partial<CheckoutFormData>) => void;
   setLoggedIn: (value: boolean) => void;
   setDeliveryZone: (pincode: string) => void;
-  applyCoupon: (code: string) => boolean;
+  applyCoupon: (code: string) => Promise<boolean>;
   totalItems: () => number;
   subtotal: () => number;
   deliveryFee: () => number;
@@ -67,20 +68,33 @@ export const useCartStore = create<CartStore>((set, get) => ({
   isLoggedIn: false,
   deliveryZone: null,
   couponDiscount: 0,
+  discountAmount: 0,
 
   addItem: (product, quantity = 1) => {
     set((state) => {
-      const existing = state.items.find((i) => i.product.id === product.id);
+      const key = product.variantId ?? product.id;
+      const existing = state.items.find(
+        (i) => (i.variantId ?? i.product.variantId ?? i.product.id) === key
+      );
       if (existing) {
         return {
           items: state.items.map((i) =>
-            i.product.id === product.id
+            (i.variantId ?? i.product.variantId ?? i.product.id) === key
               ? { ...i, quantity: i.quantity + quantity }
               : i
           ),
         };
       }
-      return { items: [...state.items, { product, quantity }] };
+      return {
+        items: [
+          ...state.items,
+          {
+            product,
+            quantity,
+            variantId: product.variantId,
+          },
+        ],
+      };
     });
   },
 
@@ -141,11 +155,26 @@ export const useCartStore = create<CartStore>((set, get) => ({
     set({ deliveryZone: zone });
   },
 
-  applyCoupon: (code) => {
-    const normalized = code.toUpperCase().trim();
-    if (normalized === "IYLOLOVE" || normalized === "BANGALORE10") {
-      set({ couponDiscount: 0.1 });
-      return true;
+  applyCoupon: async (code) => {
+    const sub = get().subtotal();
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, subtotal: sub }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        set({ couponDiscount: data.discount / sub, discountAmount: data.discount });
+        return true;
+      }
+    } catch {
+      const normalized = code.toUpperCase().trim();
+      if (normalized === "IYLOLOVE" || normalized === "BANGALORE10") {
+        const discount = sub * 0.1;
+        set({ couponDiscount: 0.1, discountAmount: discount });
+        return true;
+      }
     }
     return false;
   },
@@ -165,7 +194,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   total: () => {
     const sub = get().subtotal();
     const fee = get().deliveryFee();
-    const discount = sub * get().couponDiscount;
+    const discount = get().discountAmount || sub * get().couponDiscount;
     const giftWrapFee = get().items.filter((i) => i.giftWrap).length * 99;
     return Math.max(0, sub - discount + fee + giftWrapFee);
   },
@@ -175,6 +204,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
       checkoutStep: "login",
       checkoutForm: defaultCheckoutForm,
       couponDiscount: 0,
+      discountAmount: 0,
       deliveryZone: null,
     }),
 }));

@@ -1,13 +1,8 @@
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
-import { AnnouncementBar } from "@/components/layout/announcement-bar";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { FloatingCTA } from "@/components/layout/floating-cta";
-import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
-import { AnnouncementPopup } from "@/components/layout/announcement-popup";
-import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
+import { ChromeShell } from "@/components/ChromeShell";
+import { AppProviders } from "@/components/providers/app-providers";
 import { CartDrawer } from "@/components/ecommerce/cart-drawer";
 import { ProductQuickView } from "@/components/ecommerce/product-quick-view";
 import { CheckoutModal } from "@/components/ecommerce/checkout-modal";
@@ -105,20 +100,14 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-black font-body antialiased">
-        <SmoothScrollProvider>
-          <AnnouncementBar />
-          <Header />
-          <main>{children}</main>
-          <Footer />
-          <FloatingCTA />
-          <MobileBottomNav />
+        <AppProviders>
+          <ChromeShell>{children}</ChromeShell>
           <CartDrawer />
           <ProductQuickView />
           <CheckoutModal />
           <SearchModal />
           <WishlistDrawer />
-          <AnnouncementPopup />
-        </SmoothScrollProvider>
+        </AppProviders>
       </body>
     </html>
   );

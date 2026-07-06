@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -14,6 +14,8 @@ import {
   ChevronRight,
   Minus,
   Plus,
+  Truck,
+  Store,
 } from "lucide-react";
 import { Product } from "@/types";
 import { getProductById } from "@/data/products";
@@ -22,7 +24,10 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
 import { ProductCard } from "@/components/cards/product-card";
-import { getNextAvailableSlot } from "@/lib/preorder";
+import {
+  FulfillmentDatePicker,
+  type FulfillmentSelection,
+} from "@/components/products/fulfillment-date-picker";
 
 interface ProductDetailProps {
   product: Product;
@@ -32,8 +37,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [giftWrap, setGiftWrap] = useState(false);
+  const [fulfillmentMode, setFulfillmentMode] = useState<"delivery" | "pickup">("delivery");
+  const [fulfillment, setFulfillment] = useState<FulfillmentSelection | null>(null);
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
+  const updateCheckoutForm = useCartStore((s) => s.updateCheckoutForm);
   const toggleWishlist = useWishlistStore((s) => s.toggleItem);
   const isInWishlist = useWishlistStore((s) => s.isInWishlist(product.id));
 
@@ -44,15 +52,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const boughtTogether = (product.frequentlyBoughtWith ?? [])
     .map((id) => getProductById(id))
     .filter(Boolean) as Product[];
-  const [preorderMessage, setPreorderMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (product.isPreOrder) {
-      setPreorderMessage(getNextAvailableSlot().message);
-    }
-  }, [product.isPreOrder]);
 
   const handleAddToCart = () => {
+    if (product.isPreOrder && !fulfillment) {
+      return;
+    }
+    if (fulfillment) {
+      updateCheckoutForm({
+        deliveryMethod: fulfillmentMode,
+        deliveryDate: fulfillment.date,
+        deliverySlot: fulfillment.slotLabel,
+      });
+    }
     for (let i = 0; i < quantity; i++) addItem(product);
     openCart();
   };
@@ -147,13 +158,57 @@ export function ProductDetail({ product }: ProductDetailProps) {
               {product.isAvailableToday && (
                 <p className="text-gold">Available for pickup and delivery today</p>
               )}
-              {product.isPreOrder && preorderMessage && (
-                <p className="text-ivory/60">{preorderMessage}</p>
-              )}
               {product.shipsPanIndia && (
                 <p className="text-ivory/60">Ships PAN India in 2–4 business days</p>
               )}
             </div>
+
+            {(product.isPreOrder || product.category !== "retail") && (
+              <div className="mt-8 border border-ivory/10 p-5">
+                <p className="mb-4 text-xs uppercase tracking-widest text-gold">
+                  Schedule your order
+                </p>
+                <div className="mb-4 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFulfillmentMode("delivery");
+                      setFulfillment(null);
+                    }}
+                    className={cn(
+                      "flex flex-1 items-center justify-center gap-2 border py-3 text-xs uppercase tracking-widest transition-colors",
+                      fulfillmentMode === "delivery"
+                        ? "border-gold bg-gold/10 text-gold"
+                        : "border-ivory/20 text-muted hover:border-ivory/40"
+                    )}
+                  >
+                    <Truck className="h-4 w-4" />
+                    Delivery
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFulfillmentMode("pickup");
+                      setFulfillment(null);
+                    }}
+                    className={cn(
+                      "flex flex-1 items-center justify-center gap-2 border py-3 text-xs uppercase tracking-widest transition-colors",
+                      fulfillmentMode === "pickup"
+                        ? "border-gold bg-gold/10 text-gold"
+                        : "border-ivory/20 text-muted hover:border-ivory/40"
+                    )}
+                  >
+                    <Store className="h-4 w-4" />
+                    Store Pickup
+                  </button>
+                </div>
+                <FulfillmentDatePicker
+                  mode={fulfillmentMode}
+                  value={fulfillment}
+                  onChange={setFulfillment}
+                />
+              </div>
+            )}
 
             <div className="mt-8 flex items-center gap-4">
               <div className="flex items-center border border-ivory/20">
@@ -165,7 +220,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
-              <Button variant="gold" size="lg" className="flex-1" onClick={handleAddToCart}>
+              <Button
+                variant="gold"
+                size="lg"
+                className="flex-1"
+                onClick={handleAddToCart}
+                disabled={product.isPreOrder && !fulfillment}
+              >
                 <ShoppingBag className="h-4 w-4" />
                 Add to Cart
               </Button>

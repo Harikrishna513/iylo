@@ -29,6 +29,8 @@ export type ProductBadge =
 
 export interface Product {
   id: string;
+  dbId?: string;
+  variantId?: string;
   name: string;
   description: string;
   longDescription?: string;
@@ -112,6 +114,7 @@ export interface CartItem {
   product: Product;
   quantity: number;
   giftWrap?: boolean;
+  variantId?: string;
 }
 
 export interface GiftingOption {

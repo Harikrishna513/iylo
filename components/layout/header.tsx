@@ -12,6 +12,7 @@ import { contactInfo } from "@/data/products";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { NAVBAR_LOGO_HEIGHT, ANNOUNCEMENT_BAR_HEIGHT_PX } from "@/lib/brand";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { href: "#menu", label: "Menu" },
@@ -78,6 +79,8 @@ export function Header() {
   const wishlistItems = useWishlistStore((s) => s.items);
   const openWishlist = useWishlistStore((s) => s.openWishlist);
   const openSearch = useSearchStore((s) => s.openSearch);
+  const { user } = useAuth();
+  const accountHref = user ? "/account" : "/auth/signin?redirect=/account";
 
   const instagramHandle = contactInfo.instagram?.replace("@", "");
   const instagramUrl = instagramHandle
@@ -141,7 +144,7 @@ export function Header() {
             >
               <InstagramIcon className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
             </a>
-            <IconButton href="/admin" label="Account">
+            <IconButton href={accountHref} label="Account">
               <User className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.5} />
             </IconButton>
             <IconButton onClick={openCart} label="Open cart" badge={cartCount}>

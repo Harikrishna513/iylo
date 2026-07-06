@@ -8,6 +8,7 @@ import {
   GiftingOption,
 } from "@/types";
 import { ProductImages as img } from "@/lib/product-images";
+import { GALLERY_IMAGES as galleryImg } from "@/lib/gallery-images";
 
 import { catalogProducts } from "@/data/catalog-products";
 import { NAV_CATEGORIES } from "@/data/nav-categories";
@@ -179,23 +180,23 @@ export const giftingOptions: GiftingOption[] = [
     title: "Corporate Gifting",
     description:
       "Elevate your brand with bespoke hampers, branded packaging, GST invoices, and bulk ordering for Bangalore teams and clients.",
-    image: img.luxuryGiftHamper,
+    image: img.giftingCorporate,
     cta: "Enquire for Corporate",
   },
-  {
-    id: "festive",
-    title: "Festival Hampers",
-    description:
-      "Curated seasonal collections for Diwali, Christmas, Ugadi, and every celebration across Karnataka.",
-    image: img.carrotCake,
-    cta: "Explore Festive",
-  },
+  // {
+  //   id: "festive",
+  //   title: "Festival Hampers",
+  //   description:
+  //     "Curated seasonal collections for Diwali, Christmas, Ugadi, and every celebration across Karnataka.",
+  //   image: img.giftingFestive,
+  //   cta: "Explore Festive",
+  // },
   {
     id: "celebration",
     title: "Birthday & Wedding",
     description:
       "Birthdays, weddings, baby showers — handcrafted gifts that speak from the heart.",
-    image: img.tieredCake,
+    image: img.giftingCelebration,
     cta: "Shop Celebrations",
   },
   {
@@ -203,7 +204,7 @@ export const giftingOptions: GiftingOption[] = [
     title: "Custom Packaging",
     description:
       "Personalised ribbons, message cards, and premium boxes tailored to your occasion.",
-    image: img.premiumGiftHamper,
+    image: img.giftingCustom,
     cta: "Request Custom",
   },
 ];
@@ -332,14 +333,14 @@ export const testimonials: Testimonial[] = [
 ];
 
 export const galleryItems: GalleryItem[] = [
-  { id: "1", type: "image", src: img.sourdoughLoaf, alt: "Fresh bread from our Jayanagar oven", span: "tall", category: "bread" },
-  { id: "2", type: "image", src: img.butterCroissant, alt: "Laminated croissants", span: "normal", category: "kitchen" },
-  { id: "3", type: "image", src: img.dutchTruffleCake, alt: "Chocolate layer cake decoration", span: "wide", category: "cake" },
-  { id: "4", type: "image", src: img.multigrainLoaf, alt: "Weekend pastries", span: "normal", category: "bread" },
-  { id: "5", type: "image", src: img.cinnamonSwirl, alt: "Cinnamon rolls", span: "normal", category: "kitchen" },
-  { id: "6", type: "image", src: img.strawberryTart, alt: "Raspberry tart finishing", span: "tall", category: "cake" },
-  { id: "7", type: "image", src: img.luxuryGiftHamper, alt: "Gift box packaging", span: "normal", category: "events" },
-  { id: "8", type: "image", src: img.chocolateChipCookie, alt: "Cookie assortment", span: "wide", category: "kitchen" },
+  { id: "1", type: "image", src: galleryImg.sourdoughLoaf, alt: "Fresh bread from our Jayanagar oven", span: "tall", category: "bread" },
+  { id: "2", type: "image", src: galleryImg.butterCroissant, alt: "Laminated croissants", span: "normal", category: "kitchen" },
+  { id: "3", type: "image", src: galleryImg.dutchTruffleCake, alt: "Chocolate layer cake decoration", span: "wide", category: "cake" },
+  { id: "4", type: "image", src: galleryImg.multigrainLoaf, alt: "Weekend pastries", span: "normal", category: "bread" },
+  { id: "5", type: "image", src: galleryImg.cinnamonSwirl, alt: "Cinnamon rolls", span: "normal", category: "kitchen" },
+  { id: "6", type: "image", src: galleryImg.strawberryTart, alt: "Raspberry tart finishing", span: "tall", category: "cake" },
+  { id: "7", type: "image", src: galleryImg.giftHamper, alt: "Gift box packaging", span: "normal", category: "events" },
+  { id: "8", type: "image", src: galleryImg.chocolateChipCookie, alt: "Cookie assortment", span: "wide", category: "kitchen" },
 ];
 
 export const videoGallery = [

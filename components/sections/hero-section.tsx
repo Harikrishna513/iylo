@@ -152,7 +152,7 @@ export function HeroSection() {
               >
                 Order Now
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 size="lg"
                 onClick={() =>
@@ -170,13 +170,13 @@ export function HeroSection() {
                 }
               >
                 Gifting
-              </Button>
+              </Button> */}
             </div>
           </div>
           <div className="hidden h-[500px] lg:block" aria-hidden="true" />
         </div>
 
-        <div className="hero-info-bar mt-16 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {/* <div className="hero-info-bar mt-16 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="glass flex items-center gap-3 px-4 py-3">
             <Truck className="h-4 w-4 shrink-0 text-gold" />
             <div>
@@ -205,8 +205,8 @@ export function HeroSection() {
               <p className="text-xs text-ivory/80">Wed–Sun · closed Mon–Tue</p>
             </div>
           </div>
-        </div>
-        {slotMessage && (
+        </div> */}
+        {/* {slotMessage && (
           <p
             className="mt-4 text-center text-xs text-ivory/70 lg:text-left"
             style={{ textShadow: HERO_TEXT_SHADOW }}
@@ -226,7 +226,7 @@ export function HeroSection() {
           style={{ textShadow: HERO_TEXT_SHADOW }}
         >
           {STORE_ADDRESS}
-        </p>
+        </p> */}
       </div>
 
       <div className="scroll-indicator absolute bottom-8 left-1/2 z-30 -translate-x-1/2">

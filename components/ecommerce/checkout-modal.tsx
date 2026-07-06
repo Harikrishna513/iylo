@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -20,7 +20,15 @@ import { getDeliverySlots } from "@/lib/preorder";
 import { getAmountForFreeDelivery } from "@/lib/delivery";
 import { BAKERY_LOCATION } from "@/lib/delivery";
 import { contactInfo } from "@/data/products";
+import { useAuth } from "@/context/AuthContext";
 import type { CheckoutStep } from "@/types";
+import Link from "next/link";
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: Record<string, unknown>) => { open: () => void };
+  }
+}
 
 const STEPS: { id: CheckoutStep; label: string }[] = [
   { id: "login", label: "Account" },
@@ -33,9 +41,11 @@ const STEPS: { id: CheckoutStep; label: string }[] = [
 ];
 
 export function CheckoutModal() {
+  const { user } = useAuth();
   const {
     isCheckoutOpen,
     closeCheckout,
+    items,
     subtotal,
     total,
     deliveryFee,
@@ -50,25 +60,139 @@ export function CheckoutModal() {
     deliveryZone,
     applyCoupon,
     couponDiscount,
+    discountAmount,
   } = useCartStore();
 
   const [couponInput, setCouponInput] = useState("");
   const [couponError, setCouponError] = useState("");
   const [locating, setLocating] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
   const slots = getDeliverySlots();
   const freeDeliveryRemaining = getAmountForFreeDelivery(subtotal());
+
+  const loadRazorpayScript = useCallback(() => {
+    return new Promise<void>((resolve, reject) => {
+      if (window.Razorpay) {
+        resolve();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Failed to load Razorpay"));
+      document.body.appendChild(script);
+    });
+  }, []);
 
   const handleClose = () => {
     closeCheckout();
     resetCheckout();
   };
 
-  const handleSubmit = () => {
-    setCheckoutStep("confirmation");
-    setTimeout(() => {
-      clearCart();
-      handleClose();
-    }, 4000);
+  const fulfillmentType = () => {
+    if (checkoutForm.deliveryMethod === "pickup") return "pickup";
+    if (checkoutForm.deliveryMethod === "retail-shipping") return "pan_india_shipping";
+    return "delivery";
+  };
+
+  const handleSubmit = async () => {
+    if (!items.length) return;
+
+    const missingVariant = items.find((i) => !(i.variantId ?? i.product.variantId));
+    if (missingVariant) {
+      alert("Some items are missing product data. Please refresh and try again.");
+      return;
+    }
+
+    setPaying(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({
+            variant_id: i.variantId ?? i.product.variantId,
+            quantity: i.quantity,
+            gift_wrap: i.giftWrap ?? false,
+          })),
+          payment_method: "razorpay",
+          fulfillment_type: fulfillmentType(),
+          customer: {
+            name: checkoutForm.name || user?.user_metadata?.full_name || "Customer",
+            email: checkoutForm.email || user?.email || "",
+            phone: checkoutForm.phone,
+            line1: checkoutForm.address,
+            city: checkoutForm.city,
+            state: "Karnataka",
+            pincode: checkoutForm.pincode,
+          },
+          user_id: user?.id ?? null,
+          delivery_fee: deliveryFee(),
+          discount_amount: discountAmount || subtotal() * couponDiscount,
+          coupon_code: checkoutForm.coupon || null,
+          scheduled_date: checkoutForm.deliveryDate || null,
+          scheduled_slot_label: checkoutForm.deliverySlot || null,
+          customer_notes: checkoutForm.notes || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error ?? "Checkout failed");
+        setPaying(false);
+        return;
+      }
+
+      if (data.payment_method === "cod") {
+        setOrderNumber(data.order_number);
+        setCheckoutStep("confirmation");
+        setTimeout(() => {
+          clearCart();
+        }, 3000);
+        setPaying(false);
+        return;
+      }
+
+      await loadRazorpayScript();
+
+      const rzp = new window.Razorpay!({
+        key: data.key,
+        amount: Math.round(data.amount * 100),
+        currency: "INR",
+        name: "IYLO Bakehouse",
+        description: `Order ${data.order_number}`,
+        order_id: data.razorpay_order_id,
+        prefill: data.customer,
+        handler: async (response: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) => {
+          const verifyRes = await fetch("/api/payment-verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyRes.ok) {
+            setOrderNumber(verifyData.order_number ?? data.order_number);
+            setCheckoutStep("confirmation");
+            setTimeout(() => clearCart(), 3000);
+          } else {
+            alert(verifyData.error ?? "Payment verification failed");
+          }
+          setPaying(false);
+        },
+        modal: {
+          ondismiss: () => setPaying(false),
+        },
+      });
+      rzp.open();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Payment failed");
+      setPaying(false);
+    }
   };
 
   const detectLocation = () => {
@@ -97,22 +221,35 @@ export function CheckoutModal() {
       case "login":
         return (
           <div className="space-y-6">
-            <p className="text-sm text-ivory/60">
-              Sign in to sync your wishlist and order history, or continue as guest.
-            </p>
-            <Button
-              variant="gold"
-              className="w-full"
-              onClick={() => {
-                setLoggedIn(true);
-                setCheckoutStep("method");
-              }}
-            >
-              Continue as Guest
-            </Button>
-            <Button variant="outline" className="w-full" disabled>
-              Sign in with Google (Coming Soon)
-            </Button>
+            {user ? (
+              <>
+                <p className="text-sm text-ivory/60">
+                  Signed in as <span className="text-gold">{user.email}</span>
+                </p>
+                <Button variant="gold" className="w-full" onClick={() => setCheckoutStep("method")}>
+                  Continue
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-ivory/60">
+                  Sign in to save your order history, or continue as guest.
+                </p>
+                <Link href="/auth/signin">
+                  <Button variant="gold" className="w-full">Sign In</Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    setLoggedIn(true);
+                    setCheckoutStep("method");
+                  }}
+                >
+                  Continue as Guest
+                </Button>
+              </>
+            )}
           </div>
         );
 
@@ -312,8 +449,8 @@ export function CheckoutModal() {
               />
               <Button
                 variant="outline"
-                onClick={() => {
-                  const ok = applyCoupon(couponInput);
+                onClick={async () => {
+                  const ok = await applyCoupon(couponInput);
                   setCouponError(ok ? "" : "Invalid coupon code");
                 }}
               >
@@ -321,7 +458,11 @@ export function CheckoutModal() {
               </Button>
             </div>
             {couponError && <p className="text-xs text-red-400">{couponError}</p>}
-            {couponDiscount > 0 && <p className="text-sm text-gold">10% discount applied</p>}
+            {couponDiscount > 0 && (
+              <p className="text-sm text-gold">
+                Discount applied — {formatPrice(discountAmount || subtotal() * couponDiscount)} off
+              </p>
+            )}
             <p className="text-xs text-muted">Try: IYLOLOVE or BANGALORE10</p>
             <Button variant="gold" className="w-full" onClick={() => setCheckoutStep("payment")}>
               Continue to Payment
@@ -359,8 +500,8 @@ export function CheckoutModal() {
                 <p className="text-xs text-muted">Secure payment via Razorpay</p>
               </div>
             </div>
-            <Button variant="gold" className="w-full" onClick={handleSubmit}>
-              Place Order — {formatPrice(total())}
+            <Button variant="gold" className="w-full" onClick={handleSubmit} disabled={paying}>
+              {paying ? "Processing…" : `Place Order — ${formatPrice(total())}`}
             </Button>
           </div>
         );
@@ -372,6 +513,9 @@ export function CheckoutModal() {
               <Check className="h-8 w-8 text-gold" />
             </div>
             <p className="editorial-heading text-2xl text-ivory">Thank You</p>
+            {orderNumber && (
+              <p className="mt-2 text-sm text-gold">Order {orderNumber}</p>
+            )}
             <p className="mt-3 max-w-sm text-sm text-ivory/60">
               Your order has been received. We&apos;ll send confirmation to {checkoutForm.email || "your email"} shortly.
             </p>

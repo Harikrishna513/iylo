@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { getProductById, getAllProducts } from "@/data/products";
 import { ProductDetail } from "@/components/products/product-detail";
 import { getProductSchema } from "@/lib/seo";
+import { createServiceClient } from "@/lib/supabase";
+import { fetchProductBySlug } from "@/lib/products-server";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -14,7 +16,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const product = getProductById(id);
+  const supabase = createServiceClient();
+  const dbProduct = await fetchProductBySlug(supabase, id);
+  const product = dbProduct ?? getProductById(id);
   if (!product) return { title: "Product Not Found" };
 
   return {
@@ -40,7 +44,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
-  const product = getProductById(id);
+  const supabase = createServiceClient();
+  const dbProduct = await fetchProductBySlug(supabase, id);
+  const product = dbProduct ?? getProductById(id);
   if (!product) notFound();
 
   const schema = getProductSchema(product);

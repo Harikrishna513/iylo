@@ -13,6 +13,7 @@ const PILL_MAX_WIDTH_PX = 960;
 export function CategoryNav() {
   const [active, setActive] = useState<NavCategoryId>("celebration-cakes");
   const [isPinned, setIsPinned] = useState(false);
+  const [isPastHero, setIsPastHero] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const tabListRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -37,15 +38,31 @@ export function CategoryNav() {
   }, [updateIndicator]);
 
   useEffect(() => {
+    const hero = document.querySelector("[data-hero]");
     const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+    if (!hero || !sentinel) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsPinned(!entry.isIntersecting),
-      { threshold: 0, rootMargin: `-${stickyTop}px 0px 0px 0px` }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    const updateNavPosition = () => {
+      const heroBottom = hero.getBoundingClientRect().bottom;
+      const pastHero = heroBottom <= stickyTop;
+      setIsPastHero(pastHero);
+
+      if (!pastHero) {
+        setIsPinned(false);
+        return;
+      }
+
+      const sentinelTop = sentinel.getBoundingClientRect().top;
+      setIsPinned(sentinelTop <= stickyTop);
+    };
+
+    updateNavPosition();
+    window.addEventListener("scroll", updateNavPosition, { passive: true });
+    window.addEventListener("resize", updateNavPosition);
+    return () => {
+      window.removeEventListener("scroll", updateNavPosition);
+      window.removeEventListener("resize", updateNavPosition);
+    };
   }, [stickyTop]);
 
   useEffect(() => {
@@ -108,6 +125,8 @@ export function CategoryNav() {
     }
   };
 
+  const isSticky = isPastHero && isPinned;
+
   return (
     <>
       <div ref={sentinelRef} className="h-px w-full" aria-hidden />
@@ -115,9 +134,10 @@ export function CategoryNav() {
       <div
         className={cn(
           "z-40 flex justify-center px-4 transition-all duration-300 sm:px-6",
-          isPinned ? "fixed left-0 right-0" : "relative py-4"
+          !isPastHero && "pointer-events-none invisible",
+          isSticky ? "fixed left-0 right-0" : "relative py-4"
         )}
-        style={{ top: isPinned ? stickyTop : undefined }}
+        style={{ top: isSticky ? stickyTop : undefined }}
       >
         <nav
           aria-label="Product categories"
@@ -180,7 +200,7 @@ export function CategoryNav() {
         </nav>
       </div>
 
-      {isPinned && (
+      {isSticky && (
         <div
           className="pointer-events-none"
           style={{ height: NAV_HEIGHT_PX + STICKY_TOP_GAP_PX }}
