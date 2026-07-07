@@ -56,6 +56,13 @@ export const CATEGORY_CARDS = [
     href: "/#gifting",
     productCategory: null,
   },
+  // {
+  //   id: "cake-slices",
+  //   label: "Cake Slices",
+  //   image: "/category/cake-slices.webp",
+  //   href: "/categories/cake-slices",
+  //   productCategory: "cake-slices",
+  // },
 ] as const;
 
 export type CategoryCardId = (typeof CATEGORY_CARDS)[number]["id"];

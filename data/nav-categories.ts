@@ -2,11 +2,12 @@
 export const NAV_CATEGORIES = [
   { id: "celebration-cakes", label: "Celebration Cakes" },
   { id: "viennoiserie", label: "Viennoiserie" },
-  { id: "cake-slices", label: "Cake Slices" },
   { id: "breads", label: "Breads" },
   { id: "tarts", label: "Tarts" },
   { id: "cookies", label: "Cookies" },
-  { id: "cheesecakes", label: "Cheesecakes" },
+  { id: "custom-cakes", label: "Custom Cakes" },
+  { id: "cake-slices", label: "Cake Slices" },
+  { id: "gourmet-desserts", label: "Gourmet Desserts" },
 ] as const;
 
 export type NavCategoryId = (typeof NAV_CATEGORIES)[number]["id"];

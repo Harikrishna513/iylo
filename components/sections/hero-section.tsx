@@ -2,34 +2,26 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Truck, MapPin, Clock } from "lucide-react";
-import { getNextAvailableSlot } from "@/lib/preorder";
 import { HeroBackgroundSlider } from "@/components/sections/hero-background-slider";
-import {
-  BUSINESS_DESCRIPTION,
-  FREE_DELIVERY_ABOVE,
-  MIN_ORDER_AMOUNT,
-  PICKUP_MESSAGE,
-  STORE_ADDRESS,
-} from "@/data/site-content";
+import { BUSINESS_DESCRIPTION } from "@/data/site-content";
 import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
 import { HERO_SLIDES } from "@/lib/hero-images";
 
 const HERO_TEXT_SHADOW =
   "0 2px 20px rgba(0,0,0,0.65), 0 1px 4px rgba(0,0,0,0.45)";
 
+const TEXT1 = "Modern Baking,";
+const TEXT2 = "Made Eggless";
+const CHAR_MS = 55;
+const LINE1_START_MS = 400;
+const LINE2_START_MS = LINE1_START_MS + TEXT1.length * CHAR_MS + 220;
+
 export function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const [slotMessage, setSlotMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    setSlotMessage(getNextAvailableSlot().message);
-  }, []);
+  const [line1, setLine1] = useState("");
+  const [line2, setLine2] = useState("");
 
   useEffect(() => {
     const link = document.createElement("link");
@@ -43,50 +35,68 @@ export function HeroSection() {
   }, []);
 
   useEffect(() => {
+    let t1Ref: ReturnType<typeof setInterval> | null = null;
+    let t2Ref: ReturnType<typeof setInterval> | null = null;
+
+    const start1 = setTimeout(() => {
+      let i = 0;
+      t1Ref = setInterval(() => {
+        i++;
+        setLine1(TEXT1.slice(0, i));
+        if (i >= TEXT1.length && t1Ref) clearInterval(t1Ref);
+      }, CHAR_MS);
+    }, LINE1_START_MS);
+
+    const start2 = setTimeout(() => {
+      let i = 0;
+      t2Ref = setInterval(() => {
+        i++;
+        setLine2(TEXT2.slice(0, i));
+        if (i >= TEXT2.length && t2Ref) clearInterval(t2Ref);
+      }, CHAR_MS);
+    }, LINE2_START_MS);
+
+    return () => {
+      clearTimeout(start1);
+      clearTimeout(start2);
+      if (t1Ref) clearInterval(t1Ref);
+      if (t2Ref) clearInterval(t2Ref);
+    };
+  }, []);
+
+  useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.fromTo(
+      gsap.fromTo(
         ".hero-content",
         { opacity: 0 },
-        { opacity: 1, duration: 1.5 }
-      )
-        .fromTo(
-          headlineRef.current,
-          { y: 80, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.2 },
-          "-=0.8"
-        )
-        .fromTo(
-          subRef.current,
-          { y: 40, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1 },
-          "-=0.6"
-        )
-        .fromTo(
-          ctaRef.current?.children || [],
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 },
-          "-=0.4"
-        )
-        .fromTo(
-          ".hero-badge",
-          { scale: 0, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.6 },
-          "-=0.6"
-        )
-        .fromTo(
-          ".hero-info-bar > *",
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, stagger: 0.1 },
-          "-=0.4"
-        )
-        .fromTo(
-          ".scroll-indicator",
-          { opacity: 0, y: -10 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.2"
-        );
+        { opacity: 1, duration: 1.2, ease: "power3.out" }
+      );
+
+      gsap.fromTo(
+        ".hero-item",
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          stagger: 0.12,
+          ease: "power3.out",
+          delay: LINE2_START_MS / 1000 + 0.3,
+        }
+      );
+
+      gsap.fromTo(
+        ".scroll-indicator",
+        { opacity: 0, y: -10 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          delay: LINE2_START_MS / 1000 + 0.8,
+        }
+      );
     }, containerRef);
+
     return () => ctx.revert();
   }, []);
 
@@ -94,7 +104,7 @@ export function HeroSection() {
     <section
       ref={containerRef}
       data-hero
-      className="relative flex min-h-screen items-center justify-center overflow-hidden"
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
       style={{
         marginTop: SITE_HEADER_OFFSET_PX,
         minHeight: `calc(100vh - ${SITE_HEADER_OFFSET_PX}px)`,
@@ -104,132 +114,44 @@ export function HeroSection() {
         <HeroBackgroundSlider />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="hero-badge absolute right-6 top-28 z-30 glass px-4 py-2 md:right-10 md:top-32"
-      >
-        <span
-          className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-gold"
+      <div className="hero-content relative z-30 mx-auto w-full max-w-4xl px-6 pt-20 pb-28 text-center lg:px-10">
+        {/* <span
+          className="hero-item mb-6 inline-block text-[10px] uppercase tracking-[0.4em] text-gold opacity-0"
           style={{ textShadow: HERO_TEXT_SHADOW }}
         >
-          <span className="h-2 w-2 animate-pulse rounded-full bg-gold" />
-          Eggless Speciality
-        </span>
-      </motion.div>
+          Jayanagar, Bangalore
+        </span> */}
 
-      <div className="hero-content relative z-30 mx-auto max-w-7xl px-6 pt-32 pb-28 lg:px-10">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <div>
-            <span
-              className="hero-badge mb-6 inline-block text-[10px] uppercase tracking-[0.4em] text-gold"
-              style={{ textShadow: HERO_TEXT_SHADOW }}
-            >
-              Jayanagar, Bangalore
-            </span>
-            <h1
-              ref={headlineRef}
-              className="editorial-heading text-5xl text-ivory sm:text-6xl md:text-7xl lg:text-8xl"
-              style={{ textShadow: HERO_TEXT_SHADOW }}
-            >
-              Modern Baking, Made Eggless
-            </h1>
-            <p
-              ref={subRef}
-              className="mt-8 max-w-lg text-base leading-relaxed text-ivory md:text-lg"
-              style={{ textShadow: HERO_TEXT_SHADOW }}
-            >
-              {BUSINESS_DESCRIPTION}
-            </p>
-            <div ref={ctaRef} className="mt-10 flex flex-wrap gap-4">
-              <Button
-                variant="gold"
-                size="lg"
-                onClick={() =>
-                  document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Order Now
-              </Button>
-              {/* <Button
-                variant="outline"
-                size="lg"
-                onClick={() =>
-                  document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Explore Menu
-              </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                className="border border-ivory/20"
-                onClick={() =>
-                  document.getElementById("gifting")?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Gifting
-              </Button> */}
-            </div>
-          </div>
-          <div className="hidden h-[500px] lg:block" aria-hidden="true" />
-        </div>
+        <h1
+          className="editorial-heading mb-6 min-h-[2.1em] text-[clamp(2.5rem,7vw,6.5rem)] leading-[1.05] tracking-tight text-ivory"
+          style={{ textShadow: HERO_TEXT_SHADOW }}
+        >
+          <span>{line1}</span>
+          <br />
+          <span className="text-gold">{line2}</span>
+        </h1>
 
-        {/* <div className="hero-info-bar mt-16 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="glass flex items-center gap-3 px-4 py-3">
-            <Truck className="h-4 w-4 shrink-0 text-gold" />
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-muted">Delivery</p>
-              <p className="text-xs text-ivory/80">Across Bangalore · min. ₹{MIN_ORDER_AMOUNT}</p>
-            </div>
-          </div>
-          <div className="glass flex items-center gap-3 px-4 py-3">
-            <MapPin className="h-4 w-4 shrink-0 text-gold" />
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-muted">Pickup</p>
-              <p className="text-xs text-ivory/80">Jayanagar 4th Block</p>
-            </div>
-          </div>
-          <div className="glass flex items-center gap-3 px-4 py-3">
-            <Truck className="h-4 w-4 shrink-0 text-gold" />
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-muted">Free Delivery</p>
-              <p className="text-xs text-ivory/80">On orders above ₹{FREE_DELIVERY_ABOVE}</p>
-            </div>
-          </div>
-          <div className="glass flex items-center gap-3 px-4 py-3">
-            <Clock className="h-4 w-4 shrink-0 text-gold" />
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-muted">Store Hours</p>
-              <p className="text-xs text-ivory/80">Wed–Sun · closed Mon–Tue</p>
-            </div>
-          </div>
-        </div> */}
-        {/* {slotMessage && (
-          <p
-            className="mt-4 text-center text-xs text-ivory/70 lg:text-left"
-            style={{ textShadow: HERO_TEXT_SHADOW }}
-            suppressHydrationWarning
-          >
-            {slotMessage}
-          </p>
-        )}
         <p
-          className="mt-3 text-center text-xs text-ivory/65 lg:text-left"
+          className="hero-item mx-auto mb-10 max-w-2xl text-base leading-relaxed text-ivory/85 opacity-0 md:text-lg"
           style={{ textShadow: HERO_TEXT_SHADOW }}
         >
-          {PICKUP_MESSAGE}
+          {BUSINESS_DESCRIPTION}
         </p>
-        <p
-          className="mt-1 text-center text-[10px] text-ivory/60 lg:text-left"
-          style={{ textShadow: HERO_TEXT_SHADOW }}
-        >
-          {STORE_ADDRESS}
-        </p> */}
+
+        <div className="hero-item flex flex-wrap items-center justify-center gap-4 opacity-0">
+          <Button
+            variant="gold"
+            size="lg"
+            onClick={() =>
+              document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            Order Now
+          </Button>
+        </div>
       </div>
 
-      <div className="scroll-indicator absolute bottom-8 left-1/2 z-30 -translate-x-1/2">
+      <div className="scroll-indicator absolute bottom-8 left-1/2 z-30 -translate-x-1/2 opacity-0">
         <ChevronDown className="h-6 w-6 animate-bounce text-ivory/60" />
       </div>
     </section>

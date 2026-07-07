@@ -7,10 +7,15 @@ import { Star, MapPin, Phone, Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { contactInfo } from "@/data/products";
-import { categories } from "@/data/products";
+import { NAV_CATEGORIES } from "@/data/nav-categories";
+
+const FOOTER_CATEGORY_LINKS = NAV_CATEGORIES.slice(0, 6).map((c) => ({
+  href: `/categories/${c.id}`,
+  label: c.label,
+}));
 
 const footerLinks = {
-  shop: categories.map((c) => ({ href: `#category-${c.id}`, label: c.label })),
+  shop: FOOTER_CATEGORY_LINKS,
   care: [
     { href: "#delivery", label: "Delivery" },
     { href: "#store", label: "Pickup" },
@@ -79,7 +84,7 @@ export function Footer() {
               Categories
             </h4>
             <ul className="space-y-2.5">
-              {footerLinks.shop.slice(0, 6).map((link) => (
+              {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
