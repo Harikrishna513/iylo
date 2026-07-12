@@ -2,6 +2,26 @@ export function validatePincode(pincode: string): boolean {
   return /^[0-9]{6}$/.test(pincode.trim());
 }
 
+export function validateEmail(email: string): string | null {
+  const trimmed = email.trim().toLowerCase();
+  if (!trimmed) return null;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) return null;
+  return trimmed;
+}
+
+export function validateFullName(name: string): string | null {
+  const trimmed = name.trim().replace(/\s+/g, " ");
+  if (trimmed.length < 2) return null;
+  if (!/^[a-zA-Z\s.'-]+$/.test(trimmed)) return null;
+  return trimmed;
+}
+
+export function validatePassword(password: string): string | null {
+  if (password.length < 8) return null;
+  if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) return null;
+  return password;
+}
+
 export function validateIndianPhone(phone: string): string | null {
   const digits = phone.replace(/\D/g, "");
   if (digits.length === 10 && /^[6-9]/.test(digits)) return digits;

@@ -238,6 +238,12 @@ export function CheckoutModal() {
                 <Link href="/auth/signin">
                   <Button variant="gold" className="w-full">Sign In</Button>
                 </Link>
+                <p className="text-center text-sm text-ivory/60">
+                  New to IYLO Bake House?{" "}
+                  <Link href="/auth/signup" className="text-gold hover:underline">
+                    Create an account
+                  </Link>
+                </p>
                 <Button
                   variant="outline"
                   className="w-full"

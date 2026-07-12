@@ -124,25 +124,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fullName: string,
     phone?: string
   ) => {
-    const { error } = await supabase.auth.signUp({
+    const normalizedPhone = phone ? phone.replace(/\D/g, "").slice(-10) : undefined;
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, phone },
+        data: { full_name: fullName, phone: normalizedPhone },
       },
     });
-    if (!error) {
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    if (data.user) {
       await supabase.from("users").upsert(
         {
-          id: (await supabase.auth.getUser()).data.user?.id,
+          id: data.user.id,
           email,
           name: fullName,
-          phone: phone ?? null,
+          phone: normalizedPhone ?? null,
         },
         { onConflict: "id" }
       );
     }
-    return { error: error?.message };
+
+    return {};
   };
 
   const signOut = async () => {

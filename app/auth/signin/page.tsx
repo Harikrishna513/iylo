@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/auth/password-input";
 import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
 
 function SignInForm() {
@@ -45,22 +46,23 @@ function SignInForm() {
         />
       </div>
       <div>
-        <label className="mb-2 block text-xs uppercase tracking-widest text-muted">Password</label>
-        <input
-          type="password"
-          required
+        <label htmlFor="password" className="mb-2 block text-xs uppercase tracking-widest text-muted">
+          Password
+        </label>
+        <PasswordInput
+          id="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border border-ivory/20 bg-transparent px-4 py-3 text-ivory outline-none focus:border-gold"
+          onChange={setPassword}
+          autoComplete="current-password"
         />
       </div>
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Signing in…" : "Sign In"}
       </Button>
       <p className="text-center text-sm text-muted">
-        No account?{" "}
+        New to IYLO Bake House?{" "}
         <Link href="/auth/signup" className="text-gold hover:underline">
-          Create one
+          Create an account
         </Link>
       </p>
     </form>
