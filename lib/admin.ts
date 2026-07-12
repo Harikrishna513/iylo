@@ -7,8 +7,23 @@ export interface AdminDashboardStats {
   totalCustomers: number;
   pendingOrders: number;
   lowStockCount: number;
+  outOfStockCount: number;
+  activeProducts: number;
+  totalProducts: number;
+  inactiveProducts: number;
   recentOrders: AdminOrder[];
   lowStockItems: Array<{ name: string; variant: string; stock: number }>;
+  outOfStockItems: Array<{ name: string; variant: string; stock: number }>;
+  avgOrderValue: number;
+}
+
+export interface AdminUserRow {
+  id: string;
+  user_id: string;
+  email: string;
+  role: "admin" | "superadmin";
+  is_active: boolean;
+  created_at: string;
 }
 
 export interface AdminOrder {
@@ -107,11 +122,38 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
     .eq("is_active", true)
     .lte("stock_quantity", 5);
 
+  const { data: outOfStockVariants } = await supabase
+    .from("product_variants")
+    .select("name, stock_quantity, products(name)")
+    .eq("is_active", true)
+    .eq("stock_quantity", 0);
+
+  const { count: activeProducts } = await supabase
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("is_active", true);
+
+  const { count: totalProducts } = await supabase
+    .from("products")
+    .select("id", { count: "exact", head: true });
+
   const lowStockItems = (variants ?? []).map((v) => ({
     name: (v.products as unknown as { name: string }).name,
     variant: v.name,
     stock: v.stock_quantity,
   }));
+
+  const outOfStockItems = (outOfStockVariants ?? []).map((v) => ({
+    name: (v.products as unknown as { name: string }).name,
+    variant: v.name,
+    stock: v.stock_quantity,
+  }));
+
+  const avgOrderValue =
+    recentWithPayment.length > 0
+      ? recentWithPayment.reduce((s, o) => s + Number(o.total_amount), 0) /
+        recentWithPayment.length
+      : 0;
 
   return {
     todayOrders: todayOrders ?? 0,
@@ -120,8 +162,14 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
     totalCustomers: totalCustomers ?? 0,
     pendingOrders: pendingOrders ?? 0,
     lowStockCount: lowStockItems.length,
+    outOfStockCount: outOfStockItems.length,
+    activeProducts: activeProducts ?? 0,
+    totalProducts: totalProducts ?? 0,
+    inactiveProducts: (totalProducts ?? 0) - (activeProducts ?? 0),
     recentOrders: recentWithPayment,
     lowStockItems: lowStockItems.slice(0, 10),
+    outOfStockItems: outOfStockItems.slice(0, 10),
+    avgOrderValue,
   };
 }
 
@@ -256,4 +304,57 @@ export async function getCurrentAdminRole(
     .eq("is_active", true)
     .maybeSingle();
   return (data?.role as "admin" | "superadmin") ?? null;
+}
+
+export async function getAdminUsers(): Promise<AdminUserRow[]> {
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from("admin_users")
+    .select("id, user_id, role, is_active, created_at")
+    .order("created_at", { ascending: true });
+
+  const rows: AdminUserRow[] = [];
+  for (const row of data ?? []) {
+    const { data: authUser } = await supabase.auth.admin.getUserById(row.user_id);
+    rows.push({
+      id: row.id,
+      user_id: row.user_id,
+      email: authUser?.user?.email ?? "—",
+      role: row.role as "admin" | "superadmin",
+      is_active: row.is_active,
+      created_at: row.created_at,
+    });
+  }
+  return rows;
+}
+
+export async function exportProductsCsv(): Promise<string> {
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from("products")
+    .select(
+      `slug, name, short_description, base_price, is_active, display_order,
+       categories(slug)`
+    )
+    .order("display_order", { ascending: true });
+
+  const header =
+    "slug,name,category_slug,base_price,short_description,is_active,display_order";
+  const lines = (data ?? []).map((p) => {
+    const cat = (p.categories as unknown as { slug: string } | null)?.slug ?? "";
+    const esc = (v: string | number | boolean | null) => {
+      const s = String(v ?? "");
+      return s.includes(",") || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    return [
+      esc(p.slug),
+      esc(p.name),
+      esc(cat),
+      esc(p.base_price ?? 0),
+      esc(p.short_description ?? ""),
+      esc(p.is_active),
+      esc(p.display_order),
+    ].join(",");
+  });
+  return [header, ...lines].join("\n");
 }

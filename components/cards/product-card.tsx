@@ -14,13 +14,17 @@ interface ProductCardProps {
   product: Product;
   index?: number;
   variant?: "default" | "featured" | "compact";
+  /** Use "light" on cream/ivory page backgrounds */
+  theme?: "dark" | "light";
 }
 
 export function ProductCard({
   product,
   index = 0,
   variant = "default",
+  theme = "dark",
 }: ProductCardProps) {
+  const isLight = theme === "light";
   const addItem = useCartStore((s) => s.addItem);
   const openQuickView = useCartStore((s) => s.openQuickView);
   const toggleWishlist = useWishlistStore((s) => s.toggleItem);
@@ -135,47 +139,100 @@ export function ProductCard({
 
       <div className="mt-5 space-y-2 px-1">
         <div className="flex items-center justify-between">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
+          <p
+            className={cn(
+              "text-[10px] uppercase tracking-[0.2em]",
+              isLight ? "text-maroon/50" : "text-muted"
+            )}
+          >
             {product.category.replace("-", " ")}
           </p>
           {product.rating && (
-            <span className="flex items-center gap-1 text-xs text-ivory/60">
-              <Star className="h-3 w-3 fill-gold text-gold" />
+            <span
+              className={cn(
+                "flex items-center gap-1 text-xs",
+                isLight ? "text-maroon/50" : "text-ivory/60"
+              )}
+            >
+              <Star className="h-3 w-3 fill-light-blue text-light-blue" />
               {product.rating}
               {product.reviewCount && (
-                <span className="text-muted">({product.reviewCount})</span>
+                <span className={isLight ? "text-maroon/40" : "text-muted"}>
+                  ({product.reviewCount})
+                </span>
               )}
             </span>
           )}
         </div>
         <Link href={`/products/${product.id}`}>
-          <h3 className="editorial-heading text-xl text-ivory transition-colors hover:text-gold md:text-2xl">
+          <h3
+            className={cn(
+              "editorial-heading text-xl transition-colors md:text-2xl",
+              isLight
+                ? "text-maroon hover:text-rosewood"
+                : "text-ivory hover:text-gold"
+            )}
+          >
             {product.name}
           </h3>
         </Link>
-        <p className="line-clamp-2 text-sm text-ivory/60">{product.description}</p>
+        <p
+          className={cn(
+            "line-clamp-2 text-sm",
+            isLight ? "text-maroon/60" : "text-ivory/60"
+          )}
+        >
+          {product.description}
+        </p>
         {product.preparationTime && (
-          <p className="flex items-center gap-1.5 text-xs text-muted">
+          <p
+            className={cn(
+              "flex items-center gap-1.5 text-xs",
+              isLight ? "text-maroon/45" : "text-muted"
+            )}
+          >
             <Clock className="h-3 w-3" />
             {product.preparationTime}
           </p>
         )}
         <div className="flex items-center justify-between pt-1">
-          <p className="text-lg font-light tracking-wide text-gold">
+          <p
+            className={cn(
+              "text-lg font-light tracking-wide",
+              isLight ? "text-light-blue" : "text-gold"
+            )}
+          >
             {formatPrice(product.price)}
           </p>
           <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <button
               onClick={() => addItem(product)}
-              className="flex h-8 w-8 items-center justify-center border border-ivory/20 text-ivory/60 hover:border-gold hover:text-gold"
+              className={cn(
+                "flex h-8 w-8 items-center justify-center border transition-colors",
+                isLight
+                  ? "border-maroon/20 text-maroon/50 hover:border-light-blue hover:text-light-blue"
+                  : "border-ivory/20 text-ivory/60 hover:border-gold hover:text-gold"
+              )}
               aria-label="Decrease quantity"
             >
               <Minus className="h-3 w-3" />
             </button>
-            <span className="w-6 text-center text-sm text-ivory">1</span>
+            <span
+              className={cn(
+                "w-6 text-center text-sm",
+                isLight ? "text-maroon" : "text-ivory"
+              )}
+            >
+              1
+            </span>
             <button
               onClick={() => addItem(product)}
-              className="flex h-8 w-8 items-center justify-center border border-ivory/20 text-ivory/60 hover:border-gold hover:text-gold"
+              className={cn(
+                "flex h-8 w-8 items-center justify-center border transition-colors",
+                isLight
+                  ? "border-maroon/20 text-maroon/50 hover:border-light-blue hover:text-light-blue"
+                  : "border-ivory/20 text-ivory/60 hover:border-gold hover:text-gold"
+              )}
               aria-label="Increase quantity"
             >
               <Plus className="h-3 w-3" />

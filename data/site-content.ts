@@ -6,6 +6,8 @@ export const BRAND_NAME = "IYLO Bakehouse";
 export const BRAND_COLORS = {
   maroon: "#451519",
   lightBlue: "#99BEE0",
+  rosewood: "#6B2A31",
+  mistBlue: "#DCEBF7",
 } as const;
 
 // ── Contact — edit this block only; site-wide links update automatically ──

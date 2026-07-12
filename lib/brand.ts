@@ -6,6 +6,8 @@ export const BRAND_LOGO = "/logo.png";
 export { BRAND_COLORS, CONTACT_PHONE, CONTACT_WHATSAPP };
 export const COLOR_MAROON = BRAND_COLORS.maroon;
 export const COLOR_LIGHT_BLUE = BRAND_COLORS.lightBlue;
+export const COLOR_ROSEWOOD = BRAND_COLORS.rosewood;
+export const COLOR_MIST_BLUE = BRAND_COLORS.mistBlue;
 export const BRAND_LOGO_ALT = "iylo BAKEHOUSE";
 
 /** Source file dimensions: public/logo.png */

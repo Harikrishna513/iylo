@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { AdminInquiry, InquiryStatus } from "@/lib/inquiries";
+import { adminCardClass, adminInputClass, adminSelectClass } from "@/components/admin/admin-ui";
 
 const STATUSES: Array<"all" | InquiryStatus> = [
   "all",
@@ -17,15 +18,15 @@ const TYPES = ["all", "corporate", "custom"] as const;
 function statusClasses(status: InquiryStatus) {
   switch (status) {
     case "new":
-      return "bg-gold/15 text-gold";
+      return "bg-mist-blue text-maroon";
     case "contacted":
-      return "bg-blue-500/15 text-blue-300";
+      return "bg-light-blue/30 text-maroon";
     case "quoted":
-      return "bg-emerald-500/15 text-emerald-400";
+      return "bg-mist-blue text-maroon";
     case "closed":
-      return "bg-ivory/10 text-muted";
+      return "bg-maroon/10 text-maroon/50";
     default:
-      return "bg-ivory/10 text-muted";
+      return "bg-maroon/10 text-maroon/50";
   }
 }
 
@@ -66,8 +67,8 @@ export default function AdminInquiriesPage() {
 
   return (
     <div>
-      <h1 className="editorial-heading mb-2 text-4xl text-ivory">Enquiries</h1>
-      <p className="mb-8 text-sm text-muted">
+      <h1 className="editorial-heading mb-2 text-3xl text-maroon md:text-4xl">Enquiries</h1>
+      <p className="mb-8 text-sm text-maroon/55">
         Corporate and custom packaging requests from the website.
       </p>
 
@@ -75,10 +76,10 @@ export default function AdminInquiriesPage() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value as (typeof STATUSES)[number])}
-          className="border border-ivory/20 bg-black px-4 py-2 text-sm text-ivory"
+          className={adminSelectClass}
         >
           {STATUSES.map((s) => (
-            <option key={s} value={s} className="bg-black">
+            <option key={s} value={s}>
               {s === "all" ? "All statuses" : s}
             </option>
           ))}
@@ -86,10 +87,10 @@ export default function AdminInquiriesPage() {
         <select
           value={type}
           onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
-          className="border border-ivory/20 bg-black px-4 py-2 text-sm text-ivory"
+          className={adminSelectClass}
         >
           {TYPES.map((t) => (
-            <option key={t} value={t} className="bg-black">
+            <option key={t} value={t}>
               {t === "all" ? "All types" : t}
             </option>
           ))}
@@ -97,17 +98,17 @@ export default function AdminInquiriesPage() {
       </div>
 
       {loading ? (
-        <p className="text-muted">Loading…</p>
+        <p className="text-maroon/50">Loading…</p>
       ) : inquiries.length === 0 ? (
-        <p className="border border-ivory/10 p-8 text-center text-muted">No enquiries yet.</p>
+        <p className={`${adminCardClass} text-center text-maroon/50`}>No enquiries yet.</p>
       ) : (
         <div className="space-y-4">
           {inquiries.map((inq) => (
-            <article key={inq.id} className="border border-ivory/10 p-5">
+            <article key={inq.id} className={adminCardClass}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs uppercase tracking-widest text-gold">
+                    <span className="text-xs uppercase tracking-widest text-light-blue">
                       {inq.inquiry_type}
                     </span>
                     <span
@@ -119,11 +120,11 @@ export default function AdminInquiriesPage() {
                       {inq.status}
                     </span>
                   </div>
-                  <h2 className="mt-2 text-lg text-ivory">{inq.contact_name}</h2>
+                  <h2 className="mt-2 text-lg font-medium text-maroon">{inq.contact_name}</h2>
                   {inq.company_name && (
-                    <p className="text-sm text-muted">{inq.company_name}</p>
+                    <p className="text-sm text-maroon/55">{inq.company_name}</p>
                   )}
-                  <p className="mt-1 text-xs text-muted">
+                  <p className="mt-1 text-xs text-maroon/45">
                     {new Date(inq.created_at).toLocaleString("en-IN")} · {inq.email} ·{" "}
                     {inq.phone}
                   </p>
@@ -133,10 +134,10 @@ export default function AdminInquiriesPage() {
                   onChange={(e) =>
                     updateInquiry(inq.id, { status: e.target.value as InquiryStatus })
                   }
-                  className="border border-ivory/20 bg-black px-3 py-1.5 text-xs text-ivory"
+                  className={`${adminSelectClass} py-1.5 text-xs`}
                 >
                   {STATUSES.filter((s) => s !== "all").map((s) => (
-                    <option key={s} value={s} className="bg-black">
+                    <option key={s} value={s}>
                       {s}
                     </option>
                   ))}
@@ -146,48 +147,48 @@ export default function AdminInquiriesPage() {
               <button
                 type="button"
                 onClick={() => setExpandedId(expandedId === inq.id ? null : inq.id)}
-                className="mt-4 text-xs text-gold hover:underline"
+                className="mt-4 text-xs text-light-blue hover:underline"
               >
                 {expandedId === inq.id ? "Hide details" : "View details"}
               </button>
 
               {expandedId === inq.id && (
-                <div className="mt-4 space-y-3 border-t border-ivory/10 pt-4 text-sm text-ivory/80">
+                <div className="mt-4 space-y-3 border-t border-maroon/10 pt-4 text-sm text-maroon/75">
                   <p className="whitespace-pre-wrap">{inq.message}</p>
                   <dl className="grid gap-2 sm:grid-cols-2">
                     {inq.estimated_qty && (
                       <div>
-                        <dt className="text-xs text-muted">Quantity / event size</dt>
+                        <dt className="text-xs text-maroon/45">Quantity / event size</dt>
                         <dd>{inq.estimated_qty}</dd>
                       </div>
                     )}
                     {inq.delivery_date && (
                       <div>
-                        <dt className="text-xs text-muted">Delivery date</dt>
+                        <dt className="text-xs text-maroon/45">Delivery date</dt>
                         <dd>{inq.delivery_date}</dd>
                       </div>
                     )}
                     {inq.budget && (
                       <div>
-                        <dt className="text-xs text-muted">Budget</dt>
+                        <dt className="text-xs text-maroon/45">Budget</dt>
                         <dd>{inq.budget}</dd>
                       </div>
                     )}
                     <div>
-                      <dt className="text-xs text-muted">GST invoice</dt>
+                      <dt className="text-xs text-maroon/45">GST invoice</dt>
                       <dd>{inq.gst_required ? "Yes" : "No"}</dd>
                     </div>
                   </dl>
 
                   <div>
-                    <label className="mb-1 block text-xs text-muted">Admin notes</label>
+                    <label className="mb-1 block text-xs text-maroon/45">Admin notes</label>
                     <textarea
                       rows={2}
                       value={notesDraft[inq.id] ?? inq.admin_notes ?? ""}
                       onChange={(e) =>
                         setNotesDraft((prev) => ({ ...prev, [inq.id]: e.target.value }))
                       }
-                      className="w-full border border-ivory/20 bg-black px-3 py-2 text-sm text-ivory"
+                      className={adminInputClass}
                     />
                     <button
                       type="button"
@@ -196,7 +197,7 @@ export default function AdminInquiriesPage() {
                           admin_notes: notesDraft[inq.id] ?? inq.admin_notes ?? null,
                         })
                       }
-                      className="mt-2 border border-gold px-4 py-1.5 text-[10px] uppercase tracking-widest text-gold"
+                      className="mt-2 border border-maroon/15 px-4 py-1.5 text-[10px] uppercase tracking-widest text-maroon hover:bg-mist-blue"
                     >
                       Save notes
                     </button>

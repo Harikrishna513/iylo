@@ -6,12 +6,15 @@
   --ivory: #f7f2ea;
   --black: #050505;
   --maroon: #451519;
+  --rosewood: #6b2a31;
   --light-blue: #99bee0;
+  --mist-blue: #dcebf7;
   --brown: var(--maroon);
   --gold: var(--light-blue);
   --beige: #e8dfd3;
   --cream: #faf6f0;
   --muted: #9a8b7a;
+  --muted-on-light: rgba(69, 21, 25, 0.55);
 }
 
 @theme inline {
@@ -20,12 +23,15 @@
   --color-ivory: var(--ivory);
   --color-black: var(--black);
   --color-maroon: var(--maroon);
+  --color-rosewood: var(--rosewood);
   --color-light-blue: var(--light-blue);
+  --color-mist-blue: var(--mist-blue);
   --color-brown: var(--brown);
   --color-gold: var(--gold);
   --color-beige: var(--beige);
   --color-cream: var(--cream);
   --color-muted: var(--muted);
+  --color-muted-on-light: var(--muted-on-light);
   --font-display: var(--font-cormorant);
   --font-body: var(--font-dm-sans);
 }
@@ -133,4 +139,16 @@ body {
   );
   background-size: 200% 100%;
   animation: shimmer 3s infinite;
+}
+
+/* Admin panel — light theme using brand palette */
+.admin-theme {
+  --admin-bg: var(--mist-blue);
+  --admin-sidebar: #ffffff;
+  --admin-card: #ffffff;
+  --admin-fg: var(--maroon);
+  --admin-fg-muted: var(--muted-on-light);
+  --admin-accent: var(--light-blue);
+  --admin-border: rgba(69, 21, 25, 0.12);
+  --admin-active: var(--mist-blue);
 }

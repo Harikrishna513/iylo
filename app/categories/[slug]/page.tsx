@@ -53,11 +53,11 @@ export default async function CategoryPage({ params }: Props) {
           <p className="text-[10px] uppercase tracking-[0.4em] text-brown/70">
             Collection
           </p>
-          <h1 className="editorial-heading mt-3 text-4xl text-black md:text-5xl">
+          <h1 className="editorial-heading mt-3 text-4xl text-maroon md:text-5xl">
             {label}
           </h1>
           {categoryProducts.length > 0 && (
-            <p className="mt-3 text-sm text-black/55">
+            <p className="mt-3 text-sm text-maroon/55">
               {categoryProducts.length} items available
             </p>
           )}
@@ -66,11 +66,11 @@ export default async function CategoryPage({ params }: Props) {
         {categoryProducts.length > 0 ? (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {categoryProducts.map((product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
+              <ProductCard key={product.id} product={product} index={i} theme="light" />
             ))}
           </div>
         ) : (
-          <p className="text-center text-sm text-black/45">
+          <p className="text-center text-sm text-maroon/45">
             Products for this category will be listed soon.
           </p>
         )}
