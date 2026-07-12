@@ -1,34 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import {
-  Sparkles,
-  Truck,
-  ShieldCheck,
-  Star,
-  CreditCard,
-  Heart,
-  Gift,
-  Croissant,
-  type LucideIcon,
-} from "lucide-react";
-import { ANNOUNCEMENT_BAR_HEIGHT_PX, SITE_CONTENT_CLASS } from "@/lib/brand";
+import { Sparkles, Truck, ShieldCheck, Star, CreditCard, Heart, Gift, Croissant, type LucideIcon, } from "lucide-react";
+import { ANNOUNCEMENT_BAR_HEIGHT_PX, COLOR_LIGHT_BLUE, COLOR_MAROON, SITE_CONTENT_CLASS } from "@/lib/brand";
+import { CONTACT_PHONE } from "@/data/site-content";
 
 const MESSAGES: { icon: LucideIcon; text: string }[] = [
   { icon: Truck, text: "Free Delivery on Orders Above ₹999" },
   { icon: Sparkles, text: "Freshly Baked Every Day" },
   { icon: Star, text: "Made with Premium Ingredients" },
   { icon: ShieldCheck, text: "Cash on Delivery Across Bengaluru" },
-  { icon: ShieldCheck, text: "CALL OR WHATSAPP +91 81057 60776 TO CUSTOMIZE OR BULK ORDER" },
+  { icon: ShieldCheck, text: `CALL OR WHATSAPP ${CONTACT_PHONE} TO CUSTOMIZE OR BULK ORDER`, },
   { icon: CreditCard, text: "100% Secure Payments" },
-  { icon: Heart, text: "Handcrafted with Love Since 2025" },
+  { icon: Heart, text: "Handcrafted with Love Since 2026" },
   { icon: Gift, text: "Perfect Cakes for Every Celebration" },
 ];
 
 const ROTATE_MS = 3200;
-const BG_PRIMARY = "#2B1B12";
-const TEXT_PRIMARY = "#F7EEDD";
-const GOLD = "#E3A73F";
+const BG_PRIMARY = COLOR_MAROON;
+const TEXT_PRIMARY = "#F7F2EA";
+const ACCENT = COLOR_LIGHT_BLUE;
 
 export function AnnouncementBar() {
   const [index, setIndex] = useState(0);
@@ -51,8 +42,12 @@ export function AnnouncementBar() {
 
   return (
     <div
-      className="fixed left-0 right-0 top-0 z-[60] flex items-center border-b border-[#E3A73F]/20"
-      style={{ height: ANNOUNCEMENT_BAR_HEIGHT_PX, backgroundColor: BG_PRIMARY }}
+      className="fixed left-0 right-0 top-0 z-[60] flex items-center border-b"
+      style={{
+        height: ANNOUNCEMENT_BAR_HEIGHT_PX,
+        backgroundColor: BG_PRIMARY,
+        borderColor: `${ACCENT}33`,
+      }}
       role="region"
       aria-label="Site announcements"
       onMouseEnter={() => setPaused(true)}
@@ -64,7 +59,7 @@ export function AnnouncementBar() {
           className="flex shrink-0 items-center gap-1.5 border-r pr-3 sm:pr-4"
           style={{ borderColor: "rgba(247,238,221,0.15)" }}
         >
-          <Croissant size={13} style={{ color: GOLD }} aria-hidden />
+          <Croissant size={13} style={{ color: ACCENT }} aria-hidden />
           <span
             className="hidden whitespace-nowrap text-[10px] font-semibold uppercase tracking-widest sm:inline"
             style={{ color: TEXT_PRIMARY, opacity: 0.8 }}
@@ -80,7 +75,7 @@ export function AnnouncementBar() {
             className="announcement-slide flex items-center gap-2"
             aria-live="polite"
           >
-            <Current size={13} style={{ color: GOLD }} aria-hidden />
+            <Current size={13} style={{ color: ACCENT }} aria-hidden />
             <span
               className="whitespace-nowrap text-[11px] font-medium tracking-wide sm:text-xs"
               style={{ color: TEXT_PRIMARY }}
@@ -103,7 +98,7 @@ export function AnnouncementBar() {
               className="h-1.5 rounded-full transition-all"
               style={{
                 width: i === index ? "14px" : "5px",
-                backgroundColor: i === index ? GOLD : "rgba(247,238,221,0.35)",
+                backgroundColor: i === index ? ACCENT : "rgba(247,238,221,0.35)",
               }}
             />
           ))}

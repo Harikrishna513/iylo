@@ -1,8 +1,10 @@
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://iylobakehouse.com";
+import { BRAND_NAME, CONTACT, websiteUrl } from "@/data/site-content";
 
-export const BRAND_NAME = "IYLO Bakehouse";
-export const SUPPORT_EMAIL = "hello@iylobakehouse.com";
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? websiteUrl();
+
+export { BRAND_NAME };
+export const SUPPORT_EMAIL = CONTACT.email;
 export const ADMIN_EMAIL =
   process.env.ADMIN_EMAIL ?? process.env.GMAIL_USER ?? SUPPORT_EMAIL;
 export const EMAIL_FROM_HEADER = `${BRAND_NAME} <${process.env.GMAIL_USER ?? SUPPORT_EMAIL}>`;

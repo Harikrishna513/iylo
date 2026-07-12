@@ -11,7 +11,7 @@ const buttonVariants = cva(
         default:
           "bg-ivory text-black hover:bg-cream hover:scale-[1.02] active:scale-[0.98]",
         gold:
-          "bg-gold text-black hover:bg-gold/90 hover:scale-[1.02] active:scale-[0.98]",
+          "bg-gold text-brown hover:bg-gold/90 hover:scale-[1.02] active:scale-[0.98]",
         outline:
           "border border-ivory/30 text-ivory hover:border-gold hover:text-gold bg-transparent",
         ghost:

@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getAllProducts } from "@/data/products";
+import { SITE_URL } from "@/lib/config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://iylobakehouse.com";
+  const base = SITE_URL;
   const products = getAllProducts().map((p) => ({
     url: `${base}/products/${p.id}`,
     lastModified: new Date(),

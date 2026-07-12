@@ -5,8 +5,10 @@
   --foreground: #f7f2ea;
   --ivory: #f7f2ea;
   --black: #050505;
-  --brown: #5b3a29;
-  --gold: #d4af37;
+  --maroon: #451519;
+  --light-blue: #99bee0;
+  --brown: var(--maroon);
+  --gold: var(--light-blue);
   --beige: #e8dfd3;
   --cream: #faf6f0;
   --muted: #9a8b7a;
@@ -17,6 +19,8 @@
   --color-foreground: var(--foreground);
   --color-ivory: var(--ivory);
   --color-black: var(--black);
+  --color-maroon: var(--maroon);
+  --color-light-blue: var(--light-blue);
   --color-brown: var(--brown);
   --color-gold: var(--gold);
   --color-beige: var(--beige);
@@ -59,7 +63,7 @@ body {
 }
 
 ::selection {
-  background: rgba(212, 175, 55, 0.3);
+  background: rgba(153, 190, 224, 0.35);
   color: var(--ivory);
 }
 
@@ -78,7 +82,7 @@ body {
 }
 
 .text-gradient-gold {
-  background: linear-gradient(135deg, #d4af37 0%, #f7e7a1 50%, #d4af37 100%);
+  background: linear-gradient(135deg, #99bee0 0%, #c5ddf0 50%, #99bee0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -124,7 +128,7 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(212, 175, 55, 0.1) 50%,
+    rgba(153, 190, 224, 0.15) 50%,
     transparent 100%
   );
   background-size: 200% 100%;

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProductsByCategory } from "@/data/products";
 import { ProductCard } from "@/components/cards/product-card";
 import {
   BROWSABLE_CATEGORY_CARDS,
@@ -8,7 +7,8 @@ import {
   getCategoryCard,
   type CategoryCardId,
 } from "@/data/category-cards";
-import Image from "next/image";
+import { createServiceClient } from "@/lib/supabase";
+import { fetchProducts } from "@/lib/products-server";
 import Link from "next/link";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -34,7 +34,10 @@ export default async function CategoryPage({ params }: Props) {
   if (!card || !card.productCategory) notFound();
 
   const label = card.label;
-  const categoryProducts = getProductsByCategory(card.productCategory);
+  const supabase = createServiceClient();
+  const categoryProducts = await fetchProducts(supabase, {
+    categorySlug: card.productCategory,
+  });
 
   return (
     <div className="min-h-screen bg-cream pt-[128px]">
@@ -46,41 +49,28 @@ export default async function CategoryPage({ params }: Props) {
           ← All categories
         </Link>
 
-        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.08)] lg:max-w-none">
-            <Image
-              src={card.image}
-              alt={label}
-              fill
-              priority
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 40vw"
-            />
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-brown/70">
-              Collection
+        <div className="mb-10">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-brown/70">
+            Collection
+          </p>
+          <h1 className="editorial-heading mt-3 text-4xl text-black md:text-5xl">
+            {label}
+          </h1>
+          {categoryProducts.length > 0 && (
+            <p className="mt-3 text-sm text-black/55">
+              {categoryProducts.length} items available
             </p>
-            <h1 className="editorial-heading mt-3 text-4xl text-black md:text-5xl lg:text-6xl">
-              {label}
-            </h1>
-            <p className="mt-5 max-w-lg text-sm leading-relaxed text-black/55">
-              Handcrafted eggless creations, baked fresh in our Jayanagar kitchen.
-              {categoryProducts.length > 0
-                ? ` ${categoryProducts.length} items available.`
-                : " New items coming soon."}
-            </p>
-          </div>
+          )}
         </div>
 
         {categoryProducts.length > 0 ? (
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {categoryProducts.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>
         ) : (
-          <p className="mt-16 text-center text-sm text-black/45">
+          <p className="text-center text-sm text-black/45">
             Products for this category will be listed soon.
           </p>
         )}

@@ -2,7 +2,12 @@
 
 import { Phone, Mail, MessageCircle, Clock, MapPin } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
-import { contactInfo } from "@/data/products";
+import {
+  contactInfo,
+  telUrl,
+  whatsAppUrl,
+  mailtoUrl,
+} from "@/data/site-content";
 import { Reveal } from "@/components/animations/reveal";
 import { Button } from "@/components/ui/button";
 
@@ -15,28 +20,28 @@ export function ContactSection() {
       icon: Phone,
       label: "Phone",
       value: contactInfo.phone,
-      href: `tel:${contactInfo.phone.replace(/\s/g, "")}`,
+      href: telUrl(),
       external: false,
     },
     contactInfo.whatsapp && {
       icon: MessageCircle,
       label: "WhatsApp",
       value: contactInfo.phone || "WhatsApp",
-      href: `https://wa.me/${contactInfo.whatsapp.replace(/\D/g, "")}`,
+      href: whatsAppUrl(),
       external: true,
     },
     contactInfo.email && {
       icon: Mail,
       label: "Email",
       value: contactInfo.email,
-      href: `mailto:${contactInfo.email}`,
+      href: mailtoUrl(),
       external: true,
     },
-    contactInfo.instagram && {
+    contactInfo.instagramUrl && {
       icon: InstagramIcon,
       label: "Instagram",
       value: contactInfo.instagram,
-      href: `https://instagram.com/${contactInfo.instagram.replace("@", "")}`,
+      href: contactInfo.instagramUrl,
       external: true,
     },
   ].filter(Boolean) as Array<{
@@ -57,6 +62,11 @@ export function ContactSection() {
           <h2 className="editorial-heading mt-4 text-4xl text-black md:text-6xl">
             Contact Us
           </h2>
+          {contactInfo.founderName && (
+            <p className="mt-4 text-sm text-black/55">
+              {contactInfo.founderName} · IYLO Bakehouse
+            </p>
+          )}
         </Reveal>
 
         <div className="grid gap-12 lg:grid-cols-2">
@@ -83,7 +93,7 @@ export function ContactSection() {
               </div>
             ) : (
               <p className="border border-black/10 p-6 text-sm text-black/60">
-                Contact phone, WhatsApp, and email details will be added soon. Visit us at our Jayanagar store or use the map for directions.
+                Visit us at our Jayanagar store or use the map for directions.
               </p>
             )}
 

@@ -4,15 +4,16 @@ INSERT INTO public.site_settings (key, value, description) VALUES
     "name": "IYLO Bakehouse",
     "tagline": "Modern Baking, Made Eggless",
     "description": "A contemporary and premium bakehouse dedicated to modern baking and specialising in eggless creations, across sweet and savoury products.",
-    "primary_color": "#5b3a29",
+    "primary_color": "#451519",
     "secondary_color": "#faf6f0",
-    "accent_color": "#d4af37"
+    "accent_color": "#99BEE0"
   }', 'Brand identity'),
   ('contact', '{
-    "phone": "+918105760776",
-    "whatsapp": "+918105760776",
-    "email": "hello@iylobakehouse.com",
-    "instagram": "https://instagram.com/iylobakehouse",
+    "phone": "+917625096799",
+    "whatsapp": "+917625096799",
+    "email": "shraddharajaesh@iylobakehouse.com",
+    "instagram": "https://www.instagram.com/iylo.bakehouse/",
+    "website": "https://iylobakehouse.com",
     "google_maps_url": "https://maps.app.goo.gl/yJ5Ypo7Tm168wiHr7",
     "google_review_url": "https://g.page/r/iylo-bakehouse/review",
     "address": "No. 476/65, 7th Main, 33rd Cross, 4th Block, Jayanagar, Bangalore - 560011",

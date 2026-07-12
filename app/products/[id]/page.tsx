@@ -1,17 +1,20 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getProductById, getAllProducts } from "@/data/products";
+import { getProductById } from "@/data/products";
 import { ProductDetail } from "@/components/products/product-detail";
 import { getProductSchema } from "@/lib/seo";
+import { SITE_URL } from "@/lib/config";
 import { createServiceClient } from "@/lib/supabase";
-import { fetchProductBySlug } from "@/lib/products-server";
+import { fetchAllProductSlugs, fetchProductBySlug, fetchRelatedProducts } from "@/lib/products-server";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export async function generateStaticParams() {
-  return getAllProducts().map((p) => ({ id: p.id }));
+  const supabase = createServiceClient();
+  const slugs = await fetchAllProductSlugs(supabase);
+  return slugs.map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -37,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [product.image],
     },
     alternates: {
-      canonical: `https://iylobakehouse.com/products/${product.id}`,
+      canonical: `${SITE_URL}/products/${product.id}`,
     },
   };
 }
@@ -49,6 +52,7 @@ export default async function ProductPage({ params }: Props) {
   const product = dbProduct ?? getProductById(id);
   if (!product) notFound();
 
+  const relatedProducts = await fetchRelatedProducts(supabase, product);
   const schema = getProductSchema(product);
 
   return (
@@ -57,7 +61,7 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <ProductDetail product={product} />
+      <ProductDetail product={product} relatedProducts={relatedProducts} />
     </>
   );
 }

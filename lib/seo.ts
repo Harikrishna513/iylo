@@ -1,7 +1,7 @@
 import { Product } from "@/types";
-import { contactInfo } from "@/data/products";
 import { ProductImages as img } from "@/lib/product-images";
-import { BUSINESS_DESCRIPTION } from "@/data/site-content";
+import { contactInfo, BUSINESS_DESCRIPTION } from "@/data/site-content";
+import { SITE_URL } from "@/lib/config";
 
 export function getProductSchema(product: Product) {
   return {
@@ -37,7 +37,7 @@ export const bakerySchema = {
   "@type": "Bakery",
   name: "IYLO Bakehouse",
   description: BUSINESS_DESCRIPTION,
-  url: "https://iylobakehouse.com",
+  url: SITE_URL,
   telephone: contactInfo.phone || undefined,
   email: contactInfo.email || undefined,
   address: {

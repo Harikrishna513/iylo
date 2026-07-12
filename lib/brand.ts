@@ -1,5 +1,11 @@
+import { BRAND_COLORS, CONTACT_PHONE, CONTACT_WHATSAPP } from "@/data/site-content";
+
 /** IYLO Bakehouse brand assets (transparent) */
 export const BRAND_LOGO = "/logo.png";
+
+export { BRAND_COLORS, CONTACT_PHONE, CONTACT_WHATSAPP };
+export const COLOR_MAROON = BRAND_COLORS.maroon;
+export const COLOR_LIGHT_BLUE = BRAND_COLORS.lightBlue;
 export const BRAND_LOGO_ALT = "iylo BAKEHOUSE";
 
 /** Source file dimensions: public/logo.png */

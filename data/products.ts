@@ -12,14 +12,16 @@ import { GALLERY_IMAGES as galleryImg } from "@/lib/gallery-images";
 
 import { catalogProducts } from "@/data/catalog-products";
 import { NAV_CATEGORIES } from "@/data/nav-categories";
-import {
-  BRAND_STORY,
-  GOOGLE_MAPS_URL,
-  PICKUP_HOURS,
-  PICKUP_MESSAGE,
-  STORE_ADDRESS,
-  STORE_HOURS,
-  STORE_LANDMARK,
+import { BRAND_STORY } from "@/data/site-content";
+
+export {
+  contactInfo,
+  CONTACT,
+  CONTACT_PHONE,
+  whatsAppUrl,
+  telUrl,
+  instagramUrl,
+  instagramHandle,
 } from "@/data/site-content";
 
 export const categories = NAV_CATEGORIES;
@@ -195,16 +197,16 @@ export const giftingOptions: GiftingOption[] = [
   // },
   {
     id: "celebration",
-    title: "Birthday & Wedding",
+    title: "Custom Cakes",
     description:
-      "Birthdays, weddings, baby showers — handcrafted gifts that speak from the heart.",
+      "Birthdays, weddings, baby showers - handcrafted gifts that speak from the heart.",
     image: img.giftingCelebration,
     cta: "Shop Celebrations",
     scrollTo: "menu",
   },
   {
     id: "custom",
-    title: "Custom Packaging",
+    title: "Corporate Workshops",
     description:
       "Personalised ribbons, message cards, and premium boxes tailored to your occasion.",
     image: img.giftingCustom,
@@ -413,24 +415,6 @@ export const founderMessage = {
   title: "Baker & Dreamer",
   image: img.iyloHouse,
   quote: BRAND_STORY.origin,
-};
-
-export const contactInfo = {
-  phone: "+91 81057 60776",
-  whatsapp: "+918105760776",
-  email: "",
-  instagram: "",
-  address: STORE_ADDRESS,
-  landmark: STORE_LANDMARK,
-  storeHours: STORE_HOURS,
-  pickupHours: PICKUP_HOURS,
-  pickupMessage: PICKUP_MESSAGE,
-  mapLink: GOOGLE_MAPS_URL,
-  timings: {
-    weekdays: "Wed–Fri: 11:00 AM – 8:00 PM",
-    weekends: "Sat–Sun: 10:00 AM – 8:00 PM · Mon–Tue: Closed",
-  },
-  mapEmbed: GOOGLE_MAPS_URL,
 };
 
 export function getProductById(id: string): Product | undefined {

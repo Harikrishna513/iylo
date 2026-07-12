@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Star, MapPin, Phone, Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
 import { BrandLogo } from "@/components/ui/brand-logo";
-import { contactInfo } from "@/data/products";
+import { contactInfo, whatsAppUrl } from "@/data/site-content";
 import { NAV_CATEGORIES } from "@/data/nav-categories";
 
 const FOOTER_CATEGORY_LINKS = NAV_CATEGORIES.slice(0, 6).map((c) => ({
@@ -54,9 +54,9 @@ export function Footer() {
             </p>
             {(contactInfo.instagram || contactInfo.whatsapp) && (
             <div className="mt-6 flex gap-4">
-              {contactInfo.instagram && (
+              {contactInfo.instagramUrl && (
               <a
-                href={`https://instagram.com/${contactInfo.instagram.replace("@", "")}`}
+                href={contactInfo.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ivory/60 transition-colors hover:text-gold"
@@ -67,7 +67,7 @@ export function Footer() {
               )}
               {contactInfo.whatsapp && (
               <a
-                href={`https://wa.me/${contactInfo.whatsapp.replace("+", "")}`}
+                href={whatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs uppercase tracking-widest text-ivory/60 transition-colors hover:text-gold"
@@ -156,7 +156,7 @@ export function Footer() {
                 />
                 <button
                   type="submit"
-                  className="bg-gold px-6 py-3 text-xs font-medium uppercase tracking-widest text-black transition-opacity hover:opacity-90"
+                  className="bg-gold px-6 py-3 text-xs font-medium uppercase tracking-widest text-brown transition-opacity hover:opacity-90"
                 >
                   Join
                 </button>
@@ -169,8 +169,9 @@ export function Footer() {
           <p className="text-xs text-ivory/40">
             © {new Date().getFullYear()} IYLO Bake House, Bangalore. All rights reserved.
           </p>
+          {contactInfo.googleReviewUrl ? (
           <motion.a
-            href="https://g.page/iylobakehouse/review"
+            href={contactInfo.googleReviewUrl}
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.02 }}
@@ -180,6 +181,7 @@ export function Footer() {
             <Star className="h-4 w-4 fill-gold text-gold" />
             Leave a Google Review
           </motion.a>
+          ) : null}
         </div>
       </div>
     </footer>

@@ -12,6 +12,7 @@ import { bakerySchema, faqSchema } from "@/lib/seo";
 import { getGoogleReviewsSchema } from "@/lib/google-reviews-schema";
 import { ProductImages as img } from "@/lib/product-images";
 import { BUSINESS_DESCRIPTION } from "@/data/site-content";
+import { SITE_URL } from "@/lib/config";
 import { BRAND_LOGO } from "@/lib/brand";
 
 const cormorant = Cormorant_Garamond({
@@ -42,11 +43,11 @@ export const metadata: Metadata = {
     "custom cakes Bangalore",
   ],
   authors: [{ name: "IYLO Bake House" }],
-  metadataBase: new URL("https://iylobakehouse.com"),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     title: "IYLO Bakehouse | Modern Eggless Baking",
     description: BUSINESS_DESCRIPTION,
-    url: "https://iylobakehouse.com",
+    url: SITE_URL,
     siteName: "IYLO Bakehouse",
     locale: "en_IN",
     type: "website",
@@ -70,7 +71,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://iylobakehouse.com",
+    canonical: SITE_URL,
   },
   icons: {
     icon: BRAND_LOGO,

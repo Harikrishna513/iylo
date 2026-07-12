@@ -27,10 +27,19 @@ export type ProductBadge =
   | "Premium"
   | "PAN India";
 
+export interface ProductVariant {
+  id: string;
+  name: string;
+  price: number;
+  offerPrice?: number;
+}
+
 export interface Product {
   id: string;
   dbId?: string;
   variantId?: string;
+  variantName?: string;
+  variants?: ProductVariant[];
   name: string;
   description: string;
   longDescription?: string;

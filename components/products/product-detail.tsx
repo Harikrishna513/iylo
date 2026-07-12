@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -10,33 +10,44 @@ import {
   ShoppingBag,
   Heart,
   Share2,
-  Gift,
   ChevronRight,
   Minus,
   Plus,
   Truck,
   Store,
 } from "lucide-react";
-import { Product } from "@/types";
+import { Product, ProductVariant } from "@/types";
 import { getProductById } from "@/data/products";
 import { formatPrice, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
 import { ProductCard } from "@/components/cards/product-card";
+import { RelatedProductCard } from "@/components/products/related-product-card";
 import {
   FulfillmentDatePicker,
   type FulfillmentSelection,
 } from "@/components/products/fulfillment-date-picker";
+import { ProductVariantSelector } from "@/components/products/product-variant-selector";
+import { ProductInfoSections } from "@/components/products/product-info-sections";
+import {
+  inferProductVariants,
+  productRequiresPreOrder,
+} from "@/lib/product-variants";
 
 interface ProductDetailProps {
   product: Product;
+  relatedProducts?: Product[];
 }
 
-export function ProductDetail({ product }: ProductDetailProps) {
+export function ProductDetail({ product, relatedProducts = [] }: ProductDetailProps) {
+  const variants = useMemo(
+    () => product.variants ?? inferProductVariants(product),
+    [product]
+  );
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(variants[0]);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [giftWrap, setGiftWrap] = useState(false);
   const [fulfillmentMode, setFulfillmentMode] = useState<"delivery" | "pickup">("delivery");
   const [fulfillment, setFulfillment] = useState<FulfillmentSelection | null>(null);
   const addItem = useCartStore((s) => s.addItem);
@@ -45,16 +56,25 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const toggleWishlist = useWishlistStore((s) => s.toggleItem);
   const isInWishlist = useWishlistStore((s) => s.isInWishlist(product.id));
 
+  const requiresPreOrder = productRequiresPreOrder(product);
+  const displayPrice = selectedVariant?.price ?? product.price;
+  const variantLabel =
+    product.category === "celebration-cakes" ? "Select weight" : "Select size";
+
+  useEffect(() => {
+    const v = product.variants ?? inferProductVariants(product);
+    setSelectedVariant(v[0]);
+    setQuantity(1);
+    setFulfillment(null);
+  }, [product]);
+
   const images = product.images ?? [product.image];
-  const related = (product.relatedProductIds ?? [])
-    .map((id) => getProductById(id))
-    .filter(Boolean) as Product[];
   const boughtTogether = (product.frequentlyBoughtWith ?? [])
     .map((id) => getProductById(id))
     .filter(Boolean) as Product[];
 
   const handleAddToCart = () => {
-    if (product.isPreOrder && !fulfillment) {
+    if (requiresPreOrder && !fulfillment) {
       return;
     }
     if (fulfillment) {
@@ -64,7 +84,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
         deliverySlot: fulfillment.slotLabel,
       });
     }
-    for (let i = 0; i < quantity; i++) addItem(product);
+    const cartProduct: Product = {
+      ...product,
+      price: displayPrice,
+      variantId: selectedVariant.id,
+      variantName: selectedVariant.name,
+    };
+    addItem(cartProduct, quantity);
     openCart();
   };
 
@@ -142,10 +168,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </div>
             )}
 
-            <p className="mt-6 text-2xl text-gold">{formatPrice(product.price)}</p>
+            <p className="mt-6 text-2xl text-gold">{formatPrice(displayPrice)}</p>
+
+            <ProductVariantSelector
+              variants={variants}
+              selectedId={selectedVariant.id}
+              onSelect={setSelectedVariant}
+              label={variantLabel}
+            />
+
             <p className="mt-4 text-sm leading-relaxed text-ivory/70">
-              {product.longDescription ?? product.description}
+              {product.description}
             </p>
+
+            {requiresPreOrder && (
+              <p className="mt-3 text-sm text-ivory/55">
+                Pre-order 1–2 days ahead
+              </p>
+            )}
 
             {product.preparationTime && (
               <p className="mt-4 flex items-center gap-2 text-sm text-muted">
@@ -163,7 +203,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               )}
             </div>
 
-            {(product.isPreOrder || product.category !== "retail") && (
+            {(requiresPreOrder || product.category !== "retail") && (
               <div className="mt-8 border border-ivory/10 p-5">
                 <p className="mb-4 text-xs uppercase tracking-widest text-gold">
                   Schedule your order
@@ -225,7 +265,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 size="lg"
                 className="flex-1"
                 onClick={handleAddToCart}
-                disabled={product.isPreOrder && !fulfillment}
+                disabled={requiresPreOrder && !fulfillment}
               >
                 <ShoppingBag className="h-4 w-4" />
                 Add to Cart
@@ -247,7 +287,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <Share2 className="h-4 w-4" />
                 Share
               </button>
-              <button
+              {/* <button
                 onClick={() => setGiftWrap(!giftWrap)}
                 className={cn(
                   "flex flex-1 items-center justify-center gap-2 border py-3 text-xs uppercase tracking-widest transition-colors",
@@ -256,8 +296,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
               >
                 <Gift className="h-4 w-4" />
                 Gift Wrap +₹99
-              </button>
+              </button> */}
             </div>
+
+            <ProductInfoSections />
 
             {product.ingredients && (
               <div className="mt-10 border-t border-ivory/10 pt-8">
@@ -269,12 +311,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <div className="mt-6">
                 <h3 className="text-xs uppercase tracking-widest text-gold">Allergens</h3>
                 <p className="mt-3 text-sm text-ivory/60">{product.allergens.join(", ")}</p>
-              </div>
-            )}
-            {product.storageInstructions && (
-              <div className="mt-6">
-                <h3 className="text-xs uppercase tracking-widest text-gold">Storage</h3>
-                <p className="mt-3 text-sm text-ivory/60">{product.storageInstructions}</p>
               </div>
             )}
           </div>
@@ -291,12 +327,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </section>
         )}
 
-        {related.length > 0 && (
+        {relatedProducts.length > 0 && (
           <section className="mt-24 border-t border-ivory/10 pt-16">
-            <h2 className="editorial-heading mb-8 text-3xl text-ivory">You May Also Like</h2>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {related.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
+            <h2 className="editorial-heading mb-8 text-2xl font-light text-ivory md:text-3xl">
+              You may also like
+            </h2>
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-8">
+              {relatedProducts.map((p, i) => (
+                <RelatedProductCard key={p.id} product={p} index={i} />
               ))}
             </div>
           </section>
@@ -309,7 +347,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         className="fixed bottom-0 left-0 right-0 z-40 border-t border-ivory/10 bg-black/95 p-4 backdrop-blur-xl lg:hidden"
       >
         <div className="flex items-center gap-4">
-          <p className="text-lg text-gold">{formatPrice(product.price * quantity)}</p>
+          <p className="text-lg text-gold">{formatPrice(displayPrice * quantity)}</p>
           <Button variant="gold" className="flex-1" onClick={handleAddToCart}>
             Add to Cart
           </Button>

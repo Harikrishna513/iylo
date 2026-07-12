@@ -126,7 +126,7 @@ export function AboutSection() {
           ))}
         </div>
 
-        <div ref={timelineRef} className="mt-24 border-t border-ivory/10 pt-24">
+        {/* <div ref={timelineRef} className="mt-24 border-t border-ivory/10 pt-24">
           <h3 className="editorial-heading mb-12 text-center text-3xl text-ivory">
             Our Journey
           </h3>
@@ -147,7 +147,7 @@ export function AboutSection() {
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

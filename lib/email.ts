@@ -7,6 +7,15 @@ import {
   SITE_URL,
   SUPPORT_EMAIL,
 } from "@/lib/config";
+import { BRAND_COLORS } from "@/data/site-content";
+
+const PALETTE = {
+  ivory: "#faf6f0",
+  cream: "#f2eae2",
+  gold: BRAND_COLORS.lightBlue,
+  brown: BRAND_COLORS.maroon,
+  muted: "#9b8e87",
+} as const;
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -15,14 +24,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
-
-const PALETTE = {
-  ivory: "#faf6f0",
-  cream: "#f2eae2",
-  gold: "#d4af37",
-  brown: "#5b3a29",
-  muted: "#9b8e87",
-} as const;
 
 async function getOrderEmailData(supabase: SupabaseClient, orderId: string) {
   const { data: order } = await supabase

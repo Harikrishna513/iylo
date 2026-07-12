@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
 import { NAV_CATEGORIES, type NavCategoryId } from "@/data/nav-categories";
-import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
+import { SITE_HEADER_OFFSET_PX, COLOR_MAROON } from "@/lib/brand";
 
-const BRAND_ACCENT = "#4A2132";
+const BRAND_ACCENT = COLOR_MAROON;
 const STICKY_TOP_GAP_PX = 16;
 const NAV_HEIGHT_PX = 64;
 const PILL_MAX_WIDTH_PX = 960;
@@ -184,7 +184,7 @@ export function CategoryNav() {
                     onKeyDown={(e) => handleKeyDown(e, cat.id, index)}
                     className={cn(
                       "relative z-10 shrink-0 rounded-full px-3 py-2.5 text-xs font-medium transition-colors duration-300 sm:px-4 sm:text-sm",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A2132]/30 focus-visible:ring-offset-2",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown/30 focus-visible:ring-offset-2",
                       isActive
                         ? "font-semibold"
                         : "text-gray-500 hover:text-gray-800"

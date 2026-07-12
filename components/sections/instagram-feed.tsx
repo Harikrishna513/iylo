@@ -23,7 +23,7 @@ export function InstagramFeed() {
           {instagramPosts.map((post, i) => (
             <motion.a
               key={post.id}
-              href={`https://instagram.com/${contactInfo.instagram.replace("@", "")}`}
+              href={contactInfo.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, scale: 0.95 }}
