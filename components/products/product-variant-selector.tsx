@@ -20,7 +20,7 @@ export function ProductVariantSelector({
 
   return (
     <div className="mt-6">
-      <p className="mb-3 text-xs uppercase tracking-widest text-gold">{label}</p>
+      <p className="mb-3 text-xs uppercase tracking-widest text-light-blue">{label}</p>
       <div className="flex flex-wrap gap-2">
         {variants.map((variant) => {
           const isSelected = variant.id === selectedId;
@@ -32,12 +32,12 @@ export function ProductVariantSelector({
               className={cn(
                 "min-w-[5.5rem] border px-4 py-3 text-left text-sm transition-colors",
                 isSelected
-                  ? "border-gold bg-gold/10 text-gold"
-                  : "border-ivory/20 text-ivory/80 hover:border-ivory/40"
+                  ? "border-light-blue bg-mist-blue text-maroon"
+                  : "border-maroon/15 text-maroon/80 hover:border-maroon/30"
               )}
             >
               <span className="block font-medium">{variant.name}</span>
-              <span className="mt-0.5 block text-xs text-ivory/50">
+              <span className="mt-0.5 block text-xs text-maroon/50">
                 {formatPrice(variant.price)}
               </span>
             </button>

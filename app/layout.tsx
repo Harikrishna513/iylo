@@ -8,12 +8,12 @@ import { ProductQuickView } from "@/components/ecommerce/product-quick-view";
 import { CheckoutModal } from "@/components/ecommerce/checkout-modal";
 import { SearchModal } from "@/components/ecommerce/search-modal";
 import { WishlistDrawer } from "@/components/ecommerce/wishlist-drawer";
+import { FlyAnimationLayer } from "@/components/ecommerce/fly-animation-layer";
 import { bakerySchema, faqSchema } from "@/lib/seo";
 import { getGoogleReviewsSchema } from "@/lib/google-reviews-schema";
 import { ProductImages as img } from "@/lib/product-images";
 import { BUSINESS_DESCRIPTION } from "@/data/site-content";
 import { SITE_URL } from "@/lib/config";
-import { BRAND_LOGO } from "@/lib/brand";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -74,9 +74,14 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   icons: {
-    icon: BRAND_LOGO,
-    apple: BRAND_LOGO,
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
@@ -108,6 +113,7 @@ export default function RootLayout({
           <CheckoutModal />
           <SearchModal />
           <WishlistDrawer />
+          <FlyAnimationLayer />
         </AppProviders>
       </body>
     </html>

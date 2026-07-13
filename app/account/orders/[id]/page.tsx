@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { ArrowLeft } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { orderStatusBadgeClasses, paymentStatusBadgeClasses } from "@/lib/domain";
+import { LIGHT } from "@/lib/page-theme";
 
 interface OrderRow {
   id: string;
@@ -93,14 +94,14 @@ export default function OrderDetailPage() {
   }, [load]);
 
   if (loading) {
-    return <p className="text-muted">Loading order…</p>;
+    return <p className={LIGHT.muted}>Loading order…</p>;
   }
 
   if (!order) {
     return (
       <div>
-        <p className="text-muted">Order not found.</p>
-        <Link href="/account/orders" className="mt-4 inline-block text-sm text-gold hover:underline">
+        <p className={LIGHT.muted}>Order not found.</p>
+        <Link href="/account/orders" className="mt-4 inline-block text-sm text-light-blue hover:underline">
           ← Back to orders
         </Link>
       </div>
@@ -113,15 +114,15 @@ export default function OrderDetailPage() {
     <div>
       <Link
         href="/account/orders"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-muted hover:text-gold"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-maroon/50 hover:text-light-blue"
       >
         <ArrowLeft size={16} /> Back to orders
       </Link>
 
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="editorial-heading text-2xl text-ivory">{order.order_number}</h2>
-          <p className="mt-1 text-sm text-muted">
+          <h2 className={cn(LIGHT.title, "text-2xl")}>{order.order_number}</h2>
+          <p className={cn("mt-1", LIGHT.subtitle)}>
             Placed{" "}
             {new Date(order.placed_at).toLocaleDateString("en-IN", {
               day: "numeric",
@@ -151,30 +152,30 @@ export default function OrderDetailPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <section className="border border-ivory/10 p-5">
-          <h3 className="text-xs uppercase tracking-widest text-gold">Fulfillment</h3>
-          <p className="mt-3 text-sm capitalize text-ivory/80">
+        <section className={cn("border p-5", LIGHT.border)}>
+          <h3 className="text-xs uppercase tracking-widest text-light-blue">Fulfillment</h3>
+          <p className={cn("mt-3 capitalize", LIGHT.body)}>
             {order.fulfillment_type.replace(/_/g, " ")}
           </p>
           {order.scheduled_date && (
-            <p className="mt-2 text-sm text-ivory/70">
+            <p className={cn("mt-2", LIGHT.body)}>
               {new Date(order.scheduled_date).toLocaleDateString("en-IN")}
               {order.scheduled_slot_label && ` · ${order.scheduled_slot_label}`}
             </p>
           )}
         </section>
 
-        <section className="border border-ivory/10 p-5">
-          <h3 className="text-xs uppercase tracking-widest text-gold">Payment</h3>
-          <p className="mt-3 text-sm text-ivory/80">{paymentMethod}</p>
-          <p className="mt-1 text-lg text-gold">{formatPrice(Number(order.total_amount))}</p>
+        <section className={cn("border p-5", LIGHT.border)}>
+          <h3 className="text-xs uppercase tracking-widest text-light-blue">Payment</h3>
+          <p className={cn("mt-3", LIGHT.body)}>{paymentMethod}</p>
+          <p className="mt-1 text-lg text-light-blue">{formatPrice(Number(order.total_amount))}</p>
         </section>
       </div>
 
       {addr && (
-        <section className="mt-6 border border-ivory/10 p-5">
-          <h3 className="text-xs uppercase tracking-widest text-gold">Delivery Address</h3>
-          <p className="mt-3 text-sm leading-relaxed text-ivory/70">
+        <section className={cn("mt-6 border p-5", LIGHT.border)}>
+          <h3 className="text-xs uppercase tracking-widest text-light-blue">Delivery Address</h3>
+          <p className={cn("mt-3 leading-relaxed", LIGHT.body)}>
             {addr.full_name ?? order.guest_name}
             <br />
             {addr.line1}
@@ -187,50 +188,50 @@ export default function OrderDetailPage() {
         </section>
       )}
 
-      <section className="mt-6 border border-ivory/10">
-        <h3 className="border-b border-ivory/10 px-5 py-3 text-xs uppercase tracking-widest text-gold">
+      <section className={cn("mt-6 border", LIGHT.border)}>
+        <h3 className={cn("border-b px-5 py-3 text-xs uppercase tracking-widest text-light-blue", LIGHT.border)}>
           Items
         </h3>
-        <ul className="divide-y divide-ivory/10">
+        <ul className="divide-y divide-maroon/10">
           {items.map((item) => (
             <li key={item.id} className="flex items-center justify-between px-5 py-4">
               <div>
-                <p className="text-sm text-ivory">{item.product_name}</p>
+                <p className="text-sm font-medium text-maroon">{item.product_name}</p>
                 {item.variant_name && (
-                  <p className="text-xs text-muted">{item.variant_name}</p>
+                  <p className={cn("text-xs", LIGHT.muted)}>{item.variant_name}</p>
                 )}
-                <p className="text-xs text-muted">Qty: {item.quantity}</p>
+                <p className={cn("text-xs", LIGHT.muted)}>Qty: {item.quantity}</p>
               </div>
-              <p className="text-sm text-gold">{formatPrice(Number(item.line_total))}</p>
+              <p className="text-sm text-light-blue">{formatPrice(Number(item.line_total))}</p>
             </li>
           ))}
         </ul>
-        <div className="space-y-2 border-t border-ivory/10 px-5 py-4 text-sm">
-          <div className="flex justify-between text-muted">
+        <div className={cn("space-y-2 border-t px-5 py-4 text-sm", LIGHT.border)}>
+          <div className={cn("flex justify-between", LIGHT.muted)}>
             <span>Subtotal</span>
             <span>{formatPrice(Number(order.subtotal))}</span>
           </div>
           {Number(order.discount_amount) > 0 && (
-            <div className="flex justify-between text-muted">
+            <div className={cn("flex justify-between", LIGHT.muted)}>
               <span>Discount</span>
               <span>-{formatPrice(Number(order.discount_amount))}</span>
             </div>
           )}
           {Number(order.delivery_fee) > 0 && (
-            <div className="flex justify-between text-muted">
+            <div className={cn("flex justify-between", LIGHT.muted)}>
               <span>Delivery</span>
               <span>{formatPrice(Number(order.delivery_fee))}</span>
             </div>
           )}
           {Number(order.gift_wrap_fee) > 0 && (
-            <div className="flex justify-between text-muted">
+            <div className={cn("flex justify-between", LIGHT.muted)}>
               <span>Gift wrap</span>
               <span>{formatPrice(Number(order.gift_wrap_fee))}</span>
             </div>
           )}
-          <div className="flex justify-between border-t border-ivory/10 pt-2 text-ivory">
+          <div className={cn("flex justify-between border-t pt-2 text-maroon", LIGHT.border)}>
             <span className="font-semibold">Total</span>
-            <span className="text-gold">{formatPrice(Number(order.total_amount))}</span>
+            <span className="text-light-blue">{formatPrice(Number(order.total_amount))}</span>
           </div>
         </div>
       </section>

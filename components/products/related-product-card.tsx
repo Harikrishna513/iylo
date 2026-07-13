@@ -40,7 +40,7 @@ export function RelatedProductCard({ product, index = 0 }: RelatedProductCardPro
       className="group"
     >
       <Link href={`/products/${product.id}`} className="block">
-        <div className="relative aspect-square overflow-hidden bg-brown/20">
+        <div className="relative aspect-square overflow-hidden bg-maroon/5">
           <Image
             src={product.image}
             alt={product.name}
@@ -49,11 +49,11 @@ export function RelatedProductCard({ product, index = 0 }: RelatedProductCardPro
             sizes="(max-width: 640px) 50vw, 25vw"
           />
         </div>
-        <div className="mt-0 bg-ivory/5 px-4 py-4 transition-colors group-hover:bg-ivory/10">
-          <h3 className="text-sm leading-snug text-ivory transition-colors group-hover:text-gold">
+        <div className="mt-0 bg-mist-blue/50 px-4 py-4 transition-colors group-hover:bg-mist-blue">
+          <h3 className="text-sm leading-snug text-maroon transition-colors group-hover:text-rosewood">
             {product.name}
           </h3>
-          <p className="mt-2 text-sm text-ivory/70">
+          <p className="mt-2 text-sm text-light-blue">
             {from ? `From ${label}` : label}
           </p>
         </div>

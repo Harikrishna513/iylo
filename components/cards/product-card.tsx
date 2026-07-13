@@ -9,6 +9,7 @@ import { formatPrice, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
+import { useProductFly } from "@/hooks/use-product-fly";
 
 interface ProductCardProps {
   product: Product;
@@ -25,9 +26,8 @@ export function ProductCard({
   theme = "dark",
 }: ProductCardProps) {
   const isLight = theme === "light";
-  const addItem = useCartStore((s) => s.addItem);
   const openQuickView = useCartStore((s) => s.openQuickView);
-  const toggleWishlist = useWishlistStore((s) => s.toggleItem);
+  const { flyAddToCart, flyToggleWishlist } = useProductFly();
   const isInWishlist = useWishlistStore((s) => s.isInWishlist(product.id));
 
   return (
@@ -43,6 +43,7 @@ export function ProductCard({
     >
       <Link href={`/products/${product.id}`} className="block">
         <div
+          data-fly-source
           className={cn(
             "relative overflow-hidden bg-brown/20 shadow-lg shadow-black/20 transition-shadow duration-500 group-hover:shadow-xl group-hover:shadow-black/30",
             variant === "featured" ? "aspect-[4/5]" : "aspect-[3/4]"
@@ -96,7 +97,7 @@ export function ProductCard({
           <button
             onClick={(e) => {
               e.preventDefault();
-              toggleWishlist(product);
+              flyToggleWishlist(product, { event: e });
             }}
             className="absolute right-4 bottom-20 flex h-9 w-9 items-center justify-center glass opacity-0 transition-all duration-300 group-hover:opacity-100"
             aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
@@ -116,7 +117,7 @@ export function ProductCard({
               className="flex-1"
               onClick={(e) => {
                 e.preventDefault();
-                addItem(product);
+                flyAddToCart(product, { event: e });
               }}
             >
               <ShoppingBag className="h-3.5 w-3.5" />
@@ -206,7 +207,7 @@ export function ProductCard({
           </p>
           <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <button
-              onClick={() => addItem(product)}
+              onClick={(e) => flyAddToCart(product, { event: e })}
               className={cn(
                 "flex h-8 w-8 items-center justify-center border transition-colors",
                 isLight
@@ -226,7 +227,7 @@ export function ProductCard({
               1
             </span>
             <button
-              onClick={() => addItem(product)}
+              onClick={(e) => flyAddToCart(product, { event: e })}
               className={cn(
                 "flex h-8 w-8 items-center justify-center border transition-colors",
                 isLight

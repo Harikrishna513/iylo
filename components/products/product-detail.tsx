@@ -22,6 +22,7 @@ import { formatPrice, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
+import { useProductFly } from "@/hooks/use-product-fly";
 import { ProductCard } from "@/components/cards/product-card";
 import { RelatedProductCard } from "@/components/products/related-product-card";
 import {
@@ -30,10 +31,8 @@ import {
 } from "@/components/products/fulfillment-date-picker";
 import { ProductVariantSelector } from "@/components/products/product-variant-selector";
 import { ProductInfoSections } from "@/components/products/product-info-sections";
-import {
-  inferProductVariants,
-  productRequiresPreOrder,
-} from "@/lib/product-variants";
+import { inferProductVariants, productRequiresPreOrder } from "@/lib/product-variants";
+import { LIGHT } from "@/lib/page-theme";
 
 interface ProductDetailProps {
   product: Product;
@@ -50,11 +49,9 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
   const [quantity, setQuantity] = useState(1);
   const [fulfillmentMode, setFulfillmentMode] = useState<"delivery" | "pickup">("delivery");
   const [fulfillment, setFulfillment] = useState<FulfillmentSelection | null>(null);
-  const addItem = useCartStore((s) => s.addItem);
-  const openCart = useCartStore((s) => s.openCart);
   const updateCheckoutForm = useCartStore((s) => s.updateCheckoutForm);
-  const toggleWishlist = useWishlistStore((s) => s.toggleItem);
   const isInWishlist = useWishlistStore((s) => s.isInWishlist(product.id));
+  const { flyAddToCart, flyToggleWishlist } = useProductFly();
 
   const requiresPreOrder = productRequiresPreOrder(product);
   const displayPrice = selectedVariant?.price ?? product.price;
@@ -73,7 +70,7 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
     .map((id) => getProductById(id))
     .filter(Boolean) as Product[];
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (event?: React.MouseEvent) => {
     if (requiresPreOrder && !fulfillment) {
       return;
     }
@@ -90,24 +87,27 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
       variantId: selectedVariant.id,
       variantName: selectedVariant.name,
     };
-    addItem(cartProduct, quantity);
-    openCart();
+    flyAddToCart(cartProduct, {
+      quantity,
+      event,
+      openDrawer: true,
+    });
   };
 
   return (
-    <div className="bg-black">
+    <div className={LIGHT.bg}>
       <div className="mx-auto max-w-7xl px-6 pt-28 pb-16 lg:px-10">
-        <nav className="mb-8 flex items-center gap-2 text-xs text-muted" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-ivory">Home</Link>
+        <nav className={cn("mb-8 flex items-center gap-2 text-xs", LIGHT.muted)} aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-maroon">Home</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href="/#menu" className="hover:text-ivory capitalize">{product.category.replace("-", " ")}</Link>
+          <Link href="/#menu" className="capitalize hover:text-maroon">{product.category.replace("-", " ")}</Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-ivory/60">{product.name}</span>
+          <span className="text-maroon/70">{product.name}</span>
         </nav>
 
         <div className="grid gap-12 lg:grid-cols-2">
           <div>
-            <div className="relative aspect-square overflow-hidden bg-brown/20">
+            <div data-fly-source className="relative aspect-square overflow-hidden bg-brown/20">
               <Image
                 src={images[selectedImage]}
                 alt={product.name}
@@ -138,16 +138,16 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
                 ))}
               </div>
             )}
-            <div className="mt-6 flex items-center justify-center border border-dashed border-ivory/20 p-8 text-center text-xs text-muted">
+            <div className="mt-6 flex items-center justify-center border border-dashed border-maroon/15 p-8 text-center text-xs text-maroon/45">
               360° Preview — Coming Soon
             </div>
           </div>
 
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-gold capitalize">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-light-blue capitalize">
               {product.category.replace("-", " ")}
             </p>
-            <h1 className="editorial-heading mt-2 text-4xl text-ivory md:text-5xl">{product.name}</h1>
+            <h1 className={cn(LIGHT.title, "mt-2 text-4xl md:text-5xl")}>{product.name}</h1>
 
             {product.rating && (
               <div className="mt-4 flex items-center gap-2">
@@ -157,18 +157,18 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
                       key={i}
                       className={cn(
                         "h-4 w-4",
-                        i < Math.floor(product.rating!) ? "fill-gold text-gold" : "text-ivory/20"
+                        i < Math.floor(product.rating!) ? "fill-light-blue text-light-blue" : "text-maroon/20"
                       )}
                     />
                   ))}
                 </div>
-                <span className="text-sm text-ivory/60">
+                <span className="text-sm text-maroon/55">
                   {product.rating} ({product.reviewCount} reviews)
                 </span>
               </div>
             )}
 
-            <p className="mt-6 text-2xl text-gold">{formatPrice(displayPrice)}</p>
+            <p className="mt-6 text-2xl text-light-blue">{formatPrice(displayPrice)}</p>
 
             <ProductVariantSelector
               variants={variants}
@@ -177,18 +177,16 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
               label={variantLabel}
             />
 
-            <p className="mt-4 text-sm leading-relaxed text-ivory/70">
+            <p className={cn("mt-4 leading-relaxed", LIGHT.body)}>
               {product.description}
             </p>
 
             {requiresPreOrder && (
-              <p className="mt-3 text-sm text-ivory/55">
-                Pre-order 1–2 days ahead
-              </p>
+              <p className="mt-3 text-sm text-maroon/50">Pre-order 1–2 days ahead</p>
             )}
 
             {product.preparationTime && (
-              <p className="mt-4 flex items-center gap-2 text-sm text-muted">
+              <p className={cn("mt-4 flex items-center gap-2", LIGHT.muted)}>
                 <Clock className="h-4 w-4" />
                 {product.preparationTime}
               </p>
@@ -196,16 +194,16 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
 
             <div className="mt-4 space-y-2 text-sm">
               {product.isAvailableToday && (
-                <p className="text-gold">Available for pickup and delivery today</p>
+                <p className="text-light-blue">Available for pickup and delivery today</p>
               )}
               {product.shipsPanIndia && (
-                <p className="text-ivory/60">Ships PAN India in 2–4 business days</p>
+                <p className="text-maroon/55">Ships PAN India in 2–4 business days</p>
               )}
             </div>
 
             {(requiresPreOrder || product.category !== "retail") && (
-              <div className="mt-8 border border-ivory/10 p-5">
-                <p className="mb-4 text-xs uppercase tracking-widest text-gold">
+              <div className={cn("mt-8 border p-5", LIGHT.border)}>
+                <p className="mb-4 text-xs uppercase tracking-widest text-light-blue">
                   Schedule your order
                 </p>
                 <div className="mb-4 flex gap-2">
@@ -218,8 +216,8 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
                     className={cn(
                       "flex flex-1 items-center justify-center gap-2 border py-3 text-xs uppercase tracking-widest transition-colors",
                       fulfillmentMode === "delivery"
-                        ? "border-gold bg-gold/10 text-gold"
-                        : "border-ivory/20 text-muted hover:border-ivory/40"
+                        ? "border-light-blue bg-mist-blue text-maroon"
+                        : "border-maroon/15 text-maroon/50 hover:border-maroon/30"
                     )}
                   >
                     <Truck className="h-4 w-4" />
@@ -234,8 +232,8 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
                     className={cn(
                       "flex flex-1 items-center justify-center gap-2 border py-3 text-xs uppercase tracking-widest transition-colors",
                       fulfillmentMode === "pickup"
-                        ? "border-gold bg-gold/10 text-gold"
-                        : "border-ivory/20 text-muted hover:border-ivory/40"
+                        ? "border-light-blue bg-mist-blue text-maroon"
+                        : "border-maroon/15 text-maroon/50 hover:border-maroon/30"
                     )}
                   >
                     <Store className="h-4 w-4" />
@@ -251,12 +249,12 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
             )}
 
             <div className="mt-8 flex items-center gap-4">
-              <div className="flex items-center border border-ivory/20">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex h-12 w-12 items-center justify-center hover:text-gold" aria-label="Decrease">
+              <div className={cn("flex items-center border", LIGHT.borderStrong)}>
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex h-12 w-12 items-center justify-center text-maroon hover:text-light-blue" aria-label="Decrease">
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="w-12 text-center">{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} className="flex h-12 w-12 items-center justify-center hover:text-gold" aria-label="Increase">
+                <span className="w-12 text-center text-maroon">{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 1)} className="flex h-12 w-12 items-center justify-center text-maroon hover:text-light-blue" aria-label="Increase">
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
@@ -264,7 +262,7 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
                 variant="gold"
                 size="lg"
                 className="flex-1"
-                onClick={handleAddToCart}
+                onClick={(e) => handleAddToCart(e)}
                 disabled={requiresPreOrder && !fulfillment}
               >
                 <ShoppingBag className="h-4 w-4" />
@@ -274,15 +272,23 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
 
             <div className="mt-4 flex gap-3">
               <button
-                onClick={() => toggleWishlist(product)}
-                className="flex flex-1 items-center justify-center gap-2 border border-ivory/20 py-3 text-xs uppercase tracking-widest transition-colors hover:border-gold hover:text-gold"
+                onClick={(e) => flyToggleWishlist(product, { event: e })}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 border py-3 text-xs uppercase tracking-widest transition-colors",
+                  LIGHT.borderStrong,
+                  "text-maroon/70 hover:border-light-blue hover:text-light-blue"
+                )}
               >
-                <Heart className={cn("h-4 w-4", isInWishlist && "fill-gold text-gold")} />
+                <Heart className={cn("h-4 w-4", isInWishlist && "fill-light-blue text-light-blue")} />
                 Wishlist
               </button>
               <button
                 onClick={() => navigator.share?.({ title: product.name, url: window.location.href })}
-                className="flex flex-1 items-center justify-center gap-2 border border-ivory/20 py-3 text-xs uppercase tracking-widest transition-colors hover:border-gold hover:text-gold"
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 border py-3 text-xs uppercase tracking-widest transition-colors",
+                  LIGHT.borderStrong,
+                  "text-maroon/70 hover:border-light-blue hover:text-light-blue"
+                )}
               >
                 <Share2 className="h-4 w-4" />
                 Share
@@ -302,34 +308,34 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
             <ProductInfoSections />
 
             {product.ingredients && (
-              <div className="mt-10 border-t border-ivory/10 pt-8">
-                <h3 className="text-xs uppercase tracking-widest text-gold">Ingredients</h3>
-                <p className="mt-3 text-sm text-ivory/60">{product.ingredients.join(", ")}</p>
+              <div className={cn("mt-10 border-t pt-8", LIGHT.border)}>
+                <h3 className="text-xs uppercase tracking-widest text-light-blue">Ingredients</h3>
+                <p className={cn("mt-3", LIGHT.body)}>{product.ingredients.join(", ")}</p>
               </div>
             )}
             {product.allergens && (
               <div className="mt-6">
-                <h3 className="text-xs uppercase tracking-widest text-gold">Allergens</h3>
-                <p className="mt-3 text-sm text-ivory/60">{product.allergens.join(", ")}</p>
+                <h3 className="text-xs uppercase tracking-widest text-light-blue">Allergens</h3>
+                <p className={cn("mt-3", LIGHT.body)}>{product.allergens.join(", ")}</p>
               </div>
             )}
           </div>
         </div>
 
         {boughtTogether.length > 0 && (
-          <section className="mt-24 border-t border-ivory/10 pt-16">
-            <h2 className="editorial-heading mb-8 text-3xl text-ivory">Frequently Bought Together</h2>
+          <section className={cn("mt-24 border-t pt-16", LIGHT.border)}>
+            <h2 className={cn(LIGHT.title, "mb-8 text-3xl")}>Frequently Bought Together</h2>
             <div className="grid gap-8 sm:grid-cols-3">
               {boughtTogether.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} variant="compact" />
+                <ProductCard key={p.id} product={p} index={i} variant="compact" theme="light" />
               ))}
             </div>
           </section>
         )}
 
         {relatedProducts.length > 0 && (
-          <section className="mt-24 border-t border-ivory/10 pt-16">
-            <h2 className="editorial-heading mb-8 text-2xl font-light text-ivory md:text-3xl">
+          <section className={cn("mt-24 border-t pt-16", LIGHT.border)}>
+            <h2 className={cn(LIGHT.title, "mb-8 text-2xl font-light md:text-3xl")}>
               You may also like
             </h2>
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-8">
@@ -344,11 +350,11 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
       <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-ivory/10 bg-black/95 p-4 backdrop-blur-xl lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-maroon/10 bg-white/95 p-4 backdrop-blur-xl lg:hidden"
       >
         <div className="flex items-center gap-4">
-          <p className="text-lg text-gold">{formatPrice(displayPrice * quantity)}</p>
-          <Button variant="gold" className="flex-1" onClick={handleAddToCart}>
+          <p className="text-lg text-light-blue">{formatPrice(displayPrice * quantity)}</p>
+          <Button variant="gold" className="flex-1" onClick={(e) => handleAddToCart(e)}>
             Add to Cart
           </Button>
         </div>

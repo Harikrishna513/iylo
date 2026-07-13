@@ -13,21 +13,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
+import { useProductFly } from "@/hooks/use-product-fly";
 
 export function ProductQuickView() {
   const {
     selectedProduct,
     isQuickViewOpen,
     closeQuickView,
-    addItem,
     openCart,
   } = useCartStore();
+  const { flyAddToCart } = useProductFly();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
     if (selectedProduct) {
-      addItem(selectedProduct);
+      flyAddToCart(selectedProduct, {
+        event: e,
+        openDrawer: false,
+      });
       closeQuickView();
-      openCart();
+      window.setTimeout(() => openCart(), 700);
     }
   };
 
@@ -36,7 +40,7 @@ export function ProductQuickView() {
       <DialogContent className="max-w-3xl border-ivory/10 bg-black p-0 overflow-hidden">
         {selectedProduct && (
           <div className="grid md:grid-cols-2">
-            <div className="relative aspect-square bg-brown/20">
+            <div data-fly-source className="relative aspect-square bg-brown/20">
               <Image
                 src={selectedProduct.image}
                 alt={selectedProduct.name}

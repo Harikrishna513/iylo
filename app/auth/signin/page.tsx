@@ -7,6 +7,8 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/auth/password-input";
 import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
+import { LIGHT } from "@/lib/page-theme";
+import { cn } from "@/lib/utils";
 
 function SignInForm() {
   const { signIn } = useAuth();
@@ -34,19 +36,19 @@ function SignInForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-rosewood">{error}</p>}
       <div>
-        <label className="mb-2 block text-xs uppercase tracking-widest text-muted">Email</label>
+        <label className={cn("mb-2 block", LIGHT.label)}>Email</label>
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border border-ivory/20 bg-transparent px-4 py-3 text-ivory outline-none focus:border-gold"
+          className={LIGHT.input}
         />
       </div>
       <div>
-        <label htmlFor="password" className="mb-2 block text-xs uppercase tracking-widest text-muted">
+        <label htmlFor="password" className={cn("mb-2 block", LIGHT.label)}>
           Password
         </label>
         <PasswordInput
@@ -59,9 +61,9 @@ function SignInForm() {
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Signing in…" : "Sign In"}
       </Button>
-      <p className="text-center text-sm text-muted">
+      <p className={cn("text-center", LIGHT.subtitle)}>
         New to IYLO Bake House?{" "}
-        <Link href="/auth/signup" className="text-gold hover:underline">
+        <Link href="/auth/signup" className="text-light-blue hover:underline">
           Create an account
         </Link>
       </p>
@@ -71,10 +73,10 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen bg-black" style={{ paddingTop: SITE_HEADER_OFFSET_PX }}>
+    <div className={LIGHT.bg} style={{ paddingTop: SITE_HEADER_OFFSET_PX }}>
       <div className="mx-auto max-w-md px-6 py-16">
-        <h1 className="editorial-heading mb-2 text-3xl text-ivory">Sign In</h1>
-        <p className="mb-8 text-sm text-muted">Welcome back to IYLO Bakehouse</p>
+        <h1 className={cn(LIGHT.title, "mb-2 text-3xl")}>Sign In</h1>
+        <p className={cn("mb-8", LIGHT.subtitle)}>Welcome back to IYLO Bakehouse</p>
         <Suspense>
           <SignInForm />
         </Suspense>

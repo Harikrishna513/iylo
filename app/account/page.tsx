@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { validateIndianPhone } from "@/lib/validation";
+import { LIGHT } from "@/lib/page-theme";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export default function AccountProfilePage() {
@@ -60,20 +62,16 @@ export default function AccountProfilePage() {
   return (
     <div className="max-w-lg">
       <header className="mb-8">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-gold">
-          Account
-        </p>
-        <h2 className="editorial-heading mt-2 text-2xl text-ivory md:text-3xl">
-          Profile
-        </h2>
-        <p className="mt-2 text-sm text-muted">
+        <p className={LIGHT.label}>Account</p>
+        <h2 className={cn(LIGHT.title, "mt-2 text-2xl md:text-3xl")}>Profile</h2>
+        <p className={cn("mt-2", LIGHT.subtitle)}>
           Name and mobile are required to place an order. Email is used for login.
         </p>
       </header>
 
       <form onSubmit={handleSave} className="space-y-5">
         {error && (
-          <div className="border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="border border-rosewood/30 bg-rosewood/10 px-4 py-3 text-sm text-rosewood">
             {error}
           </div>
         )}
@@ -98,7 +96,7 @@ export default function AccountProfilePage() {
             {loading ? "Saving…" : saved ? "Saved" : "Save Profile"}
           </Button>
           {saved && (
-            <span className="text-xs text-emerald-400">Profile updated.</span>
+            <span className="text-xs text-maroon/55">Profile updated.</span>
           )}
         </div>
       </form>
@@ -123,18 +121,16 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-muted">
-        {label}
-      </label>
+      <label className={cn("mb-1.5 block", LIGHT.label)}>{label}</label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full border border-ivory/20 bg-black px-4 py-3 text-sm text-ivory outline-none transition-colors focus:border-gold disabled:opacity-50"
+        className={LIGHT.input}
       />
-      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
+      {hint && <p className={cn("mt-1 text-xs", LIGHT.muted)}>{hint}</p>}
     </div>
   );
 }

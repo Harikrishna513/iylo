@@ -3,6 +3,10 @@ import { BRAND_COLORS, CONTACT_PHONE, CONTACT_WHATSAPP } from "@/data/site-conte
 /** IYLO Bakehouse brand assets (transparent) */
 export const BRAND_LOGO = "/logo.png";
 
+/** Circular browser tab / PWA icons (generated from iylo-logo.jpg) */
+export const BRAND_FAVICON = "/favicon.ico";
+export const BRAND_APPLE_ICON = "/apple-touch-icon.png";
+
 export { BRAND_COLORS, CONTACT_PHONE, CONTACT_WHATSAPP };
 export const COLOR_MAROON = BRAND_COLORS.maroon;
 export const COLOR_LIGHT_BLUE = BRAND_COLORS.lightBlue;

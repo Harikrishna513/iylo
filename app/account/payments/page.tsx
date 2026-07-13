@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { CreditCard, ChevronRight } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { paymentStatusBadgeClasses } from "@/lib/domain";
+import { LIGHT } from "@/lib/page-theme";
 
 interface PaymentRow {
   id: string;
@@ -65,16 +66,16 @@ export default function PaymentsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="editorial-heading text-2xl text-ivory">Payments</h2>
-        <p className="mt-1 text-sm text-muted">Your Razorpay and COD payment history.</p>
+        <h2 className={cn(LIGHT.title, "text-2xl")}>Payments</h2>
+        <p className={cn("mt-1", LIGHT.subtitle)}>Your Razorpay and COD payment history.</p>
       </div>
 
       {loading ? (
-        <p className="py-10 text-center text-sm text-muted">Loading…</p>
+        <p className={cn("py-10 text-center", LIGHT.muted)}>Loading…</p>
       ) : payments.length === 0 ? (
         <div className="py-12 text-center">
-          <CreditCard size={48} className="mx-auto mb-3 text-ivory/20" />
-          <p className="text-sm text-muted">No payment history yet.</p>
+          <CreditCard size={48} className="mx-auto mb-3 text-maroon/15" />
+          <p className={LIGHT.muted}>No payment history yet.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -82,12 +83,15 @@ export default function PaymentsPage() {
             <Link
               key={p.id}
               href={`/account/orders/${p.id}`}
-              className="block border border-ivory/10 p-5 transition-colors hover:border-gold/30 hover:bg-gold/5"
+              className={cn(
+                "block border p-5 transition-colors hover:border-light-blue/40 hover:bg-mist-blue/50",
+                LIGHT.border
+              )}
             >
               <div className="flex flex-wrap items-center gap-4">
                 <div className="min-w-[200px] flex-1">
-                  <p className="text-lg text-gold">{formatPrice(p.total_amount)}</p>
-                  <p className="mt-0.5 text-xs text-muted">
+                  <p className="text-lg text-light-blue">{formatPrice(p.total_amount)}</p>
+                  <p className={cn("mt-0.5 text-xs", LIGHT.muted)}>
                     {new Date(p.placed_at).toLocaleDateString("en-IN", {
                       day: "numeric",
                       month: "short",
@@ -97,12 +101,12 @@ export default function PaymentsPage() {
                     {p.order_number}
                   </p>
                   {p.razorpay_payment_id && (
-                    <p className="mt-0.5 truncate font-mono text-[10px] text-muted">
+                    <p className="mt-0.5 truncate font-mono text-[10px] text-maroon/40">
                       {p.razorpay_payment_id}
                     </p>
                   )}
                 </div>
-                <span className="rounded-full bg-ivory/5 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-ivory/65">
+                <span className="rounded-full bg-mist-blue px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-maroon/70">
                   {p.payment_method}
                 </span>
                 <span
@@ -113,7 +117,7 @@ export default function PaymentsPage() {
                 >
                   {p.payment_status}
                 </span>
-                <ChevronRight size={18} className="text-muted" />
+                <ChevronRight size={18} className="text-maroon/40" />
               </div>
             </Link>
           ))}

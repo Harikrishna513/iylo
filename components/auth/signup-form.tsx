@@ -13,6 +13,7 @@ import {
   validatePassword,
 } from "@/lib/validation";
 import { cn } from "@/lib/utils";
+import { LIGHT } from "@/lib/page-theme";
 
 type FieldErrors = {
   fullName?: string;
@@ -23,10 +24,7 @@ type FieldErrors = {
 };
 
 const inputClass = (hasError?: boolean) =>
-  cn(
-    "w-full border bg-transparent px-4 py-3 text-ivory outline-none focus:border-gold",
-    hasError ? "border-red-400/70" : "border-ivory/20"
-  );
+  cn(LIGHT.input, hasError && "border-rosewood/70");
 
 export function SignUpForm() {
   const { signUp } = useAuth();
@@ -123,12 +121,12 @@ export function SignUpForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      {formError && <p className="text-sm text-red-400">{formError}</p>}
-      {successMessage && <p className="text-sm text-gold">{successMessage}</p>}
+      {formError && <p className="text-sm text-rosewood">{formError}</p>}
+      {successMessage && <p className="text-sm text-light-blue">{successMessage}</p>}
 
       <div>
-        <label htmlFor="fullName" className="mb-2 block text-xs uppercase tracking-widest text-muted">
-          Full Name <span className="text-gold">*</span>
+        <label htmlFor="fullName" className={cn("mb-2 block", LIGHT.label)}>
+          Full Name <span className="text-light-blue">*</span>
         </label>
         <input
           id="fullName"
@@ -151,13 +149,13 @@ export function SignUpForm() {
           className={inputClass(!!fieldErrors.fullName)}
         />
         {fieldErrors.fullName && (
-          <p className="mt-1.5 text-xs text-red-400">{fieldErrors.fullName}</p>
+          <p className="mt-1.5 text-xs text-rosewood">{fieldErrors.fullName}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="mobile" className="mb-2 block text-xs uppercase tracking-widest text-muted">
-          Mobile Number <span className="text-gold">*</span>
+        <label htmlFor="mobile" className={cn("mb-2 block", LIGHT.label)}>
+          Mobile Number <span className="text-light-blue">*</span>
         </label>
         <input
           id="mobile"
@@ -182,13 +180,13 @@ export function SignUpForm() {
           className={inputClass(!!fieldErrors.mobile)}
         />
         {fieldErrors.mobile && (
-          <p className="mt-1.5 text-xs text-red-400">{fieldErrors.mobile}</p>
+          <p className="mt-1.5 text-xs text-rosewood">{fieldErrors.mobile}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="email" className="mb-2 block text-xs uppercase tracking-widest text-muted">
-          Email <span className="text-gold">*</span>
+        <label htmlFor="email" className={cn("mb-2 block", LIGHT.label)}>
+          Email <span className="text-light-blue">*</span>
         </label>
         <input
           id="email"
@@ -211,13 +209,13 @@ export function SignUpForm() {
           className={inputClass(!!fieldErrors.email)}
         />
         {fieldErrors.email && (
-          <p className="mt-1.5 text-xs text-red-400">{fieldErrors.email}</p>
+          <p className="mt-1.5 text-xs text-rosewood">{fieldErrors.email}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-2 block text-xs uppercase tracking-widest text-muted">
-          Password <span className="text-gold">*</span>
+        <label htmlFor="password" className={cn("mb-2 block", LIGHT.label)}>
+          Password <span className="text-light-blue">*</span>
         </label>
         <PasswordInput
           id="password"
@@ -242,9 +240,9 @@ export function SignUpForm() {
       <div>
         <label
           htmlFor="confirmPassword"
-          className="mb-2 block text-xs uppercase tracking-widest text-muted"
+          className={cn("mb-2 block", LIGHT.label)}
         >
-          Confirm Password <span className="text-gold">*</span>
+          Confirm Password <span className="text-light-blue">*</span>
         </label>
         <PasswordInput
           id="confirmPassword"
@@ -272,9 +270,9 @@ export function SignUpForm() {
         {loading ? "Creating…" : "Create Account"}
       </Button>
 
-      <p className="text-center text-sm text-muted">
+      <p className={cn("text-center", LIGHT.subtitle)}>
         Already have an account?{" "}
-        <Link href="/auth/signin" className="text-gold hover:underline">
+        <Link href="/auth/signin" className="text-light-blue hover:underline">
           Sign in
         </Link>
       </p>

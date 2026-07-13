@@ -5,13 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { formatPrice } from "@/lib/utils";
-import { useCartStore } from "@/store/cart-store";
+import { formatPrice, cn } from "@/lib/utils";
 import type { Product } from "@/types";
+import { LIGHT } from "@/lib/page-theme";
+import { useProductFly } from "@/hooks/use-product-fly";
 
 export default function AccountWishlistPage() {
   const { user } = useAuth();
-  const { addItem } = useCartStore();
+  const { flyAddToCart } = useProductFly();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -52,25 +53,25 @@ export default function AccountWishlistPage() {
 
   return (
     <div>
-      <h2 className="mb-6 text-lg text-ivory">Wishlist</h2>
+      <h2 className={cn(LIGHT.title, "mb-6 text-2xl")}>Wishlist</h2>
       {products.length === 0 ? (
-        <p className="text-muted">Your wishlist is empty.</p>
+        <p className={LIGHT.muted}>Your wishlist is empty.</p>
       ) : (
         <ul className="space-y-4">
           {products.map((p) => (
-            <li key={p.id} className="flex gap-4 border border-ivory/10 p-4">
-              <div className="relative h-20 w-20 shrink-0 overflow-hidden">
+            <li key={p.id} className={cn("flex gap-4 border p-4", LIGHT.border)}>
+              <div data-fly-source className="relative h-20 w-20 shrink-0 overflow-hidden bg-maroon/5">
                 <Image src={p.image} alt={p.name} fill className="object-cover" sizes="80px" />
               </div>
               <div className="flex flex-1 flex-col">
-                <Link href={`/products/${p.id}`} className="text-ivory hover:text-gold">
+                <Link href={`/products/${p.id}`} className="font-medium text-maroon hover:text-light-blue">
                   {p.name}
                 </Link>
-                <p className="text-sm text-gold">{formatPrice(p.price)}</p>
+                <p className="text-sm text-light-blue">{formatPrice(p.price)}</p>
                 <button
                   type="button"
-                  onClick={() => addItem(p)}
-                  className="mt-auto self-start text-xs uppercase tracking-widest text-gold hover:underline"
+                  onClick={(e) => flyAddToCart(p, { event: e })}
+                  className="mt-auto self-start text-xs uppercase tracking-widest text-light-blue hover:underline"
                 >
                   Add to Cart
                 </button>

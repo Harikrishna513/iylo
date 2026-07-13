@@ -62,7 +62,7 @@ export function FulfillmentDatePicker({
 
   if (!days.length) {
     return (
-      <p className="text-sm text-muted">
+      <p className="text-sm text-maroon/50">
         No slots available. Please check back tomorrow.
       </p>
     );
@@ -70,7 +70,7 @@ export function FulfillmentDatePicker({
 
   return (
     <div className={cn("space-y-4", className)}>
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-light-blue">
         <Calendar className="h-4 w-4" />
         Select {mode === "pickup" ? "pickup" : "delivery"} date
       </div>
@@ -89,12 +89,12 @@ export function FulfillmentDatePicker({
                 "border px-3 py-3 text-left text-xs transition-colors",
                 !hasSlots && "cursor-not-allowed opacity-40",
                 isSelected
-                  ? "border-gold bg-gold/10 text-gold"
-                  : "border-ivory/20 text-ivory/70 hover:border-ivory/40"
+                  ? "border-light-blue bg-mist-blue text-maroon"
+                  : "border-maroon/15 text-maroon/70 hover:border-maroon/30"
               )}
             >
               <span className="block font-medium">{day.label.split(",")[0]}</span>
-              <span className="mt-1 block text-[10px] text-muted">
+              <span className="mt-1 block text-[10px] text-maroon/45">
                 {day.label.split(",").slice(1).join(",").trim()}
               </span>
             </button>
@@ -104,7 +104,7 @@ export function FulfillmentDatePicker({
 
       {selectedDay && (
         <div>
-          <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-gold">
+          <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-light-blue">
             <Clock className="h-4 w-4" />
             Select time slot
           </div>
@@ -119,13 +119,13 @@ export function FulfillmentDatePicker({
                   "border px-4 py-3 text-left text-sm transition-colors",
                   !slot.available && "cursor-not-allowed opacity-30",
                   value?.slotId === slot.id
-                    ? "border-gold bg-gold/10 text-gold"
-                    : "border-ivory/20 text-ivory/70 hover:border-ivory/40"
+                    ? "border-light-blue bg-mist-blue text-maroon"
+                    : "border-maroon/15 text-maroon/70 hover:border-maroon/30"
                 )}
               >
                 {slot.label}
                 {!slot.available && (
-                  <span className="ml-2 text-[10px] text-muted">(passed)</span>
+                  <span className="ml-2 text-[10px] text-maroon/45">(passed)</span>
                 )}
               </button>
             ))}
@@ -134,14 +134,14 @@ export function FulfillmentDatePicker({
       )}
 
       {value && (
-        <p className="rounded border border-gold/20 bg-gold/5 px-4 py-3 text-sm text-ivory/80">
-          Scheduled: <strong className="text-gold">{value.dateLabel}</strong> ·{" "}
+        <p className="rounded border border-light-blue/30 bg-mist-blue px-4 py-3 text-sm text-maroon/80">
+          Scheduled: <strong className="text-light-blue">{value.dateLabel}</strong> ·{" "}
           {value.slotLabel}
         </p>
       )}
 
       {mode === "pickup" && (
-        <p className="text-xs leading-relaxed text-muted">
+        <p className="text-xs leading-relaxed text-maroon/45">
           We&apos;d love to welcome you to our bakery and have you experience the
           aromas of our freshly baked creations.
         </p>

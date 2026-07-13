@@ -5,13 +5,13 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, ShoppingBag } from "lucide-react";
 import { useWishlistStore } from "@/store/wishlist-store";
-import { useCartStore } from "@/store/cart-store";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useProductFly } from "@/hooks/use-product-fly";
 
 export function WishlistDrawer() {
   const { isOpen, closeWishlist, items, removeItem } = useWishlistStore();
-  const addItem = useCartStore((s) => s.addItem);
+  const { flyAddToCart } = useProductFly();
 
   return (
     <AnimatePresence>
@@ -52,7 +52,12 @@ export function WishlistDrawer() {
                 <ul className="space-y-6">
                   {items.map((product) => (
                     <li key={product.id} className="flex gap-4">
-                      <Link href={`/products/${product.id}`} onClick={closeWishlist} className="relative h-20 w-20 shrink-0 overflow-hidden">
+                      <Link
+                        href={`/products/${product.id}`}
+                        onClick={closeWishlist}
+                        data-fly-source
+                        className="relative h-20 w-20 shrink-0 overflow-hidden"
+                      >
                         <Image src={product.image} alt={product.name} fill className="object-cover" sizes="80px" />
                       </Link>
                       <div className="flex-1">
@@ -64,8 +69,11 @@ export function WishlistDrawer() {
                           <Button
                             size="sm"
                             variant="gold"
-                            onClick={() => {
-                              addItem(product);
+                            onClick={(e) => {
+                              flyAddToCart(product, {
+                                event: e,
+                                openDrawer: true,
+                              });
                               removeItem(product.id);
                             }}
                           >

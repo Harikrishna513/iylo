@@ -13,6 +13,7 @@ import { InstagramIcon } from "@/components/icons/instagram-icon";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { NAVBAR_LOGO_HEIGHT, ANNOUNCEMENT_BAR_HEIGHT_PX } from "@/lib/brand";
 import { useAuth } from "@/context/AuthContext";
+import { useFlyAnimationStore } from "@/store/fly-animation-store";
 
 const navLinks = [
   { href: "#menu", label: "Menu" },
@@ -32,6 +33,7 @@ function IconButton({
   children,
   className,
   badge,
+  id,
 }: {
   onClick?: () => void;
   href?: string;
@@ -39,6 +41,7 @@ function IconButton({
   children: ReactNode;
   className?: string;
   badge?: number;
+  id?: string;
 }) {
   const classes = cn(
     "relative flex h-9 w-9 items-center justify-center text-brown/70 transition-colors hover:text-brown sm:h-10 sm:w-10",
@@ -58,14 +61,14 @@ function IconButton({
 
   if (href) {
     return (
-      <Link href={href} className={classes} aria-label={label}>
+      <Link href={href} id={id} className={classes} aria-label={label}>
         {content}
       </Link>
     );
   }
 
   return (
-    <button type="button" onClick={onClick} className={classes} aria-label={label}>
+    <button type="button" id={id} onClick={onClick} className={classes} aria-label={label}>
       {content}
     </button>
   );
@@ -80,6 +83,7 @@ export function Header() {
   const openWishlist = useWishlistStore((s) => s.openWishlist);
   const openSearch = useSearchStore((s) => s.openSearch);
   const { user } = useAuth();
+  const pulseTarget = useFlyAnimationStore((s) => s.pulseTarget);
   const accountHref = user ? "/account" : "/auth/signin?redirect=/account";
 
   const instagramLink = contactInfo.instagramUrl;
@@ -146,16 +150,38 @@ export function Header() {
             <IconButton href={accountHref} label="Account">
               <User className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.5} />
             </IconButton>
-            <IconButton onClick={openCart} label="Open cart" badge={cartCount}>
-              <ShoppingBag className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.5} />
-            </IconButton>
-            <IconButton
-              onClick={openWishlist}
-              label="Wishlist"
-              badge={wishlistItems.length}
+            <motion.div
+              animate={
+                pulseTarget === "cart"
+                  ? { scale: [1, 1.35, 1], transition: { duration: 0.4 } }
+                  : { scale: 1 }
+              }
             >
-              <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.5} />
-            </IconButton>
+              <IconButton
+                id="fly-target-cart"
+                onClick={openCart}
+                label="Open cart"
+                badge={cartCount}
+              >
+                <ShoppingBag className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.5} />
+              </IconButton>
+            </motion.div>
+            <motion.div
+              animate={
+                pulseTarget === "wishlist"
+                  ? { scale: [1, 1.35, 1], transition: { duration: 0.4 } }
+                  : { scale: 1 }
+              }
+            >
+              <IconButton
+                id="fly-target-wishlist"
+                onClick={openWishlist}
+                label="Wishlist"
+                badge={wishlistItems.length}
+              >
+                <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.5} />
+              </IconButton>
+            </motion.div>
           </div>
         </div>
       </header>

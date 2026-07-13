@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LIGHT } from "@/lib/page-theme";
 
 interface PasswordInputProps {
   id: string;
@@ -37,21 +38,18 @@ export function PasswordInput({
           onBlur={onBlur}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className={cn(
-            "w-full border bg-transparent px-4 py-3 pr-12 text-ivory outline-none focus:border-gold",
-            error ? "border-red-400/70" : "border-ivory/20"
-          )}
+          className={cn(LIGHT.input, "pr-12", error && "border-rosewood/70")}
         />
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted transition-colors hover:text-ivory"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-maroon/45 transition-colors hover:text-maroon"
           aria-label={visible ? "Hide password" : "Show password"}
         >
           {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
-      {error && <p className="mt-1.5 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-rosewood">{error}</p>}
     </div>
   );
 }

@@ -4,6 +4,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { validatePincode, validateIndianPhone } from "@/lib/validation";
+import { LIGHT } from "@/lib/page-theme";
+import { cn } from "@/lib/utils";
 import { Plus, Edit2, Trash2, MapPin, Star, X } from "lucide-react";
 
 interface Address {
@@ -115,14 +117,14 @@ export default function AddressesPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="editorial-heading text-2xl text-ivory">Addresses</h2>
-          <p className="mt-1 text-sm text-muted">Save addresses for faster checkout.</p>
+          <h2 className={cn(LIGHT.title, "text-2xl")}>Addresses</h2>
+          <p className={cn("mt-1", LIGHT.subtitle)}>Save addresses for faster checkout.</p>
         </div>
         {!editing && (
           <button
             type="button"
             onClick={startNew}
-            className="inline-flex items-center gap-2 border border-gold bg-gold/10 px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-gold transition-colors hover:bg-gold/20"
+            className="inline-flex items-center gap-2 border border-light-blue bg-mist-blue px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-maroon transition-colors hover:bg-mist-blue/80"
           >
             <Plus size={16} /> Add New
           </button>
@@ -130,20 +132,20 @@ export default function AddressesPage() {
       </div>
 
       {editing && (
-        <form onSubmit={save} className="relative mb-6 space-y-4 border border-ivory/10 bg-black/50 p-6">
+        <form onSubmit={save} className={cn("relative mb-6 space-y-4 border bg-mist-blue/30 p-6", LIGHT.border)}>
           <button
             type="button"
             onClick={cancel}
-            className="absolute right-4 top-4 text-muted hover:text-ivory"
+            className="absolute right-4 top-4 text-maroon/45 hover:text-maroon"
           >
             <X size={18} />
           </button>
-          <h3 className="text-lg text-ivory">
+          <h3 className="text-lg font-medium text-maroon">
             {editing.id ? "Edit Address" : "New Address"}
           </h3>
 
           {error && (
-            <div className="border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">
+            <div className="border border-rosewood/30 bg-rosewood/10 px-4 py-2.5 text-sm text-rosewood">
               {error}
             </div>
           )}
@@ -197,21 +199,21 @@ export default function AddressesPage() {
                 onChange={(e) => setEditing({ ...editing, is_default: e.target.checked })}
                 className="h-4 w-4 accent-gold"
               />
-              <span className="text-sm text-ivory/70">Set as default address</span>
+              <span className="text-sm text-maroon/70">Set as default address</span>
             </label>
           </div>
 
           <div className="flex gap-3">
             <button
               type="submit"
-              className="border border-gold bg-gold px-7 py-3 text-xs font-semibold uppercase tracking-widest text-black hover:bg-gold/90"
+              className="bg-maroon px-7 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-rosewood"
             >
               Save Address
             </button>
             <button
               type="button"
               onClick={cancel}
-              className="px-7 py-3 text-xs font-semibold uppercase tracking-widest text-muted hover:text-ivory"
+              className="px-7 py-3 text-xs font-semibold uppercase tracking-widest text-maroon/50 hover:text-maroon"
             >
               Cancel
             </button>
@@ -220,28 +222,28 @@ export default function AddressesPage() {
       )}
 
       {loading ? (
-        <p className="py-10 text-center text-sm text-muted">Loading…</p>
+        <p className={cn("py-10 text-center", LIGHT.muted)}>Loading…</p>
       ) : addresses.length === 0 && !editing ? (
         <div className="py-12 text-center">
-          <MapPin size={48} className="mx-auto mb-3 text-ivory/20" />
-          <p className="text-sm text-muted">No saved addresses yet.</p>
+          <MapPin size={48} className="mx-auto mb-3 text-maroon/15" />
+          <p className={LIGHT.muted}>No saved addresses yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {addresses.map((a) => (
             <div
               key={a.id}
-              className="border border-ivory/10 p-5 transition-colors hover:border-ivory/20"
+              className={cn("border p-5 transition-colors hover:border-maroon/20", LIGHT.border)}
             >
               <div className="mb-2 flex items-start justify-between">
-                <p className="text-sm font-semibold text-ivory">{a.full_name}</p>
+                <p className="text-sm font-semibold text-maroon">{a.full_name}</p>
                 {a.is_default && (
-                  <span className="flex items-center gap-1 bg-gold/15 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-gold">
+                  <span className="flex items-center gap-1 bg-mist-blue px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-maroon">
                     <Star size={10} /> Default
                   </span>
                 )}
               </div>
-              <p className="text-sm leading-relaxed text-ivory/70">
+              <p className={cn("text-sm leading-relaxed", LIGHT.body)}>
                 {a.line1}
                 {a.line2 && `, ${a.line2}`}
                 <br />
@@ -249,11 +251,11 @@ export default function AddressesPage() {
                 <br />
                 Phone: {a.phone}
               </p>
-              <div className="mt-3 flex gap-2 border-t border-ivory/10 pt-3">
+              <div className={cn("mt-3 flex gap-2 border-t pt-3", LIGHT.border)}>
                 <button
                   type="button"
                   onClick={() => startEdit(a)}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-gold"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-maroon/50 hover:text-light-blue"
                 >
                   <Edit2 size={12} /> Edit
                 </button>
@@ -261,7 +263,7 @@ export default function AddressesPage() {
                   <button
                     type="button"
                     onClick={() => setDefault(a.id)}
-                    className="text-xs font-semibold text-muted hover:text-gold"
+                    className="text-xs font-semibold text-maroon/50 hover:text-light-blue"
                   >
                     Set as Default
                   </button>
@@ -269,7 +271,7 @@ export default function AddressesPage() {
                 <button
                   type="button"
                   onClick={() => remove(a.id)}
-                  className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-red-400 hover:text-red-300"
+                  className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-rosewood hover:text-maroon"
                 >
                   <Trash2 size={12} /> Delete
                 </button>
@@ -299,16 +301,14 @@ function Input({
 }) {
   return (
     <div className={className}>
-      <label className="mb-1.5 ml-1 block text-[10px] font-semibold uppercase tracking-widest text-muted">
-        {label}
-      </label>
+      <label className={cn("mb-1.5 ml-1 block", LIGHT.label)}>{label}</label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="w-full border border-ivory/20 bg-black px-4 py-3 text-sm text-ivory outline-none focus:border-gold"
+        className={LIGHT.input}
       />
     </div>
   );

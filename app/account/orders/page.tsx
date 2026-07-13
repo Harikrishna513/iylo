@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { cn, formatPrice } from "@/lib/utils";
 import { orderStatusBadgeClasses } from "@/lib/domain";
+import { LIGHT } from "@/lib/page-theme";
 
 interface OrderRow {
   id: string;
@@ -35,31 +36,34 @@ export default function AccountOrdersPage() {
       });
   }, [user]);
 
-  if (loading) return <p className="text-muted">Loading orders…</p>;
+  if (loading) return <p className={LIGHT.muted}>Loading orders…</p>;
 
   return (
     <div>
-      <h2 className="editorial-heading mb-6 text-2xl text-ivory">Order History</h2>
+      <h2 className={cn(LIGHT.title, "mb-6 text-2xl")}>Order History</h2>
       {orders.length === 0 ? (
-        <p className="text-muted">No orders yet.</p>
+        <p className={LIGHT.muted}>No orders yet.</p>
       ) : (
         <ul className="space-y-3">
           {orders.map((o) => (
             <li key={o.id}>
               <Link
                 href={`/account/orders/${o.id}`}
-                className="flex items-center justify-between border border-ivory/10 p-4 transition-colors hover:border-gold/30 hover:bg-gold/5"
+                className={cn(
+                  "flex items-center justify-between border p-4 transition-colors hover:border-light-blue/40 hover:bg-mist-blue/50",
+                  LIGHT.border
+                )}
               >
                 <div>
-                  <p className="text-ivory">{o.order_number}</p>
-                  <p className="text-xs text-muted">
+                  <p className="font-medium text-maroon">{o.order_number}</p>
+                  <p className={cn("text-xs", LIGHT.muted)}>
                     {new Date(o.placed_at).toLocaleDateString("en-IN")} ·{" "}
                     {o.fulfillment_type.replace(/_/g, " ")}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <p className="text-gold">{formatPrice(o.total_amount)}</p>
+                    <p className="text-light-blue">{formatPrice(o.total_amount)}</p>
                     <span
                       className={cn(
                         "mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
@@ -69,14 +73,14 @@ export default function AccountOrdersPage() {
                       {o.status.replace(/_/g, " ")}
                     </span>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted" />
+                  <ChevronRight className="h-4 w-4 text-maroon/40" />
                 </div>
               </Link>
             </li>
           ))}
         </ul>
       )}
-      <Link href="/" className="mt-8 inline-block text-sm text-gold hover:underline">
+      <Link href="/" className="mt-8 inline-block text-sm text-light-blue hover:underline">
         Continue Shopping →
       </Link>
     </div>

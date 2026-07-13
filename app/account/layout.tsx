@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
+import { LIGHT } from "@/lib/page-theme";
 
 const NAV = [
   { href: "/account", label: "Profile", icon: User },
@@ -44,7 +45,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   if (loading || !user) {
     return (
       <div
-        className="flex min-h-screen items-center justify-center bg-black text-muted"
+        className={cn("flex items-center justify-center", LIGHT.bg, LIGHT.muted)}
         style={{ paddingTop: SITE_HEADER_OFFSET_PX }}
       >
         Loading your account…
@@ -55,22 +56,22 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const displayName = profile?.name || user.email?.split("@")[0] || "there";
 
   return (
-    <div
-      className="min-h-screen bg-black pb-20"
-      style={{ paddingTop: SITE_HEADER_OFFSET_PX }}
-    >
+    <div className={cn(LIGHT.bg, "pb-20")} style={{ paddingTop: SITE_HEADER_OFFSET_PX }}>
       <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
         <div className="mb-8">
-          <h1 className="editorial-heading text-3xl text-ivory md:text-4xl">
-            Hi, {displayName}
-          </h1>
-          <p className="mt-1 text-sm text-muted">
+          <h1 className={cn(LIGHT.title, "text-3xl md:text-4xl")}>Hi, {displayName}</h1>
+          <p className={cn("mt-1", LIGHT.subtitle)}>
             Manage your profile, orders, addresses, and preferences.
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="h-fit border border-ivory/10 bg-black/50 p-4 lg:sticky lg:top-28 lg:p-5">
+          <aside
+            className={cn(
+              LIGHT.card,
+              "h-fit p-4 lg:sticky lg:top-28 lg:p-5"
+            )}
+          >
             <nav className="-mx-1 flex gap-1 overflow-x-auto px-1 lg:flex-col lg:overflow-visible">
               {NAV.map((item) => {
                 const isActive =
@@ -81,10 +82,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 whitespace-nowrap px-3.5 py-2.5 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-gold/15 text-gold"
-                        : "text-ivory/65 hover:bg-ivory/5 hover:text-ivory"
+                      "flex items-center gap-3 whitespace-nowrap rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors",
+                      isActive ? LIGHT.navActive : LIGHT.navInactive
                     )}
                   >
                     <item.icon size={16} />
@@ -95,7 +94,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="mt-1 flex items-center gap-3 px-3.5 py-2.5 text-left text-sm font-medium text-red-400 transition-colors hover:bg-red-400/10"
+                className="mt-1 flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-sm font-medium text-rosewood transition-colors hover:bg-rosewood/10"
               >
                 <LogOut size={16} />
                 <span>Logout</span>
@@ -103,9 +102,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             </nav>
           </aside>
 
-          <main className="min-h-[420px] border border-ivory/10 p-6 md:p-10">
-            {children}
-          </main>
+          <main className={cn(LIGHT.card, "min-h-[420px] p-6 md:p-10")}>{children}</main>
         </div>
       </div>
     </div>
