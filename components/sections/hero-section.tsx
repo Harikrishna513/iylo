@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -84,14 +85,8 @@ export function HeroSection() {
         </h1>
 
         <div className="hero-item flex flex-wrap items-center justify-center gap-4 opacity-0">
-          <Button
-            variant="gold"
-            size="lg"
-            onClick={() =>
-              document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Order Now
+          <Button variant="gold" size="lg" asChild>
+            <Link href="/products">Order Now</Link>
           </Button>
         </div>
       </div>

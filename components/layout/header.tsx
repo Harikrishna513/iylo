@@ -16,12 +16,12 @@ import { useAuth } from "@/context/AuthContext";
 import { useFlyAnimationStore } from "@/store/fly-animation-store";
 
 const navLinks = [
-  { href: "#menu", label: "Menu" },
-  { href: "#gifting", label: "Gifting & Bulk Orders" },
-  { href: "#birthday-wedding-cakes", label: "Birthday & Wedding Cakes (Custom)" },
-  { href: "#workshops", label: "Workshops" },
-  { href: "#about", label: "Story" },
-  { href: "#contact", label: "Contact" },
+  { href: "/products", label: "Menu" },
+  { href: "/#gifting", label: "Gifting & Bulk Orders" },
+  { href: "/#birthday-wedding-cakes", label: "Birthday & Wedding Cakes (Custom)" },
+  { href: "/#workshops", label: "Workshops" },
+  { href: "/#about", label: "Story" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 function IconButton({
