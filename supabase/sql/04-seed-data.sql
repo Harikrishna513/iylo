@@ -17,7 +17,7 @@ INSERT INTO public.site_settings (key, value, description) VALUES
   ('contact', '{
     "phone": "+917625096799",
     "whatsapp": "+917625096799",
-    "email": "shraddharajaesh@iylobakehouse.com",
+    "email": "shraddharajesh@iylobakehouse.com",
     "instagram": "https://www.instagram.com/iylo.bakehouse/",
     "website": "https://iylobakehouse.com",
     "google_maps_url": "https://maps.app.goo.gl/yJ5Ypo7Tm168wiHr7",

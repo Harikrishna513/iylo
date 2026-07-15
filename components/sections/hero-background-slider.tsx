@@ -60,7 +60,7 @@ export function HeroBackgroundSlider() {
             loading={i === 0 ? "eager" : "lazy"}
             quality={90}
             sizes="100vw"
-            className="object-cover object-center scale-105"
+            className="object-cover object-center"
             style={{
               filter: HERO_BG_BLUR_PX > 0 ? `blur(${HERO_BG_BLUR_PX}px)` : undefined,
             }}

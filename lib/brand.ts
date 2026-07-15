@@ -1,9 +1,12 @@
 import { BRAND_COLORS, CONTACT_PHONE, CONTACT_WHATSAPP } from "@/data/site-content";
 
-/** IYLO Bakehouse brand assets (transparent) */
+/** IYLO Bakehouse brand assets (transparent wordmark for dark / colored grounds) */
 export const BRAND_LOGO = "/logo.png";
 
-/** Circular browser tab / PWA icons (generated from iylo-logo.jpg) */
+/** Square powder-blue wordmark — favicon source & auth/login mark */
+export const BRAND_CIRCLE_LOGO = "/circle-logo.jpg";
+
+/** Circular browser tab / PWA icons (generated from circle-logo.jpg) */
 export const BRAND_FAVICON = "/favicon.ico";
 export const BRAND_APPLE_ICON = "/apple-touch-icon.png";
 

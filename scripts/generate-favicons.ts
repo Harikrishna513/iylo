@@ -1,12 +1,16 @@
 /**
- * Generates circular favicon PNGs + favicon.ico from public/iylo-logo.jpg
- * Run: npx tsx scripts/generate-favicons.ts
+ * Generates clear circular favicons from public/circle-logo.jpg
+ * Logo is padded inside the circle so letterforms are not clipped.
+ * Run: npm run generate-favicons
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+
+/** Brand powder blue #99BEE0 */
+const BG = { r: 153, g: 190, b: 224, alpha: 1 };
 
 async function main() {
   let sharp: typeof import("sharp");
@@ -19,9 +23,10 @@ async function main() {
     sharp = require("sharp");
   }
 
-  const srcPath = join(process.cwd(), "public/iylo-logo.jpg");
+  const srcPath = join(process.cwd(), "public/circle-logo.jpg");
   const src = await readFile(srcPath);
   const publicDir = join(process.cwd(), "public");
+  await mkdir(publicDir, { recursive: true });
 
   const sizes = [
     { name: "favicon-32x32.png", size: 32 },
@@ -31,30 +36,49 @@ async function main() {
     { name: "icon-512.png", size: 512 },
   ] as const;
 
-  const circleMask = Buffer.from(
-    `<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="256" cy="256" r="256" fill="white"/>
-    </svg>`
-  );
+  async function circularIcon(size: number) {
+    // Keep ~14% padding so “iylo / BAKEHOUSE” stays clear inside the circle
+    const inner = Math.max(8, Math.round(size * 0.72));
+    const circleMask = Buffer.from(
+      `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="white"/>
+      </svg>`
+    );
 
-  for (const { name, size } of sizes) {
-    const out = await sharp(src)
-      .resize(size, size, { fit: "cover", position: "centre" })
-      .composite([{ input: await sharp(circleMask).resize(size, size).png().toBuffer(), blend: "dest-in" }])
+    const logo = await sharp(src)
+      .resize(inner, inner, {
+        fit: "contain",
+        background: BG,
+      })
       .png()
       .toBuffer();
+
+    return sharp({
+      create: {
+        width: size,
+        height: size,
+        channels: 4,
+        background: BG,
+      },
+    })
+      .composite([
+        { input: logo, gravity: "centre" },
+        {
+          input: await sharp(circleMask).png().toBuffer(),
+          blend: "dest-in",
+        },
+      ])
+      .png()
+      .toBuffer();
+  }
+
+  for (const { name, size } of sizes) {
+    const out = await circularIcon(size);
     await writeFile(join(publicDir, name), out);
     console.log(`Wrote public/${name}`);
   }
 
-  const ico32 = await sharp(src)
-    .resize(32, 32, { fit: "cover", position: "centre" })
-    .composite([
-      { input: await sharp(circleMask).resize(32, 32).png().toBuffer(), blend: "dest-in" },
-    ])
-    .png()
-    .toBuffer();
-
+  const ico32 = await circularIcon(32);
   await writeFile(join(publicDir, "favicon.ico"), ico32);
   await writeFile(join(process.cwd(), "app/favicon.ico"), ico32);
   console.log("Wrote public/favicon.ico and app/favicon.ico");
@@ -65,7 +89,7 @@ async function main() {
     description: "Eggless artisan bakes · Jayanagar, Bangalore",
     start_url: "/",
     display: "standalone",
-    background_color: "#faf6f0",
+    background_color: "#99BEE0",
     theme_color: "#451519",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },

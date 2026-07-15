@@ -178,41 +178,33 @@ export const retailProducts: Product[] = products.filter((p) => p.shipsPanIndia)
 
 export const giftingOptions: GiftingOption[] = [
   {
-    id: "corporate",
-    title: "Corporate Gifting",
+    id: "gifting-bulk",
+    title: "Gifting & Bulk Orders",
     description:
-      "Elevate your brand with bespoke hampers, branded packaging, GST invoices, and bulk ordering for Bangalore teams and clients.",
+      "Celebrate every festival, special occasion, or corporate event with thoughtfully curated hampers and bakery delights, beautifully crafted to make every moment memorable.",
     image: img.giftingCorporate,
-    cta: "Enquire for Corporate",
+    cta: "Enquire Now",
     scrollTo: "corporate",
     inquiryType: "corporate",
   },
-  // {
-  //   id: "festive",
-  //   title: "Festival Hampers",
-  //   description:
-  //     "Curated seasonal collections for Diwali, Christmas, Ugadi, and every celebration across Karnataka.",
-  //   image: img.giftingFestive,
-  //   cta: "Explore Festive",
-  // },
   {
-    id: "celebration",
-    title: "Custom Cakes",
+    id: "birthday-wedding-cakes",
+    title: "Birthday & Wedding Cakes (Custom)",
     description:
-      "Birthdays, weddings, baby showers - handcrafted gifts that speak from the heart.",
+      "Celebrate life's special moments with handcrafted custom cakes, designed to match your vision and made with the finest ingredients.",
     image: img.giftingCelebration,
-    cta: "Shop Celebrations",
-    scrollTo: "menu",
-  },
-  {
-    id: "custom",
-    title: "Corporate Workshops",
-    description:
-      "Personalised ribbons, message cards, and premium boxes tailored to your occasion.",
-    image: img.giftingCustom,
-    cta: "Request Custom",
+    cta: "Enquire for Custom Cakes",
     scrollTo: "corporate",
     inquiryType: "custom",
+  },
+  {
+    id: "workshops-curated",
+    title: "Workshops",
+    description:
+      "Discover the art of baking through engaging, hands-on workshops led by our expert bakers, perfect for beginners and enthusiasts alike.",
+    image: img.giftingCustom,
+    cta: "Explore Workshops",
+    scrollTo: "workshops",
   },
 ];
 
@@ -396,25 +388,25 @@ export const timelineEvents = [
   {
     year: "Origins",
     title: "A Grandmother's Kitchen",
-    description: BRAND_STORY.origin,
+    description: BRAND_STORY.intro,
   },
   {
     year: "Today",
-    title: "What Makes Us Different",
-    description: BRAND_STORY.differentiator,
+    title: "Founder's Journey",
+    description: BRAND_STORY.founder,
   },
   {
     year: "Vision",
-    title: "Community Through Food",
-    description: BRAND_STORY.values,
+    title: "Our Vision",
+    description: BRAND_STORY.vision,
   },
 ];
 
 export const founderMessage = {
-  name: "Founder, IYLO Bakehouse",
-  title: "Baker & Dreamer",
+  name: "Shraddha Rajesh",
+  title: "Founder, Iylo Bakehouse",
   image: img.iyloHouse,
-  quote: BRAND_STORY.origin,
+  quote: BRAND_STORY.mission,
 };
 
 export function getProductById(id: string): Product | undefined {

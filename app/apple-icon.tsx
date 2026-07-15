@@ -7,12 +7,13 @@ export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
 async function loadLogoDataUrl() {
-  const logo = await readFile(join(process.cwd(), "public/iylo-logo.jpg"));
+  const logo = await readFile(join(process.cwd(), "public/circle-logo.jpg"));
   return `data:image/jpeg;base64,${logo.toString("base64")}`;
 }
 
 export default async function AppleIcon() {
   const src = await loadLogoDataUrl();
+  const inner = Math.round(size.width * 0.72);
 
   return new ImageResponse(
     (
@@ -32,9 +33,13 @@ export default async function AppleIcon() {
         <img
           src={src}
           alt=""
-          width={180}
-          height={180}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          width={inner}
+          height={inner}
+          style={{
+            width: inner,
+            height: inner,
+            objectFit: "contain",
+          }}
         />
       </div>
     ),

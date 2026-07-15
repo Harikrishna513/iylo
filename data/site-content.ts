@@ -16,7 +16,7 @@ export const CONTACT = {
   /** 10-digit mobile without country code */
   phone: "7625096799",
   whatsapp: "7625096799",
-  email: "shraddharajaesh@iylobakehouse.com",
+  email: "shraddharajesh@iylobakehouse.com",
   website: "https://iylobakehouse.com",
   instagram: "https://www.instagram.com/iylo.bakehouse/",
   facebook: "",
@@ -89,12 +89,14 @@ export const BUSINESS_DESCRIPTION =
   "A contemporary and premium bakehouse dedicated to modern baking and specialising in eggless creations, across sweet and savoury products.";
 
 export const BRAND_STORY = {
-  origin:
-    "I have always had a passion for baking, and I started cooking and baking because of my grandmother. I always had a very special connection with her through food. I started this bakery as a way of living our combined dream of bringing people together through the love for food.",
-  differentiator:
-    "We want to try and bring to the people, flavours that they are familiar with, but in a new and reconstructed manner. We want to make an effort to make everyday special through the variations of products that we offer.",
-  values:
-    "Customers need to remember our values of bringing people together as a community through the medium of our products. We believe in serving customers with intent, and curating the best experience for them through our products.",
+  intro:
+    "At our core, we believe that great things cannot be rushed. Iylo Bakehouse was born from the belief that baking is about so much more than the food on the plate. We choose patience, craft, and connection over shortcuts. To us, every day is a celebration, and we want our bakes to be the medium that brings people together.",
+  founder:
+    "I am Shraddha Rajesh, the founder of Iylo Bakehouse. My passion for cooking and baking began as a young girl, standing alongside my grandmother. To me, her kitchen was never just a place to cook—it was a safe space where I learned some of my most important life lessons. Honoring her teachings, combined with my professional training as a pastry chef, I built Iylo. It is a brand focused on creating memories, fostering connection, and bringing people together through our carefully crafted bakes.",
+  mission:
+    "To craft a memorable experience for you every single time. We bake with purpose and serve with intent, bringing people together around the simple joy of exceptional food.",
+  vision:
+    "To create a space where professional craft meets the comforting warmth of home, making every milestone sweeter and every quiet moment worth pausing for.",
 };
 
 export const STORE_ADDRESS =

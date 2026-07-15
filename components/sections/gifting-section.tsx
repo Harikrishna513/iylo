@@ -12,27 +12,21 @@ export function GiftingSection() {
     <section id="gifting" className="section-padding bg-ivory text-black">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-16 text-center">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-brown">
+          <h2 className="editorial-heading text-4xl text-black md:text-6xl">
             Thoughtfully Curated
-          </p>
-          <h2 className="editorial-heading mt-4 text-4xl text-black md:text-6xl">
-            Gifting Collection
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-sm text-black/50">
-            Every gift tells a story. Our luxury hampers are designed to create
-            lasting impressions.
-          </p>
         </Reveal>
 
         <div className="space-y-8">
           {giftingOptions.map((option, i) => (
             <motion.div
               key={option.id}
+              id={option.id}
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className={`grid items-center gap-8 lg:grid-cols-2 ${
+              className={`scroll-mt-32 grid items-center gap-8 lg:grid-cols-2 ${
                 i % 2 === 1 ? "lg:direction-rtl" : ""
               }`}
             >

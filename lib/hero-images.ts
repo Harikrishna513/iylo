@@ -39,7 +39,7 @@ export const HERO_FADE_DURATION_MS = 900;
  *   6–8 = medium
  *   10+ = heavy blur
  */
-export const HERO_BG_BLUR_PX = 4;
+export const HERO_BG_BLUR_PX = 0;
 
 /**
  * Optional dark tint over slides (0–1). Helps text readability.
