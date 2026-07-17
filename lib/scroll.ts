@@ -1,4 +1,4 @@
-export type InquiryScrollType = "corporate";
+export type InquiryScrollType = "corporate" | "custom";
 
 const INQUIRY_TYPE_KEY = "iylo_inquiry_type";
 
@@ -12,7 +12,7 @@ export function consumePendingInquiryType(): InquiryScrollType | null {
   const value = sessionStorage.getItem(INQUIRY_TYPE_KEY);
   if (value === "corporate" || value === "custom") {
     sessionStorage.removeItem(INQUIRY_TYPE_KEY);
-    return "corporate";
+    return value;
   }
   return null;
 }

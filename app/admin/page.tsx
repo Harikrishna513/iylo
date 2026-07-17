@@ -1,59 +1,267 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { getAdminDashboardStats } from "@/lib/admin";
+import { Calendar, Filter, Loader2, X } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
-import { AdminStatCard, adminCardClass, adminTableWrapClass, adminThClass, adminTdClass } from "@/components/admin/admin-ui";
+import type { AdminCategoryRow, AdminDashboardStats } from "@/lib/admin";
+import {
+  DASHBOARD_PRESETS,
+  dateRangeForPreset,
+  describeDateRange,
+  isoToLocalDateInput,
+  localDateToIsoEndExclusive,
+  localDateToIsoStart,
+  type DashboardPreset,
+} from "@/lib/domain/dashboard-presets";
+import {
+  AdminStatCard,
+  adminCardClass,
+  adminTableWrapClass,
+  adminThClass,
+  adminTdClass,
+} from "@/components/admin/admin-ui";
 
-export const dynamic = "force-dynamic";
+const ALL_CATEGORIES = "__all__";
 
-export const metadata = {
-  title: "Admin Dashboard | IYLO Bakehouse",
-  robots: { index: false, follow: false },
+interface FilterState {
+  preset: DashboardPreset;
+  customFrom: string;
+  customTo: string;
+  categorySlug: string;
+}
+
+const INITIAL_FILTERS: FilterState = {
+  preset: "month",
+  customFrom: "",
+  customTo: "",
+  categorySlug: ALL_CATEGORIES,
 };
 
-export default async function AdminDashboardPage() {
-  const stats = await getAdminDashboardStats();
+export default function AdminDashboardPage() {
+  const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
+  const [stats, setStats] = useState<AdminDashboardStats | null>(null);
+  const [categories, setCategories] = useState<AdminCategoryRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const queryParams = useMemo(() => {
+    const params = new URLSearchParams();
+    if (filters.preset === "custom") {
+      const from = localDateToIsoStart(filters.customFrom);
+      const to = localDateToIsoEndExclusive(filters.customTo);
+      if (from) params.set("dateFrom", from);
+      if (to) params.set("dateTo", to);
+    } else {
+      const range = dateRangeForPreset(filters.preset);
+      if (range.dateFrom) params.set("dateFrom", range.dateFrom);
+      if (range.dateTo) params.set("dateTo", range.dateTo);
+    }
+    if (filters.categorySlug !== ALL_CATEGORIES) {
+      params.set("categorySlug", filters.categorySlug);
+    }
+    return params;
+  }, [filters]);
+
+  const friendlyRange = useMemo(() => {
+    if (filters.preset === "all") return "All time";
+    if (filters.preset === "custom") {
+      return describeDateRange({
+        dateFrom: localDateToIsoStart(filters.customFrom),
+        dateTo: localDateToIsoEndExclusive(filters.customTo),
+      });
+    }
+    return describeDateRange(dateRangeForPreset(filters.preset));
+  }, [filters]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setRefreshing(true);
+    (async () => {
+      try {
+        const res = await fetch(`/api/admin/dashboard?${queryParams}`);
+        const data = await res.json();
+        if (!cancelled) {
+          setStats(data.stats ?? null);
+          setCategories(data.categories ?? []);
+        }
+      } finally {
+        if (!cancelled) {
+          setRefreshing(false);
+          setLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [queryParams]);
+
+  const setPreset = useCallback((preset: DashboardPreset) => {
+    setFilters((prev) => {
+      if (preset === "custom") {
+        const r = dateRangeForPreset(prev.preset);
+        return {
+          ...prev,
+          preset,
+          customFrom: isoToLocalDateInput(r.dateFrom),
+          customTo: isoToLocalDateInput(
+            r.dateTo
+              ? new Date(new Date(r.dateTo).getTime() - 86_400_000).toISOString()
+              : null
+          ),
+        };
+      }
+      return { ...prev, preset };
+    });
+  }, []);
+
+  const hasNonDefault =
+    filters.preset !== INITIAL_FILTERS.preset ||
+    filters.categorySlug !== INITIAL_FILTERS.categorySlug ||
+    !!filters.customFrom ||
+    !!filters.customTo;
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-2">
         <h1 className="editorial-heading text-3xl text-maroon md:text-4xl">Dashboard</h1>
-        <p className="mt-1 text-sm text-maroon/55">IYLO Bakehouse · Jayanagar, Bangalore</p>
+        <p className="mt-1 text-sm text-maroon/55">
+          Showing data for {friendlyRange.toLowerCase()}.
+        </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <AdminStatCard label="Month Revenue" value={formatPrice(stats.monthRevenue)} accent />
-        <AdminStatCard
-          label="Orders Placed"
-          value={stats.recentOrders.length}
-          hint={`${stats.pendingOrders} pending`}
-        />
-        <AdminStatCard
-          label="Avg Order Value"
-          value={formatPrice(stats.avgOrderValue)}
-          hint="Recent orders"
-        />
-        <AdminStatCard label="Customers" value={stats.totalCustomers} />
-        <AdminStatCard
-          label="Active Products"
-          value={stats.activeProducts}
-          hint={`${stats.totalProducts} total in catalogue`}
-        />
-        <AdminStatCard
-          label="Hidden"
-          value={stats.inactiveProducts}
-          hint="Not visible on store"
-        />
-        <AdminStatCard
-          label="Out of Stock"
-          value={stats.outOfStockCount}
-          hint="Variants at 0 pcs"
-        />
-        <AdminStatCard
-          label="Low Stock"
-          value={stats.lowStockCount}
-          hint="Below 5 pcs per variant"
-        />
+      <div className={`${adminCardClass} mb-6 mt-6`}>
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="hidden text-[10px] font-bold uppercase tracking-widest text-maroon/55 sm:inline">
+              <Calendar className="mr-1 inline h-3.5 w-3.5 -mt-0.5" />
+              Period
+            </span>
+            {DASHBOARD_PRESETS.map((p) => {
+              const active = filters.preset === p.value;
+              return (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setPreset(p.value)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    active
+                      ? "border-maroon bg-maroon text-white shadow-sm"
+                      : "border-maroon/20 bg-white text-maroon/65 hover:border-maroon/40"
+                  }`}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {filters.preset === "custom" && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-maroon/55">
+                From
+              </span>
+              <input
+                type="date"
+                value={filters.customFrom}
+                onChange={(e) =>
+                  setFilters((f) => ({ ...f, customFrom: e.target.value }))
+                }
+                className="rounded-full border border-maroon/20 bg-white px-3 py-1.5 text-xs text-maroon outline-none focus:border-light-blue"
+              />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-maroon/55">
+                To
+              </span>
+              <input
+                type="date"
+                value={filters.customTo}
+                min={filters.customFrom || undefined}
+                onChange={(e) =>
+                  setFilters((f) => ({ ...f, customTo: e.target.value }))
+                }
+                className="rounded-full border border-maroon/20 bg-white px-3 py-1.5 text-xs text-maroon outline-none focus:border-light-blue"
+              />
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2 xl:ml-auto">
+            <span className="hidden text-[10px] font-bold uppercase tracking-widest text-maroon/55 sm:inline">
+              <Filter className="mr-1 inline h-3.5 w-3.5 -mt-0.5" />
+              Category
+            </span>
+            <select
+              value={filters.categorySlug}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, categorySlug: e.target.value }))
+              }
+              className="min-w-[180px] rounded-full border border-maroon/20 bg-white px-3 py-1.5 text-xs font-medium text-maroon outline-none focus:border-light-blue"
+            >
+              <option value={ALL_CATEGORIES}>All categories</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {hasNonDefault && (
+              <button
+                type="button"
+                onClick={() => setFilters(INITIAL_FILTERS)}
+                className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-maroon/45 hover:text-maroon"
+              >
+                <X className="h-3 w-3" /> Reset
+              </button>
+            )}
+            {refreshing && (
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-maroon/40" aria-label="Refreshing" />
+            )}
+          </div>
+        </div>
       </div>
+
+      {loading || !stats ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-[112px] animate-pulse rounded-lg border border-maroon/10 bg-white" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <AdminStatCard label="Revenue" value={formatPrice(stats.filteredRevenue)} accent />
+          <AdminStatCard
+            label="Orders"
+            value={stats.filteredOrderCount}
+            hint={`${stats.pendingOrders} pending`}
+          />
+          <AdminStatCard
+            label="Avg Order Value"
+            value={formatPrice(stats.filteredAvgOrderValue)}
+            hint={friendlyRange}
+          />
+          <AdminStatCard label="Customers" value={stats.totalCustomers} />
+          <AdminStatCard
+            label="Delivered / Picked up"
+            value={stats.deliveredOrders}
+            hint={`${stats.cancelledOrders} cancelled`}
+          />
+          <AdminStatCard
+            label="Active Products"
+            value={stats.activeProducts}
+            hint={`${stats.totalProducts} total · ${stats.inactiveProducts} hidden`}
+          />
+          <AdminStatCard
+            label="Out of Stock"
+            value={stats.outOfStockCount}
+            hint="Variants at 0 pcs"
+          />
+          <AdminStatCard
+            label="Low Stock"
+            value={stats.lowStockCount}
+            hint="Below 5 pcs per variant"
+          />
+        </div>
+      )}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className={adminCardClass}>
@@ -74,12 +282,10 @@ export default async function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {stats.recentOrders.slice(0, 5).map((o) => (
+                {(stats?.recentOrders ?? []).slice(0, 5).map((o) => (
                   <tr key={o.id} className="border-b border-maroon/5 last:border-0">
                     <td className={`${adminTdClass} font-medium`}>{o.order_number}</td>
-                    <td className={`${adminTdClass} text-maroon/70`}>
-                      {o.guest_name ?? "—"}
-                    </td>
+                    <td className={`${adminTdClass} text-maroon/70`}>{o.guest_name ?? "—"}</td>
                     <td className={`${adminTdClass} text-light-blue`}>
                       {formatPrice(o.total_amount)}
                     </td>
@@ -88,10 +294,10 @@ export default async function AdminDashboardPage() {
                     </td>
                   </tr>
                 ))}
-                {!stats.recentOrders.length && (
+                {!stats?.recentOrders.length && (
                   <tr>
                     <td colSpan={4} className="p-6 text-center text-sm text-maroon/50">
-                      No orders yet
+                      No orders in this period
                     </td>
                   </tr>
                 )}
@@ -108,10 +314,10 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
           <p className="mb-4 text-xs text-maroon/50">
-            {stats.outOfStockCount} out of stock · {stats.lowStockCount} low (&lt; 5 pcs)
+            {stats?.outOfStockCount ?? 0} out of stock · {stats?.lowStockCount ?? 0} low
           </p>
           <ul className="space-y-3">
-            {[...stats.outOfStockItems, ...stats.lowStockItems]
+            {[...(stats?.outOfStockItems ?? []), ...(stats?.lowStockItems ?? [])]
               .slice(0, 8)
               .map((item, i) => (
                 <li key={i} className="flex items-center justify-between text-sm">
@@ -130,7 +336,7 @@ export default async function AdminDashboardPage() {
                   </span>
                 </li>
               ))}
-            {!stats.outOfStockItems.length && !stats.lowStockItems.length && (
+            {!stats?.outOfStockItems.length && !stats?.lowStockItems.length && (
               <li className="text-sm text-maroon/50">All items well stocked</li>
             )}
           </ul>

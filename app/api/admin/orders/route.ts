@@ -12,6 +12,8 @@ export async function GET(req: NextRequest) {
   const orders = await getAdminOrders({
     status: searchParams.get("status") ?? undefined,
     search: searchParams.get("search") ?? undefined,
+    dateFrom: searchParams.get("dateFrom"),
+    dateTo: searchParams.get("dateTo"),
   });
 
   return NextResponse.json({ orders });

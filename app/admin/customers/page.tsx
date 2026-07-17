@@ -1,68 +1,177 @@
-import { getAdminCustomers } from "@/lib/admin";
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Search, Loader2, Mail, Phone, Users as UsersIcon, IndianRupee } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import type { AdminCustomer } from "@/lib/admin";
 import {
-  AdminStatCard,
+  adminCardClass,
+  adminInputClass,
   adminTableWrapClass,
   adminThClass,
   adminTdClass,
 } from "@/components/admin/admin-ui";
 
-export const dynamic = "force-dynamic";
+export default function AdminCustomersPage() {
+  const [rows, setRows] = useState<AdminCustomer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
-export const metadata = {
-  title: "Customers | IYLO Admin",
-  robots: { index: false, follow: false },
-};
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/customers");
+      const data = await res.json();
+      setRows(data.customers ?? []);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-export default async function AdminCustomersPage() {
-  const customers = await getAdminCustomers();
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return rows;
+    const q = search.toLowerCase();
+    return rows.filter(
+      (r) =>
+        r.email.toLowerCase().includes(q) ||
+        (r.full_name ?? "").toLowerCase().includes(q) ||
+        (r.phone ?? "").includes(q)
+    );
+  }, [rows, search]);
+
+  const totalSpent = filtered.reduce((s, r) => s + r.total_spent, 0);
+  const activeCount = rows.filter((r) => r.is_active && r.order_count > 0).length;
 
   return (
     <div>
-      <h1 className="editorial-heading mb-8 text-3xl text-maroon md:text-4xl">Customers</h1>
+      <h1 className="editorial-heading text-3xl text-maroon md:text-4xl">Customers</h1>
+      <p className="mt-1 mb-6 text-sm text-maroon/55">
+        {rows.length} registered shopper{rows.length === 1 ? "" : "s"}
+      </p>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-3">
-        <AdminStatCard label="Total" value={customers.length} />
-        <AdminStatCard
-          label="With Orders"
-          value={customers.filter((c) => c.order_count > 0).length}
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <Stat
+          icon={UsersIcon}
+          label="Customers"
+          value={rows.length.toString()}
         />
-        <AdminStatCard
-          label="Lifetime Spend"
-          value={formatPrice(customers.reduce((s, c) => s + c.total_spent, 0))}
+        <Stat
+          icon={IndianRupee}
+          label="Total Lifetime Spend"
+          value={formatPrice(totalSpent)}
           accent
+        />
+        <Stat
+          icon={Mail}
+          label="Active"
+          value={activeCount.toString()}
+          hint="With at least one order"
+        />
+      </div>
+
+      <div className="relative mb-5 max-w-md">
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-maroon/40" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name, email, or phone…"
+          className={`${adminInputClass} pl-10`}
         />
       </div>
 
       <div className={adminTableWrapClass}>
-        <table className="w-full min-w-[640px]">
+        <table className="w-full min-w-[720px]">
           <thead>
             <tr className="border-b border-maroon/10">
-              <th className={adminThClass}>Name</th>
-              <th className={adminThClass}>Email</th>
-              <th className={adminThClass}>Phone</th>
+              <th className={adminThClass}>Customer</th>
+              <th className={adminThClass}>Contact</th>
               <th className={adminThClass}>Orders</th>
-              <th className={adminThClass}>Spent</th>
+              <th className={adminThClass}>Lifetime Spend</th>
+              <th className={adminThClass}>Joined</th>
             </tr>
           </thead>
           <tbody>
-            {customers.map((c) => (
-              <tr key={c.id} className="border-b border-maroon/5 last:border-0">
-                <td className={`${adminTdClass} font-medium`}>{c.full_name ?? "—"}</td>
-                <td className={`${adminTdClass} text-maroon/70`}>{c.email}</td>
-                <td className={`${adminTdClass} text-maroon/70`}>{c.phone ?? "—"}</td>
-                <td className={`${adminTdClass} text-maroon/70`}>{c.order_count}</td>
-                <td className={`${adminTdClass} text-light-blue`}>
-                  {formatPrice(c.total_spent)}
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="py-16 text-center">
+                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-maroon/40" />
                 </td>
               </tr>
-            ))}
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-16 text-center text-sm text-maroon/50">
+                  {search ? "No matching customers" : "No customers yet"}
+                </td>
+              </tr>
+            ) : (
+              filtered.map((c) => (
+                <tr key={c.id} className="border-b border-maroon/5 last:border-0">
+                  <td className={adminTdClass}>
+                    <p className="font-semibold text-maroon">{c.full_name ?? "—"}</p>
+                    <p className="font-mono text-xs text-maroon/45">{c.id.slice(0, 8)}…</p>
+                  </td>
+                  <td className={adminTdClass}>
+                    <p className="flex items-center gap-1.5 text-sm text-maroon/80">
+                      <Mail className="h-3.5 w-3.5 text-maroon/40" />
+                      {c.email || "—"}
+                    </p>
+                    {c.phone && (
+                      <p className="mt-1 flex items-center gap-1.5 text-xs text-maroon/55">
+                        <Phone className="h-3 w-3 text-maroon/40" />
+                        {c.phone}
+                      </p>
+                    )}
+                  </td>
+                  <td className={`${adminTdClass} font-semibold`}>{c.order_count}</td>
+                  <td className={`${adminTdClass} font-bold text-light-blue`}>
+                    {formatPrice(c.total_spent)}
+                  </td>
+                  <td className={`${adminTdClass} text-xs text-maroon/55`}>
+                    {new Date(c.created_at).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-        {!customers.length && (
-          <p className="p-8 text-center text-sm text-maroon/50">No customers yet</p>
-        )}
       </div>
+    </div>
+  );
+}
+
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  hint,
+  accent,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  hint?: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className={adminCardClass}>
+      <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-mist-blue text-maroon">
+        <Icon className="h-4 w-4" />
+      </div>
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-maroon/50">
+        {label}
+      </p>
+      <p className={`editorial-heading mt-1 text-2xl ${accent ? "text-light-blue" : "text-maroon"}`}>
+        {value}
+      </p>
+      {hint && <p className="mt-1 text-xs text-maroon/45">{hint}</p>}
     </div>
   );
 }

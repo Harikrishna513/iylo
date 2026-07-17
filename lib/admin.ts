@@ -1,11 +1,20 @@
 import { createServiceClient } from "@/lib/supabase";
+import { escapeCsvCell } from "@/lib/csv-products";
+
+export interface DashboardFilters {
+  dateFrom?: string | null;
+  dateTo?: string | null;
+  categorySlug?: string | null;
+}
 
 export interface AdminDashboardStats {
-  todayOrders: number;
-  weekRevenue: number;
-  monthRevenue: number;
-  totalCustomers: number;
+  filteredRevenue: number;
+  filteredOrderCount: number;
+  filteredAvgOrderValue: number;
   pendingOrders: number;
+  deliveredOrders: number;
+  cancelledOrders: number;
+  totalCustomers: number;
   lowStockCount: number;
   outOfStockCount: number;
   activeProducts: number;
@@ -14,7 +23,12 @@ export interface AdminDashboardStats {
   recentOrders: AdminOrder[];
   lowStockItems: Array<{ name: string; variant: string; stock: number }>;
   outOfStockItems: Array<{ name: string; variant: string; stock: number }>;
-  avgOrderValue: number;
+}
+
+export interface AdminCategoryRow {
+  id: string;
+  slug: string;
+  name: string;
 }
 
 export interface AdminUserRow {
@@ -46,6 +60,7 @@ export interface AdminCustomer {
   order_count: number;
   total_spent: number;
   created_at: string;
+  is_active: boolean;
 }
 
 export interface AdminProduct {
@@ -59,49 +74,64 @@ export interface AdminProduct {
   variant_count: number;
 }
 
-const revenueStatuses = ["confirmed", "preparing", "ready", "out_for_delivery", "delivered", "picked_up"];
+const revenueStatuses = [
+  "confirmed",
+  "preparing",
+  "ready",
+  "out_for_delivery",
+  "delivered",
+  "picked_up",
+];
 
-export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
+function applyDateFilter<T extends { gte: (c: string, v: string) => T; lt: (c: string, v: string) => T }>(
+  query: T,
+  filters: DashboardFilters | undefined,
+  column = "placed_at"
+): T {
+  let q = query;
+  if (filters?.dateFrom) q = q.gte(column, filters.dateFrom);
+  if (filters?.dateTo) q = q.lt(column, filters.dateTo);
+  return q;
+}
+
+export async function getAdminCategories(): Promise<AdminCategoryRow[]> {
   const supabase = createServiceClient();
-  const today = new Date().toISOString().split("T")[0];
+  const { data } = await supabase
+    .from("categories")
+    .select("id, slug, name")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true });
+  return (data ?? []) as AdminCategoryRow[];
+}
 
-  const { count: todayOrders } = await supabase
+export async function getAdminDashboardStats(
+  filters: DashboardFilters = {}
+): Promise<AdminDashboardStats> {
+  const supabase = createServiceClient();
+
+  let ordersQuery = supabase
     .from("orders")
-    .select("id", { count: "exact", head: true })
-    .gte("placed_at", `${today}T00:00:00`);
+    .select("id, order_number, status, total_amount, guest_name, guest_email, fulfillment_type, placed_at");
+  ordersQuery = applyDateFilter(ordersQuery as never, filters) as typeof ordersQuery;
 
-  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-  const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+  const { data: periodOrders } = await ordersQuery.order("placed_at", { ascending: false });
 
-  const { data: weekOrders } = await supabase
-    .from("orders")
-    .select("total_amount, status")
-    .gte("placed_at", weekAgo)
-    .in("status", revenueStatuses);
+  const orders = periodOrders ?? [];
+  const revenueOrders = orders.filter((o) => revenueStatuses.includes(o.status));
+  const filteredRevenue = revenueOrders.reduce((s, o) => s + Number(o.total_amount), 0);
+  const filteredOrderCount = orders.length;
+  const filteredAvgOrderValue =
+    revenueOrders.length > 0 ? filteredRevenue / revenueOrders.length : 0;
 
-  const { data: monthOrders } = await supabase
-    .from("orders")
-    .select("total_amount, status")
-    .gte("placed_at", monthAgo)
-    .in("status", revenueStatuses);
+  const pendingOrders = orders.filter((o) => o.status === "pending").length;
+  const deliveredOrders = orders.filter(
+    (o) => o.status === "delivered" || o.status === "picked_up"
+  ).length;
+  const cancelledOrders = orders.filter((o) => o.status === "cancelled").length;
 
-  const { count: totalCustomers } = await supabase
-    .from("users")
-    .select("id", { count: "exact", head: true });
-
-  const { count: pendingOrders } = await supabase
-    .from("orders")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "pending");
-
-  const { data: recentOrders } = await supabase
-    .from("orders")
-    .select("id, order_number, status, total_amount, guest_name, guest_email, fulfillment_type, placed_at")
-    .order("placed_at", { ascending: false })
-    .limit(10);
-
+  const recentSlice = orders.slice(0, 10);
   const recentWithPayment = await Promise.all(
-    (recentOrders ?? []).map(async (o) => {
+    recentSlice.map(async (o) => {
       const { data: txn } = await supabase
         .from("payment_transactions")
         .select("status")
@@ -115,6 +145,10 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
       } as AdminOrder;
     })
   );
+
+  const { count: totalCustomers } = await supabase
+    .from("users")
+    .select("id", { count: "exact", head: true });
 
   const { data: variants } = await supabase
     .from("product_variants")
@@ -137,11 +171,13 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
     .from("products")
     .select("id", { count: "exact", head: true });
 
-  const lowStockItems = (variants ?? []).map((v) => ({
-    name: (v.products as unknown as { name: string }).name,
-    variant: v.name,
-    stock: v.stock_quantity,
-  }));
+  const lowStockItems = (variants ?? [])
+    .filter((v) => v.stock_quantity > 0)
+    .map((v) => ({
+      name: (v.products as unknown as { name: string }).name,
+      variant: v.name,
+      stock: v.stock_quantity,
+    }));
 
   const outOfStockItems = (outOfStockVariants ?? []).map((v) => ({
     name: (v.products as unknown as { name: string }).name,
@@ -149,18 +185,14 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
     stock: v.stock_quantity,
   }));
 
-  const avgOrderValue =
-    recentWithPayment.length > 0
-      ? recentWithPayment.reduce((s, o) => s + Number(o.total_amount), 0) /
-        recentWithPayment.length
-      : 0;
-
   return {
-    todayOrders: todayOrders ?? 0,
-    weekRevenue: (weekOrders ?? []).reduce((s, o) => s + Number(o.total_amount), 0),
-    monthRevenue: (monthOrders ?? []).reduce((s, o) => s + Number(o.total_amount), 0),
+    filteredRevenue,
+    filteredOrderCount,
+    filteredAvgOrderValue,
+    pendingOrders,
+    deliveredOrders,
+    cancelledOrders,
     totalCustomers: totalCustomers ?? 0,
-    pendingOrders: pendingOrders ?? 0,
     lowStockCount: lowStockItems.length,
     outOfStockCount: outOfStockItems.length,
     activeProducts: activeProducts ?? 0,
@@ -169,39 +201,42 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
     recentOrders: recentWithPayment,
     lowStockItems: lowStockItems.slice(0, 10),
     outOfStockItems: outOfStockItems.slice(0, 10),
-    avgOrderValue,
   };
 }
 
 export async function getAdminOrders(opts?: {
   status?: string;
   search?: string;
+  dateFrom?: string | null;
+  dateTo?: string | null;
   limit?: number;
 }): Promise<AdminOrder[]> {
   const supabase = createServiceClient();
   let query = supabase
     .from("orders")
-    .select("id, order_number, status, total_amount, guest_name, guest_email, fulfillment_type, placed_at")
+    .select(
+      "id, order_number, status, total_amount, guest_name, guest_email, fulfillment_type, placed_at"
+    )
     .order("placed_at", { ascending: false })
-    .limit(opts?.limit ?? 100);
+    .limit(opts?.limit ?? 200);
 
   if (opts?.status && opts.status !== "all") {
     query = query.eq("status", opts.status);
   }
+  if (opts?.dateFrom) query = query.gte("placed_at", opts.dateFrom);
+  if (opts?.dateTo) query = query.lt("placed_at", opts.dateTo);
 
   const { data } = await query;
-  const orders = data ?? [];
+  let orders = data ?? [];
 
   if (opts?.search) {
     const q = opts.search.toLowerCase();
-    return orders
-      .filter(
-        (o) =>
-          o.order_number?.toLowerCase().includes(q) ||
-          o.guest_name?.toLowerCase().includes(q) ||
-          o.guest_email?.toLowerCase().includes(q)
-      )
-      .map((o) => ({ ...o, payment_status: "pending" })) as AdminOrder[];
+    orders = orders.filter(
+      (o) =>
+        o.order_number?.toLowerCase().includes(q) ||
+        o.guest_name?.toLowerCase().includes(q) ||
+        o.guest_email?.toLowerCase().includes(q)
+    );
   }
 
   return Promise.all(
@@ -240,13 +275,18 @@ export async function getAdminCustomers(): Promise<AdminCustomer[]> {
   const supabase = createServiceClient();
   const { data: profiles } = await supabase
     .from("users")
-    .select("id, name, phone, created_at")
+    .select("id, name, phone, email, created_at")
     .order("created_at", { ascending: false });
 
   const customers: AdminCustomer[] = [];
 
   for (const p of profiles ?? []) {
-    const { data: authUser } = await supabase.auth.admin.getUserById(p.id);
+    let email = (p as { email?: string | null }).email ?? "";
+    if (!email) {
+      const { data: authUser } = await supabase.auth.admin.getUserById(p.id);
+      email = authUser?.user?.email ?? "";
+    }
+
     const { data: orders } = await supabase
       .from("orders")
       .select("total_amount, status")
@@ -256,11 +296,12 @@ export async function getAdminCustomers(): Promise<AdminCustomer[]> {
     customers.push({
       id: p.id,
       full_name: p.name,
-      email: authUser?.user?.email ?? "",
+      email,
       phone: p.phone,
       order_count: orders?.length ?? 0,
       total_spent: (orders ?? []).reduce((s, o) => s + Number(o.total_amount), 0),
       created_at: p.created_at,
+      is_active: true,
     });
   }
 
@@ -333,28 +374,57 @@ export async function exportProductsCsv(): Promise<string> {
   const { data } = await supabase
     .from("products")
     .select(
-      `slug, name, short_description, base_price, is_active, display_order,
+      `sku, slug, name, short_description, base_price, is_active, display_order,
        categories(slug)`
     )
     .order("display_order", { ascending: true });
 
   const header =
-    "slug,name,category_slug,base_price,short_description,is_active,display_order";
+    "slug,name,category_slug,sku,short_description,base_price,is_active,display_order";
   const lines = (data ?? []).map((p) => {
     const cat = (p.categories as unknown as { slug: string } | null)?.slug ?? "";
-    const esc = (v: string | number | boolean | null) => {
-      const s = String(v ?? "");
-      return s.includes(",") || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
-    };
     return [
-      esc(p.slug),
-      esc(p.name),
-      esc(cat),
-      esc(p.base_price ?? 0),
-      esc(p.short_description ?? ""),
-      esc(p.is_active),
-      esc(p.display_order),
+      escapeCsvCell(p.slug),
+      escapeCsvCell(p.name),
+      escapeCsvCell(cat),
+      escapeCsvCell(p.sku),
+      escapeCsvCell(p.short_description ?? ""),
+      escapeCsvCell(p.base_price ?? ""),
+      escapeCsvCell(p.is_active),
+      escapeCsvCell(p.display_order),
     ].join(",");
   });
   return [header, ...lines].join("\n");
+}
+
+export async function createAdminProduct(input: {
+  name: string;
+  slug: string;
+  category_id: string;
+  short_description?: string;
+  base_price?: number | null;
+  sku?: string;
+  is_active?: boolean;
+}): Promise<{ id: string }> {
+  const supabase = createServiceClient();
+  const sku =
+    input.sku?.trim() ||
+    `IYLO-${input.slug.toUpperCase().replace(/[^A-Z0-9]+/g, "-").slice(0, 24)}-${Date.now().toString(36).toUpperCase()}`;
+
+  const { data, error } = await supabase
+    .from("products")
+    .insert({
+      name: input.name.trim(),
+      slug: input.slug.trim().toLowerCase(),
+      sku,
+      category_id: input.category_id,
+      short_description: input.short_description?.trim() || input.name.trim(),
+      base_price: input.base_price ?? null,
+      is_active: input.is_active ?? true,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return { id: data.id };
 }

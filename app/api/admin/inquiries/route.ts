@@ -12,6 +12,9 @@ export async function GET(req: NextRequest) {
   const inquiries = await getAdminInquiries({
     status: searchParams.get("status") ?? undefined,
     type: searchParams.get("type") ?? undefined,
+    search: searchParams.get("search") ?? undefined,
+    dateFrom: searchParams.get("dateFrom"),
+    dateTo: searchParams.get("dateTo"),
   });
 
   return NextResponse.json({ inquiries });

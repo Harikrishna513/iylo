@@ -1,16 +1,17 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Download, Upload, Trash2, Search } from "lucide-react";
+import { FileSpreadsheet, Plus, Search, Trash2 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
-import type { AdminProduct } from "@/lib/admin";
+import type { AdminCategoryRow, AdminProduct } from "@/lib/admin";
 import {
   adminInputClass,
   adminSelectClass,
   adminTableWrapClass,
   adminThClass,
   adminTdClass,
+  adminCardClass,
 } from "@/components/admin/admin-ui";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 
@@ -21,11 +22,9 @@ interface AdminProductsClientProps {
 export function AdminProductsClient({ initialProducts }: AdminProductsClientProps) {
   const [products, setProducts] = useState(initialProducts);
   const [search, setSearch] = useState("");
-  const [importing, setImporting] = useState(false);
-  const [importMessage, setImportMessage] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<AdminProduct | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [showNew, setShowNew] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -37,30 +36,6 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
         p.category_name.toLowerCase().includes(q)
     );
   }, [products, search]);
-
-  const handleExport = () => {
-    window.location.href = "/api/admin/products/export";
-  };
-
-  const handleImport = async (file: File) => {
-    setImporting(true);
-    setImportMessage("");
-    const form = new FormData();
-    form.append("file", file);
-    const res = await fetch("/api/admin/products/import", { method: "POST", body: form });
-    const data = await res.json();
-    setImporting(false);
-    if (!res.ok) {
-      setImportMessage(data.error ?? "Import failed");
-      return;
-    }
-    setImportMessage(
-      `Imported ${data.imported}, updated ${data.updated}${
-        data.errors?.length ? `. ${data.errors.length} row(s) had issues.` : "."
-      }`
-    );
-    window.location.reload();
-  };
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
@@ -90,42 +65,23 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={handleExport}
+          <Link
+            href="/admin/products/import"
             className="inline-flex items-center gap-2 border border-maroon/15 bg-white px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-maroon transition-colors hover:bg-mist-blue"
           >
-            <Download className="h-3.5 w-3.5" />
-            Export CSV
-          </button>
+            <FileSpreadsheet className="h-3.5 w-3.5" />
+            Import / Export
+          </Link>
           <button
             type="button"
-            onClick={() => fileRef.current?.click()}
-            disabled={importing}
-            className="inline-flex items-center gap-2 border border-maroon/15 bg-white px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-maroon transition-colors hover:bg-mist-blue disabled:opacity-60"
+            onClick={() => setShowNew(true)}
+            className="inline-flex items-center gap-2 bg-maroon px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-rosewood"
           >
-            <Upload className="h-3.5 w-3.5" />
-            {importing ? "Importing…" : "Import CSV"}
+            <Plus className="h-3.5 w-3.5" />
+            New Product
           </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".csv,text/csv"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleImport(file);
-              e.target.value = "";
-            }}
-          />
         </div>
       </div>
-
-      {importMessage && (
-        <p className="mb-4 rounded-lg border border-light-blue/40 bg-mist-blue px-4 py-3 text-sm text-maroon">
-          {importMessage}
-        </p>
-      )}
 
       <div className="relative mb-6 max-w-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-maroon/40" />
@@ -157,18 +113,21 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                   <p className="font-medium">{p.name}</p>
                   <p className="text-xs text-maroon/45">{p.slug}</p>
                 </td>
-                <td className={`${adminTdClass} text-maroon/70`}>{p.category_name}</td>
+                <td className={`${adminTdClass} text-maroon/70`}>{p.category_name || "—"}</td>
                 <td className={`${adminTdClass} text-light-blue`}>
-                  {p.base_price ? formatPrice(p.base_price) : "Enquiry"}
+                  {p.base_price != null ? formatPrice(p.base_price) : "—"}
                 </td>
-                <td className={`${adminTdClass} text-maroon/70`}>{p.stock_total}</td>
+                <td className={`${adminTdClass} text-maroon/70`}>
+                  {p.stock_total}
+                  <span className="text-xs text-maroon/40"> · {p.variant_count} var</span>
+                </td>
                 <td className={adminTdClass}>
                   <span
-                    className={
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                       p.is_active
-                        ? "rounded-full bg-mist-blue px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-maroon"
-                        : "rounded-full bg-maroon/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-maroon/50"
-                    }
+                        ? "bg-mist-blue text-maroon"
+                        : "bg-maroon/10 text-maroon/50"
+                    }`}
                   >
                     {p.is_active ? "Active" : "Hidden"}
                   </span>
@@ -186,10 +145,10 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(p)}
-                        className="inline-flex items-center gap-1 text-xs text-rosewood hover:underline"
+                        className="text-maroon/40 hover:text-rosewood"
+                        aria-label="Hide product"
                       >
-                        <Trash2 className="h-3 w-3" />
-                        Hide
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     )}
                   </div>
@@ -200,7 +159,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
         </table>
         {!filtered.length && (
           <p className="p-8 text-center text-sm text-maroon/50">
-            {search ? "No products match your search." : "No products in database."}
+            {search ? "No matching products" : "No products yet"}
           </p>
         )}
       </div>
@@ -208,13 +167,180 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
       <ConfirmDialog
         open={!!deleteTarget}
         title="Hide product?"
-        message={`"${deleteTarget?.name}" will be hidden from the storefront. You can re-activate it later via CSV import or the database.`}
-        confirmLabel="Hide product"
+        message={
+          deleteTarget
+            ? `"${deleteTarget.name}" will be hidden from the storefront.`
+            : ""
+        }
+        confirmLabel="Hide"
         destructive
         loading={deleting}
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
+
+      {showNew && (
+        <NewProductModal
+          onClose={() => setShowNew(false)}
+          onCreated={() => {
+            setShowNew(false);
+            window.location.reload();
+          }}
+        />
+      )}
     </>
+  );
+}
+
+function NewProductModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: () => void;
+}) {
+  const [categories, setCategories] = useState<AdminCategoryRow[]>([]);
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
+  const [basePrice, setBasePrice] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/admin/products")
+      .then((r) => r.json())
+      .then((d) => {
+        setCategories(d.categories ?? []);
+        if (d.categories?.[0]) setCategoryId(d.categories[0].id);
+      })
+      .catch(() => {});
+  }, []);
+
+  const syncSlug = (value: string) => {
+    setName(value);
+    setSlug(
+      value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    const res = await fetch("/api/admin/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        slug,
+        category_id: categoryId,
+        short_description: shortDescription || name,
+        base_price: basePrice,
+      }),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) {
+      setError(data.error ?? "Failed to create product");
+      return;
+    }
+    onCreated();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className={`${adminCardClass} w-full max-w-lg`}>
+        <h2 className="editorial-heading text-2xl text-maroon">New Product</h2>
+        <p className="mt-1 text-xs text-maroon/50">
+          Creates a catalogue entry. Use Import / Export for bulk updates.
+        </p>
+        {error && <p className="mt-3 text-sm text-rosewood">{error}</p>}
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+          <div>
+            <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
+              Name
+            </label>
+            <input
+              required
+              value={name}
+              onChange={(e) => syncSlug(e.target.value)}
+              className={adminInputClass}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
+              Slug
+            </label>
+            <input
+              required
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              className={adminInputClass}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
+              Category
+            </label>
+            <select
+              required
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className={`${adminSelectClass} w-full`}
+            >
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
+              Short description
+            </label>
+            <input
+              value={shortDescription}
+              onChange={(e) => setShortDescription(e.target.value)}
+              className={adminInputClass}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
+              Base price (₹)
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={basePrice}
+              onChange={(e) => setBasePrice(e.target.value)}
+              className={adminInputClass}
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="border border-maroon/15 px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-maroon"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="bg-maroon px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-white disabled:opacity-60"
+            >
+              {saving ? "Saving…" : "Create"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

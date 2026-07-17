@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       continue;
     }
 
-    const payload = {
+    const payload: Record<string, unknown> = {
       slug,
       name,
       category_id: categoryId,
@@ -91,6 +91,7 @@ export async function POST(request: Request) {
       is_active: row.is_active ? row.is_active.toLowerCase() !== "false" : true,
       display_order: row.display_order ? Number(row.display_order) : i,
     };
+    if (row.sku) payload.sku = row.sku;
 
     const { data: existing } = await supabase
       .from("products")
@@ -103,6 +104,9 @@ export async function POST(request: Request) {
       if (error) errors.push(`Row ${i + 1}: ${error.message}`);
       else updated++;
     } else {
+      if (!payload.sku) {
+        payload.sku = `IYLO-${slug.toUpperCase().replace(/[^A-Z0-9]+/g, "-").slice(0, 24)}-${i}`;
+      }
       const { error } = await supabase.from("products").insert(payload);
       if (error) errors.push(`Row ${i + 1}: ${error.message}`);
       else imported++;

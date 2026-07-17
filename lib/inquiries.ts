@@ -60,6 +60,9 @@ export async function createInquiry(payload: InquiryPayload) {
 export async function getAdminInquiries(opts?: {
   status?: string;
   type?: string;
+  search?: string;
+  dateFrom?: string | null;
+  dateTo?: string | null;
 }): Promise<AdminInquiry[]> {
   const supabase = createServiceClient();
   let query = supabase
@@ -73,10 +76,26 @@ export async function getAdminInquiries(opts?: {
   if (opts?.type && opts.type !== "all") {
     query = query.eq("inquiry_type", opts.type);
   }
+  if (opts?.dateFrom) query = query.gte("created_at", opts.dateFrom);
+  if (opts?.dateTo) query = query.lt("created_at", opts.dateTo);
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as AdminInquiry[];
+  let rows = (data ?? []) as AdminInquiry[];
+
+  if (opts?.search?.trim()) {
+    const q = opts.search.trim().toLowerCase();
+    rows = rows.filter(
+      (r) =>
+        r.contact_name?.toLowerCase().includes(q) ||
+        r.email?.toLowerCase().includes(q) ||
+        r.phone?.includes(q) ||
+        r.company_name?.toLowerCase().includes(q) ||
+        r.message?.toLowerCase().includes(q)
+    );
+  }
+
+  return rows;
 }
 
 export async function updateInquiry(

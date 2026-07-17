@@ -81,15 +81,12 @@ export default function AdminUsersPage() {
         <h2 className="text-sm font-semibold uppercase tracking-widest text-maroon/50">
           Add Admin
         </h2>
-        <p className="mt-1 text-xs text-maroon/45">
-          Email must already have a customer account on the store.
-        </p>
         {error && <p className="mt-3 text-sm text-rosewood">{error}</p>}
         {message && <p className="mt-3 text-sm text-light-blue">{message}</p>}
         <div className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
-              Email
+              Email (must already have a customer account)
             </label>
             <input
               type="email"

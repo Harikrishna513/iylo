@@ -1,8 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Calendar, Loader2, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AdminInquiry, InquiryStatus } from "@/lib/inquiries";
+import {
+  DASHBOARD_PRESETS,
+  dateRangeForPreset,
+  describeDateRange,
+  isoToLocalDateInput,
+  localDateToIsoEndExclusive,
+  localDateToIsoStart,
+  type DashboardPreset,
+} from "@/lib/domain/dashboard-presets";
 import { adminCardClass, adminInputClass, adminSelectClass } from "@/components/admin/admin-ui";
 
 const STATUSES: Array<"all" | InquiryStatus> = [
@@ -14,6 +24,18 @@ const STATUSES: Array<"all" | InquiryStatus> = [
 ];
 
 const TYPES = ["all", "corporate", "custom"] as const;
+
+interface PeriodState {
+  preset: DashboardPreset;
+  customFrom: string;
+  customTo: string;
+}
+
+const INITIAL_PERIOD: PeriodState = {
+  preset: "all",
+  customFrom: "",
+  customTo: "",
+};
 
 function statusClasses(status: InquiryStatus) {
   switch (status) {
@@ -34,24 +56,68 @@ export default function AdminInquiriesPage() {
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([]);
   const [status, setStatus] = useState<(typeof STATUSES)[number]>("all");
   const [type, setType] = useState<(typeof TYPES)[number]>("all");
+  const [search, setSearch] = useState("");
+  const [period, setPeriod] = useState<PeriodState>(INITIAL_PERIOD);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
 
-  const load = async () => {
+  const dateParams = useMemo(() => {
+    if (period.preset === "custom") {
+      return {
+        dateFrom: localDateToIsoStart(period.customFrom),
+        dateTo: localDateToIsoEndExclusive(period.customTo),
+      };
+    }
+    return dateRangeForPreset(period.preset);
+  }, [period]);
+
+  const friendlyRange = useMemo(() => {
+    if (period.preset === "all") return "All time";
+    if (period.preset === "custom") {
+      return describeDateRange({
+        dateFrom: dateParams.dateFrom,
+        dateTo: dateParams.dateTo,
+      });
+    }
+    return describeDateRange(dateRangeForPreset(period.preset));
+  }, [period, dateParams]);
+
+  const load = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
     if (status !== "all") params.set("status", status);
     if (type !== "all") params.set("type", type);
+    if (search.trim()) params.set("search", search.trim());
+    if (dateParams.dateFrom) params.set("dateFrom", dateParams.dateFrom);
+    if (dateParams.dateTo) params.set("dateTo", dateParams.dateTo);
     const res = await fetch(`/api/admin/inquiries?${params}`);
     const data = await res.json();
     setInquiries(data.inquiries ?? []);
     setLoading(false);
-  };
+  }, [status, type, search, dateParams]);
 
   useEffect(() => {
     load();
-  }, [status, type]);
+  }, [load]);
+
+  const setPreset = (preset: DashboardPreset) => {
+    setPeriod((prev) => {
+      if (preset === "custom") {
+        const r = dateRangeForPreset(prev.preset);
+        return {
+          preset,
+          customFrom: isoToLocalDateInput(r.dateFrom),
+          customTo: isoToLocalDateInput(
+            r.dateTo
+              ? new Date(new Date(r.dateTo).getTime() - 86_400_000).toISOString()
+              : null
+          ),
+        };
+      }
+      return { ...prev, preset };
+    });
+  };
 
   const updateInquiry = async (
     id: string,
@@ -68,39 +134,114 @@ export default function AdminInquiriesPage() {
   return (
     <div>
       <h1 className="editorial-heading mb-2 text-3xl text-maroon md:text-4xl">Enquiries</h1>
-      <p className="mb-8 text-sm text-maroon/55">
-        Corporate and custom packaging requests from the website.
+      <p className="mb-6 text-sm text-maroon/55">
+        Corporate and custom packaging requests · {friendlyRange}
       </p>
 
-      <div className="mb-6 flex flex-wrap gap-4">
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as (typeof STATUSES)[number])}
-          className={adminSelectClass}
-        >
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s === "all" ? "All statuses" : s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
-          className={adminSelectClass}
-        >
-          {TYPES.map((t) => (
-            <option key={t} value={t}>
-              {t === "all" ? "All types" : t}
-            </option>
-          ))}
-        </select>
+      <div className={`${adminCardClass} mb-6 space-y-3`}>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="hidden text-[10px] font-bold uppercase tracking-widest text-maroon/55 sm:inline">
+            <Calendar className="mr-1 inline h-3.5 w-3.5 -mt-0.5" />
+            Period
+          </span>
+          {DASHBOARD_PRESETS.map((p) => {
+            const active = period.preset === p.value;
+            return (
+              <button
+                key={p.value}
+                type="button"
+                onClick={() => setPreset(p.value)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  active
+                    ? "border-maroon bg-maroon text-white"
+                    : "border-maroon/20 bg-white text-maroon/65 hover:border-maroon/40"
+                }`}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+          {period.preset !== INITIAL_PERIOD.preset && (
+            <button
+              type="button"
+              onClick={() => setPeriod(INITIAL_PERIOD)}
+              className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-maroon/45"
+            >
+              <X className="h-3 w-3" /> Reset
+            </button>
+          )}
+        </div>
+
+        {period.preset === "custom" && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-maroon/55">
+              From
+            </span>
+            <input
+              type="date"
+              value={period.customFrom}
+              onChange={(e) =>
+                setPeriod((p) => ({ ...p, customFrom: e.target.value }))
+              }
+              className="rounded-full border border-maroon/20 bg-white px-3 py-1.5 text-xs text-maroon"
+            />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-maroon/55">
+              To
+            </span>
+            <input
+              type="date"
+              value={period.customTo}
+              min={period.customFrom || undefined}
+              onChange={(e) =>
+                setPeriod((p) => ({ ...p, customTo: e.target.value }))
+              }
+              className="rounded-full border border-maroon/20 bg-white px-3 py-1.5 text-xs text-maroon"
+            />
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-3">
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as (typeof STATUSES)[number])}
+            className={adminSelectClass}
+          >
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s === "all" ? "All statuses" : s}
+              </option>
+            ))}
+          </select>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
+            className={adminSelectClass}
+          >
+            {TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t === "all" ? "All types" : t}
+              </option>
+            ))}
+          </select>
+          <div className="relative min-w-[220px] flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-maroon/40" />
+            <input
+              type="search"
+              placeholder="Search name, email, phone, company…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className={`${adminInputClass} pl-10`}
+            />
+          </div>
+        </div>
       </div>
 
       {loading ? (
-        <p className="text-maroon/50">Loading…</p>
+        <div className="flex justify-center py-16">
+          <Loader2 className="h-6 w-6 animate-spin text-maroon/40" />
+        </div>
       ) : inquiries.length === 0 ? (
-        <p className={`${adminCardClass} text-center text-maroon/50`}>No enquiries yet.</p>
+        <p className={`${adminCardClass} text-center text-maroon/50`}>No enquiries found.</p>
       ) : (
         <div className="space-y-4">
           {inquiries.map((inq) => (
