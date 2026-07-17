@@ -8,7 +8,7 @@ export interface InquiryPayload {
   contact_name: string;
   company_name?: string;
   phone: string;
-  email: string;
+  email?: string;
   message: string;
   gst_required?: boolean;
   estimated_qty?: string;
@@ -42,7 +42,7 @@ export async function createInquiry(payload: InquiryPayload) {
       contact_name: payload.contact_name,
       company_name: payload.company_name || null,
       phone: payload.phone,
-      email: payload.email.toLowerCase(),
+      email: (payload.email?.trim().toLowerCase() || "not-provided@iylobakehouse.com"),
       message: payload.message,
       gst_required: payload.gst_required ?? false,
       estimated_qty: payload.estimated_qty || null,

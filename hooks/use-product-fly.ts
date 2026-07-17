@@ -15,7 +15,6 @@ import { useWishlistStore } from "@/store/wishlist-store";
 export function useProductFly() {
   const spawn = useFlyAnimationStore((s) => s.spawn);
   const addItem = useCartStore((s) => s.addItem);
-  const openCart = useCartStore((s) => s.openCart);
   const toggleWishlist = useWishlistStore((s) => s.toggleItem);
   const isInWishlist = useWishlistStore((s) => s.isInWishlist);
 
@@ -50,7 +49,6 @@ export function useProductFly() {
         quantity?: number;
         source?: HTMLElement | null;
         event?: React.MouseEvent;
-        openDrawer?: boolean;
       }
     ) => {
       const source = resolveFlySource(opts?.source, opts?.event);
@@ -59,12 +57,11 @@ export function useProductFly() {
         product.image,
         () => {
           addItem(product, opts?.quantity ?? 1);
-          if (opts?.openDrawer !== false) openCart();
         },
         source
       );
     },
-    [flyTo, addItem, openCart]
+    [flyTo, addItem]
   );
 
   const flyToggleWishlist = useCallback(

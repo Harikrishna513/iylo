@@ -1,80 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
+import { Heart, ShoppingBag } from "lucide-react";
+import { useWishlistStore } from "@/store/wishlist-store";
 import { formatPrice, cn } from "@/lib/utils";
-import type { Product } from "@/types";
+import { Button } from "@/components/ui/button";
 import { LIGHT } from "@/lib/page-theme";
 import { useProductFly } from "@/hooks/use-product-fly";
 
 export default function AccountWishlistPage() {
-  const { user } = useAuth();
+  const { items, removeItem } = useWishlistStore();
   const { flyAddToCart } = useProductFly();
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("wishlist")
-      .select(
-        `products(id, slug, name, short_description, base_price, offer_price,
-         product_images(public_url, is_primary),
-         product_variants(id, price, offer_price, is_active))`
-      )
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        const mapped = (data ?? []).map((row) => {
-          const p = row.products as unknown as {
-            slug: string;
-            name: string;
-            short_description: string;
-            base_price: number | null;
-            product_images: Array<{ public_url: string; is_primary: boolean }>;
-            product_variants: Array<{ id: string; price: number; offer_price: number | null; is_active: boolean }>;
-          };
-          const variant = p.product_variants?.find((v) => v.is_active);
-          const img = p.product_images?.find((i) => i.is_primary) ?? p.product_images?.[0];
-          return {
-            id: p.slug,
-            variantId: variant?.id,
-            name: p.name,
-            description: p.short_description,
-            price: Number(variant?.offer_price ?? variant?.price ?? p.base_price ?? 0),
-            category: "viennoiserie" as const,
-            image: img?.public_url ?? "/products/placeholder.jpg",
-          };
-        });
-        setProducts(mapped);
-      });
-  }, [user]);
 
   return (
     <div>
-      <h2 className={cn(LIGHT.title, "mb-6 text-2xl")}>Wishlist</h2>
-      {products.length === 0 ? (
-        <p className={LIGHT.muted}>Your wishlist is empty.</p>
+      <h2 className={cn(LIGHT.title, "mb-2 text-2xl")}>Wishlist</h2>
+      <p className={cn("mb-6", LIGHT.subtitle)}>
+        Items you&apos;ve saved — add them to your cart anytime.
+      </p>
+
+      {items.length === 0 ? (
+        <div className="flex flex-col items-center py-16 text-center">
+          <Heart className="mb-4 h-12 w-12 text-maroon/20" strokeWidth={1.25} />
+          <p className={LIGHT.muted}>Your wishlist is empty.</p>
+          <Button variant="brown" className="mt-8" asChild>
+            <Link href="/products">Browse Menu</Link>
+          </Button>
+        </div>
       ) : (
         <ul className="space-y-4">
-          {products.map((p) => (
+          {items.map((p) => (
             <li key={p.id} className={cn("flex gap-4 border p-4", LIGHT.border)}>
-              <div data-fly-source className="relative h-20 w-20 shrink-0 overflow-hidden bg-maroon/5">
+              <Link
+                href={`/products/${p.id}`}
+                data-fly-source
+                className="relative h-20 w-20 shrink-0 overflow-hidden bg-maroon/5"
+              >
                 <Image src={p.image} alt={p.name} fill className="object-cover" sizes="80px" />
-              </div>
-              <div className="flex flex-1 flex-col">
-                <Link href={`/products/${p.id}`} className="font-medium text-maroon hover:text-light-blue">
+              </Link>
+              <div className="flex min-w-0 flex-1 flex-col">
+                <Link
+                  href={`/products/${p.id}`}
+                  className="font-medium text-maroon hover:text-light-blue"
+                >
                   {p.name}
                 </Link>
                 <p className="text-sm text-light-blue">{formatPrice(p.price)}</p>
-                <button
-                  type="button"
-                  onClick={(e) => flyAddToCart(p, { event: e })}
-                  className="mt-auto self-start text-xs uppercase tracking-widest text-light-blue hover:underline"
-                >
-                  Add to Cart
-                </button>
+                <div className="mt-auto flex flex-wrap items-center gap-3 pt-3">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      flyAddToCart(p, { event: e });
+                      removeItem(p.id);
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-light-blue hover:underline"
+                  >
+                    <ShoppingBag className="h-3.5 w-3.5" />
+                    Add to Cart
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(p.id)}
+                    className="text-xs uppercase tracking-widest text-maroon/40 hover:text-rosewood"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             </li>
           ))}

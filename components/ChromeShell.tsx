@@ -6,7 +6,6 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { FloatingCTA } from "@/components/layout/floating-cta";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
-import { AnnouncementPopup } from "@/components/layout/announcement-popup";
 
 export function ChromeShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -27,7 +26,6 @@ export function ChromeShell({ children }: { children: React.ReactNode }) {
         <>
           <FloatingCTA />
           <MobileBottomNav />
-          <AnnouncementPopup />
         </>
       )}
     </>

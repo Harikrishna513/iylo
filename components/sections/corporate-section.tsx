@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Building2, Gift, UtensilsCrossed } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
 import { Button } from "@/components/ui/button";
 import { ProductImages as img } from "@/lib/product-images";
-import { consumePendingInquiryType, type InquiryScrollType } from "@/lib/scroll";
 
 const services = [
   {
     icon: Gift,
     title: "Bulk Gifting",
-    description: "Custom hampers for teams, clients, and partners with branded packaging.",
+    description:
+      "Custom hampers for teams, clients, and partners with branded and custom packaging.",
   },
   {
     icon: Building2,
@@ -39,16 +39,10 @@ const emptyForm = {
 };
 
 export function CorporateSection() {
-  const [inquiryType, setInquiryType] = useState<InquiryScrollType>("corporate");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState(emptyForm);
-
-  useEffect(() => {
-    const pending = consumePendingInquiryType();
-    if (pending) setInquiryType(pending);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +54,7 @@ export function CorporateSection() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          inquiry_type: inquiryType,
+          inquiry_type: "corporate",
           company_name: form.company,
           contact_name: form.name,
           email: form.email,
@@ -88,9 +82,6 @@ export function CorporateSection() {
     }
   };
 
-  const formTitle =
-    inquiryType === "custom" ? "Custom Packaging Enquiry" : "Corporate Enquiry";
-
   return (
     <section id="corporate" className="relative scroll-mt-28 overflow-hidden">
       <div className="absolute inset-0">
@@ -112,7 +103,8 @@ export function CorporateSection() {
           </h2>
           <p className="mt-6 text-sm leading-relaxed text-ivory/60">
             Elevate your corporate gifting and events with IYLO&apos;s artisan collections. From
-            Diwali hampers to boardroom catering, we deliver excellence at scale.
+            Diwali hampers to boardroom catering and custom packaging, we deliver excellence at
+            scale.
           </p>
         </Reveal>
 
@@ -130,30 +122,10 @@ export function CorporateSection() {
 
         <Reveal className="mt-16">
           <div id="corporate-enquiry" className="glass max-w-2xl scroll-mt-28 p-8">
-            <div className="mb-6 flex gap-2">
-              {(["corporate", "custom"] as const).map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => {
-                    setInquiryType(type);
-                    setSubmitted(false);
-                    setError("");
-                  }}
-                  className={`border px-4 py-2 text-[10px] uppercase tracking-widest transition-colors ${
-                    inquiryType === type
-                      ? "border-gold bg-gold/10 text-gold"
-                      : "border-ivory/20 text-muted hover:border-ivory/40"
-                  }`}
-                >
-                  {type === "corporate" ? "Corporate / B2B" : "Custom Packaging"}
-                </button>
-              ))}
-            </div>
-
-            <h3 className="editorial-heading text-2xl text-ivory">{formTitle}</h3>
+            <h3 className="editorial-heading text-2xl text-ivory">Corporate / B2B Enquiry</h3>
             <p className="mt-2 text-sm text-ivory/50">
-              GST invoices available for Bangalore businesses. We respond within 24 hours.
+              Including bulk gifting, hampers, events, and custom packaging. GST invoices available.
+              We respond within 24 hours.
             </p>
 
             {submitted ? (
@@ -169,23 +141,24 @@ export function CorporateSection() {
                 )}
 
                 {[
-                  {
-                    key: "company",
-                    label: inquiryType === "custom" ? "Company / Occasion" : "Company",
-                    type: "text",
-                    required: inquiryType === "corporate",
-                  },
+                  { key: "company", label: "Company", type: "text", required: false },
                   { key: "name", label: "Contact Name", type: "text", required: true },
-                  { key: "email", label: "Email", type: "email", required: true },
+                  { key: "email", label: "Email", type: "email", required: false },
                   { key: "phone", label: "Phone", type: "tel", required: true },
                   { key: "gst", label: "GST Number", type: "text", required: false },
-                  { key: "eventSize", label: "Quantity / Event Size", type: "text", required: false },
+                  {
+                    key: "eventSize",
+                    label: "Quantity / Event Size",
+                    type: "text",
+                    required: false,
+                  },
                   { key: "deliveryDate", label: "Delivery Date", type: "date", required: false },
                   { key: "budget", label: "Budget (₹)", type: "text", required: false },
                 ].map((field) => (
                   <div key={field.key}>
                     <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted">
                       {field.label}
+                      {field.required && <span className="ml-1 text-gold">*</span>}
                     </label>
                     <input
                       required={field.required}
@@ -202,11 +175,11 @@ export function CorporateSection() {
                     Requirements
                   </label>
                   <textarea
-                    required
                     rows={3}
                     value={form.requirements}
                     onChange={(e) => setForm({ ...form, requirements: e.target.value })}
-                    className="w-full resize-none border border-ivory/20 bg-transparent px-3 py-2 text-sm text-ivory outline-none focus:border-gold"
+                    placeholder="Include custom packaging needs, branding, or event details…"
+                    className="w-full resize-none border border-ivory/20 bg-transparent px-3 py-2 text-sm text-ivory outline-none placeholder:text-ivory/30 focus:border-gold"
                   />
                 </div>
 

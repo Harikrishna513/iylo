@@ -20,18 +20,13 @@ export function ProductQuickView() {
     selectedProduct,
     isQuickViewOpen,
     closeQuickView,
-    openCart,
   } = useCartStore();
   const { flyAddToCart } = useProductFly();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     if (selectedProduct) {
-      flyAddToCart(selectedProduct, {
-        event: e,
-        openDrawer: false,
-      });
+      flyAddToCart(selectedProduct, { event: e });
       closeQuickView();
-      window.setTimeout(() => openCart(), 700);
     }
   };
 

@@ -195,7 +195,7 @@ export const giftingOptions: GiftingOption[] = [
     image: img.giftingCelebration,
     cta: "Enquire for Custom Cakes",
     scrollTo: "corporate",
-    inquiryType: "custom",
+    inquiryType: "corporate",
   },
   {
     id: "workshops-curated",
@@ -266,7 +266,7 @@ export const announcements: Announcement[] = [
     date: "August 1, 2026",
     image: img.mangoCreamCake,
     tag: "Seasonal Launch",
-    type: "popup",
+    type: "banner",
   },
   {
     id: "third-wave-collab",

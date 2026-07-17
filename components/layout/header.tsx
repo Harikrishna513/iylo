@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingBag, Search, Heart, User, } from "lucide-react";
+import { Menu, X, ShoppingBag, Search, Heart, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
@@ -76,15 +76,27 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const items = useCartStore((s) => s.items);
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const openCart = useCartStore((s) => s.openCart);
   const wishlistItems = useWishlistStore((s) => s.items);
-  const openWishlist = useWishlistStore((s) => s.openWishlist);
   const openSearch = useSearchStore((s) => s.openSearch);
   const { user } = useAuth();
   const pulseTarget = useFlyAnimationStore((s) => s.pulseTarget);
   const accountHref = user ? "/account" : "/auth/signin?redirect=/account";
 
   const instagramLink = contactInfo.instagramUrl;
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
   return (
     <>
@@ -155,12 +167,7 @@ export function Header() {
                   : { scale: 1 }
               }
             >
-              <IconButton
-                id="fly-target-cart"
-                onClick={openCart}
-                label="Open cart"
-                badge={cartCount}
-              >
+              <IconButton href="/cart" label="Open cart" badge={cartCount} id="fly-target-cart">
                 <ShoppingBag className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.5} />
               </IconButton>
             </motion.div>
@@ -173,7 +180,7 @@ export function Header() {
             >
               <IconButton
                 id="fly-target-wishlist"
-                onClick={openWishlist}
+                href="/account/wishlist"
                 label="Wishlist"
                 badge={wishlistItems.length}
               >
@@ -186,45 +193,66 @@ export function Header() {
 
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] bg-black/95 backdrop-blur-xl"
-          >
-            <div className="flex h-full flex-col p-8">
-              <div className="flex items-center justify-between">
-                <BrandLogo variant="circle" height={56} />
+          <>
+            <motion.button
+              type="button"
+              aria-label="Close menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 z-[70] bg-maroon/40 backdrop-blur-[2px]"
+            />
+            <motion.aside
+              role="dialog"
+              aria-modal="true"
+              aria-label="Site menu"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              className="fixed bottom-0 left-0 top-0 z-[80] flex w-[min(100%,320px)] flex-col bg-cream shadow-[8px_0_40px_rgba(69,21,25,0.18)] sm:w-[340px]"
+            >
+              <div className="flex items-center justify-between border-b border-maroon/10 px-5 py-4">
+                <BrandLogo variant="circle" height={48} />
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center text-ivory"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-maroon/70 transition-colors hover:bg-maroon/5 hover:text-maroon"
                   aria-label="Close menu"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5" strokeWidth={1.5} />
                 </button>
               </div>
-              <nav className="flex flex-1 flex-col items-center justify-center gap-5 px-4">
+
+              <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
                 {navLinks.map((link, i) => (
                   <motion.div
                     key={link.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    className="w-full max-w-md text-center"
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.04 }}
                   >
                     <Link
                       href={link.href}
                       onClick={() => setMenuOpen(false)}
-                      className="editorial-heading text-2xl text-ivory hover:text-gold sm:text-3xl"
+                      className="block rounded-xl px-4 py-3.5 text-[15px] font-medium leading-snug text-maroon transition-colors hover:bg-mist-blue/70 hover:text-maroon"
                     >
                       {link.label}
                     </Link>
                   </motion.div>
                 ))}
               </nav>
-            </div>
-          </motion.div>
+
+              <div className="border-t border-maroon/10 px-5 py-4">
+                <p className="text-[10px] uppercase tracking-[0.25em] text-maroon/40">
+                  iylo bakehouse
+                </p>
+                <p className="mt-1 text-xs text-maroon/55">served with intent</p>
+              </div>
+            </motion.aside>
+          </>
         )}
       </AnimatePresence>
     </>

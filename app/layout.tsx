@@ -3,11 +3,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ChromeShell } from "@/components/ChromeShell";
 import { AppProviders } from "@/components/providers/app-providers";
-import { CartDrawer } from "@/components/ecommerce/cart-drawer";
 import { ProductQuickView } from "@/components/ecommerce/product-quick-view";
 import { CheckoutModal } from "@/components/ecommerce/checkout-modal";
 import { SearchModal } from "@/components/ecommerce/search-modal";
-import { WishlistDrawer } from "@/components/ecommerce/wishlist-drawer";
 import { FlyAnimationLayer } from "@/components/ecommerce/fly-animation-layer";
 import { bakerySchema, faqSchema } from "@/lib/seo";
 import { getGoogleReviewsSchema } from "@/lib/google-reviews-schema";
@@ -108,11 +106,9 @@ export default function RootLayout({
       <body className="bg-black font-body antialiased">
         <AppProviders>
           <ChromeShell>{children}</ChromeShell>
-          <CartDrawer />
           <ProductQuickView />
           <CheckoutModal />
           <SearchModal />
-          <WishlistDrawer />
           <FlyAnimationLayer />
         </AppProviders>
       </body>

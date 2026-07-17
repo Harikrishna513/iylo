@@ -7,11 +7,9 @@ import { bundles } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { Reveal } from "@/components/animations/reveal";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/store/cart-store";
+import Link from "next/link";
 
 export function BundlesSection() {
-  const openCart = useCartStore((s) => s.openCart);
-
   return (
     <section id="bundles" className="section-padding bg-black">
       <div className="mx-auto max-w-7xl">
@@ -75,14 +73,11 @@ export function BundlesSection() {
                       </span>
                     )}
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-6 w-fit"
-                    onClick={openCart}
-                  >
-                    Add Bundle
-                    <ArrowRight className="h-3.5 w-3.5" />
+                  <Button variant="outline" size="sm" className="mt-6 w-fit" asChild>
+                    <Link href="/cart">
+                      Add Bundle
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
                   </Button>
                 </div>
               </div>

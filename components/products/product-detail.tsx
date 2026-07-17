@@ -90,7 +90,6 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
     flyAddToCart(cartProduct, {
       quantity,
       event,
-      openDrawer: true,
     });
   };
 
@@ -100,7 +99,7 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
         <nav className={cn("mb-8 flex items-center gap-2 text-xs", LIGHT.muted)} aria-label="Breadcrumb">
           <Link href="/" className="hover:text-maroon">Home</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link href="/#menu" className="capitalize hover:text-maroon">{product.category.replace("-", " ")}</Link>
+          <Link href="/products" className="capitalize hover:text-maroon">{product.category.replace("-", " ")}</Link>
           <ChevronRight className="h-3 w-3" />
           <span className="text-maroon/70">{product.name}</span>
         </nav>
