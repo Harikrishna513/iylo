@@ -55,6 +55,10 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
 
   const requiresPreOrder = productRequiresPreOrder(product);
   const displayPrice = selectedVariant?.price ?? product.price;
+  const stockLeft =
+    typeof selectedVariant?.stock === "number" ? selectedVariant.stock : null;
+  const outOfStock = stockLeft !== null && stockLeft <= 0;
+  const maxQty = stockLeft !== null ? Math.max(1, stockLeft) : 99;
   const variantLabel =
     product.category === "celebration-cakes" ? "Select weight" : "Select size";
 
@@ -65,12 +69,19 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
     setFulfillment(null);
   }, [product]);
 
+  useEffect(() => {
+    if (stockLeft !== null && quantity > stockLeft) {
+      setQuantity(Math.max(1, stockLeft));
+    }
+  }, [selectedVariant, stockLeft, quantity]);
+
   const images = product.images ?? [product.image];
   const boughtTogether = (product.frequentlyBoughtWith ?? [])
     .map((id) => getProductById(id))
     .filter(Boolean) as Product[];
 
   const handleAddToCart = (event?: React.MouseEvent) => {
+    if (outOfStock) return;
     if (requiresPreOrder && !fulfillment) {
       return;
     }
@@ -249,11 +260,21 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
 
             <div className="mt-8 flex items-center gap-4">
               <div className={cn("flex items-center border", LIGHT.borderStrong)}>
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex h-12 w-12 items-center justify-center text-maroon hover:text-light-blue" aria-label="Decrease">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="flex h-12 w-12 items-center justify-center text-maroon hover:text-light-blue"
+                  aria-label="Decrease"
+                  disabled={outOfStock}
+                >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-12 text-center text-maroon">{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} className="flex h-12 w-12 items-center justify-center text-maroon hover:text-light-blue" aria-label="Increase">
+                <button
+                  onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
+                  className="flex h-12 w-12 items-center justify-center text-maroon hover:text-light-blue"
+                  aria-label="Increase"
+                  disabled={outOfStock}
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
@@ -262,12 +283,15 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
                 size="lg"
                 className="flex-1"
                 onClick={(e) => handleAddToCart(e)}
-                disabled={requiresPreOrder && !fulfillment}
+                disabled={outOfStock || (requiresPreOrder && !fulfillment)}
               >
                 <ShoppingBag className="h-4 w-4" />
-                Add to Cart
+                {outOfStock ? "Out of Stock" : "Add to Cart"}
               </Button>
             </div>
+            {stockLeft !== null && !outOfStock && stockLeft <= 5 && (
+              <p className="mt-2 text-xs text-rosewood">Only {stockLeft} left</p>
+            )}
 
             <div className="mt-4 flex gap-3">
               <button

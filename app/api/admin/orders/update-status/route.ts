@@ -18,7 +18,13 @@ export async function POST(req: NextRequest) {
   const supabase = createServiceClient();
 
   if (status === "cancelled") {
-    await restoreOrderInventory(supabase, order_id);
+    const restore = await restoreOrderInventory(supabase, order_id);
+    if (!restore.ok) {
+      return NextResponse.json(
+        { error: restore.error ?? "Stock restoration failed" },
+        { status: 409 }
+      );
+    }
   }
 
   const update: Record<string, unknown> = { status };

@@ -314,7 +314,8 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
           <p className="mb-4 text-xs text-maroon/50">
-            {stats?.outOfStockCount ?? 0} out of stock · {stats?.lowStockCount ?? 0} low
+            Live stock from catalogue · {stats?.outOfStockCount ?? 0} out of stock ·{" "}
+            {stats?.lowStockCount ?? 0} low (per variant threshold)
           </p>
           <ul className="space-y-3">
             {[...(stats?.outOfStockItems ?? []), ...(stats?.lowStockItems ?? [])]

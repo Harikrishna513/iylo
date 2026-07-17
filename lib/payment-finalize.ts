@@ -75,7 +75,14 @@ export async function finalizeRazorpayPayment(
     }
   }
 
-  await deductOrderInventory(supabase, order.id);
+  const deduct = await deductOrderInventory(supabase, order.id);
+  if (!deduct.ok) {
+    return {
+      ok: false,
+      order_id: order.id,
+      error: deduct.error ?? "Inventory deduction failed",
+    };
+  }
 
   if (!alreadyPaid) {
     try {

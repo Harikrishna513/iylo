@@ -180,7 +180,22 @@ export async function POST(req: NextRequest) {
         .update({ status: "confirmed", confirmed_at: new Date().toISOString() })
         .eq("id", order.id);
 
-      await deductOrderInventory(supabase, order.id);
+      const deduct = await deductOrderInventory(supabase, order.id);
+      if (!deduct.ok) {
+        await supabase
+          .from("orders")
+          .update({
+            status: "cancelled",
+            cancelled_at: new Date().toISOString(),
+            cancellation_reason: deduct.error ?? "Insufficient stock",
+          })
+          .eq("id", order.id);
+        return NextResponse.json(
+          { error: deduct.error ?? "Insufficient stock. Please update your cart." },
+          { status: 409 }
+        );
+      }
+
       await sendOrderEmails(supabase, order.id);
 
       return NextResponse.json({

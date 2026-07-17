@@ -32,6 +32,8 @@ export interface ProductVariant {
   name: string;
   price: number;
   offerPrice?: number;
+  /** Live stock from DB; undefined when using static catalogue fallbacks */
+  stock?: number;
 }
 
 export interface Product {

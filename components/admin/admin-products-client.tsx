@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { FileSpreadsheet, Plus, Search, Trash2 } from "lucide-react";
+import { FileSpreadsheet, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { AdminCategoryRow, AdminProduct } from "@/lib/admin";
 import {
@@ -14,6 +14,7 @@ import {
   adminCardClass,
 } from "@/components/admin/admin-ui";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { ProductEditorModal } from "@/components/admin/product-editor-modal";
 
 interface AdminProductsClientProps {
   initialProducts: AdminProduct[];
@@ -25,6 +26,15 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
   const [deleteTarget, setDeleteTarget] = useState<AdminProduct | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [showNew, setShowNew] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<AdminCategoryRow[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/products")
+      .then((r) => r.json())
+      .then((d) => setCategories(d.categories ?? []))
+      .catch(() => {});
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -53,6 +63,12 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
       const data = await res.json();
       alert(data.error ?? "Delete failed");
     }
+  };
+
+  const handleProductSaved = (updated: AdminProduct) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p))
+    );
   };
 
   return (
@@ -115,7 +131,11 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                 </td>
                 <td className={`${adminTdClass} text-maroon/70`}>{p.category_name || "—"}</td>
                 <td className={`${adminTdClass} text-light-blue`}>
-                  {p.base_price != null ? formatPrice(p.base_price) : "—"}
+                  {p.base_price != null
+                    ? formatPrice(p.base_price)
+                    : p.variants[0]
+                      ? formatPrice(p.variants[0].price)
+                      : "—"}
                 </td>
                 <td className={`${adminTdClass} text-maroon/70`}>
                   {p.stock_total}
@@ -134,6 +154,15 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                 </td>
                 <td className={adminTdClass}>
                   <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingId(p.id)}
+                      className="rounded-lg p-1.5 text-maroon/55 transition-colors hover:bg-mist-blue hover:text-maroon"
+                      title="Edit"
+                      aria-label={`Edit ${p.name}`}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
                     <Link
                       href={`/products/${p.slug}`}
                       target="_blank"
@@ -181,6 +210,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
 
       {showNew && (
         <NewProductModal
+          categories={categories}
           onClose={() => setShowNew(false)}
           onCreated={() => {
             setShowNew(false);
@@ -188,27 +218,43 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
           }}
         />
       )}
+
+      {editingId && (
+        <ProductEditorModal
+          productId={editingId}
+          categories={categories}
+          onClose={() => setEditingId(null)}
+          onSaved={handleProductSaved}
+        />
+      )}
     </>
   );
 }
 
 function NewProductModal({
+  categories: initialCategories,
   onClose,
   onCreated,
 }: {
+  categories: AdminCategoryRow[];
   onClose: () => void;
   onCreated: () => void;
 }) {
-  const [categories, setCategories] = useState<AdminCategoryRow[]>([]);
+  const [categories, setCategories] = useState(initialCategories);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState(initialCategories[0]?.id ?? "");
   const [shortDescription, setShortDescription] = useState("");
   const [basePrice, setBasePrice] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (initialCategories.length) {
+      setCategories(initialCategories);
+      if (!categoryId && initialCategories[0]) setCategoryId(initialCategories[0].id);
+      return;
+    }
     fetch("/api/admin/products")
       .then((r) => r.json())
       .then((d) => {
@@ -216,7 +262,7 @@ function NewProductModal({
         if (d.categories?.[0]) setCategoryId(d.categories[0].id);
       })
       .catch(() => {});
-  }, []);
+  }, [initialCategories, categoryId]);
 
   const syncSlug = (value: string) => {
     setName(value);
@@ -257,7 +303,7 @@ function NewProductModal({
       <div className={`${adminCardClass} w-full max-w-lg`}>
         <h2 className="editorial-heading text-2xl text-maroon">New Product</h2>
         <p className="mt-1 text-xs text-maroon/50">
-          Creates a catalogue entry. Use Import / Export for bulk updates.
+          Creates a catalogue entry. Open Edit afterward to set description, variants, and flags.
         </p>
         {error && <p className="mt-3 text-sm text-rosewood">{error}</p>}
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">

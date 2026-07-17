@@ -48,6 +48,7 @@ export function mapDbVariants(
     price: number;
     offer_price: number | null;
     is_active: boolean;
+    stock_quantity?: number;
   }>
 ): ProductVariant[] {
   return rows
@@ -57,6 +58,8 @@ export function mapDbVariants(
       name: v.name,
       price: Number(v.offer_price ?? v.price),
       offerPrice: v.offer_price ? Number(v.offer_price) : undefined,
+      stock:
+        typeof v.stock_quantity === "number" ? Number(v.stock_quantity) : undefined,
     }));
 }
 

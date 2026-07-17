@@ -63,15 +63,65 @@ export interface AdminCustomer {
   is_active: boolean;
 }
 
+export interface AdminProductVariant {
+  id: string;
+  name: string;
+  sku: string;
+  price: number;
+  offer_price: number | null;
+  stock_quantity: number;
+  low_stock_threshold: number;
+  is_active: boolean;
+  display_order: number;
+}
+
 export interface AdminProduct {
   id: string;
+  sku: string;
   slug: string;
   name: string;
-  base_price: number | null;
-  is_active: boolean;
+  category_id: string;
   category_name: string;
+  category_slug: string;
+  short_description: string;
+  long_description: string | null;
+  base_price: number | null;
+  offer_price: number | null;
+  diet_type: string;
+  availability_type: string;
+  is_bestseller: boolean;
+  is_seasonal: boolean;
+  is_new: boolean;
+  is_featured: boolean;
+  is_active: boolean;
+  preparation_time: string | null;
+  shelf_life: string | null;
+  weight_label: string | null;
+  display_order: number;
   stock_total: number;
   variant_count: number;
+  variants: AdminProductVariant[];
+}
+
+export interface AdminProductUpdateInput {
+  name?: string;
+  slug?: string;
+  category_id?: string;
+  short_description?: string;
+  long_description?: string | null;
+  base_price?: number | null;
+  offer_price?: number | null;
+  diet_type?: string;
+  availability_type?: string;
+  is_bestseller?: boolean;
+  is_seasonal?: boolean;
+  is_new?: boolean;
+  is_featured?: boolean;
+  is_active?: boolean;
+  preparation_time?: string | null;
+  shelf_life?: string | null;
+  weight_label?: string | null;
+  display_order?: number;
 }
 
 const revenueStatuses = [
@@ -154,7 +204,7 @@ export async function getAdminDashboardStats(
     .from("product_variants")
     .select("name, stock_quantity, low_stock_threshold, products(name)")
     .eq("is_active", true)
-    .lte("stock_quantity", 5);
+    .gt("stock_quantity", 0);
 
   const { data: outOfStockVariants } = await supabase
     .from("product_variants")
@@ -172,7 +222,10 @@ export async function getAdminDashboardStats(
     .select("id", { count: "exact", head: true });
 
   const lowStockItems = (variants ?? [])
-    .filter((v) => v.stock_quantity > 0)
+    .filter((v) => {
+      const threshold = Number(v.low_stock_threshold ?? 5);
+      return v.stock_quantity > 0 && v.stock_quantity <= threshold;
+    })
     .map((v) => ({
       name: (v.products as unknown as { name: string }).name,
       variant: v.name,
@@ -308,30 +361,239 @@ export async function getAdminCustomers(): Promise<AdminCustomer[]> {
   return customers;
 }
 
+function mapAdminProduct(p: Record<string, unknown>): AdminProduct {
+  const category = p.categories as { id?: string; name?: string; slug?: string } | null;
+  const variantsRaw =
+    (p.product_variants as Array<{
+      id: string;
+      name: string;
+      sku: string;
+      price: number;
+      offer_price: number | null;
+      stock_quantity: number;
+      low_stock_threshold: number;
+      is_active: boolean;
+      display_order: number;
+    }>) ?? [];
+  const variants = [...variantsRaw].sort((a, b) => a.display_order - b.display_order);
+  return {
+    id: p.id as string,
+    sku: (p.sku as string) ?? "",
+    slug: p.slug as string,
+    name: p.name as string,
+    category_id: (p.category_id as string) ?? category?.id ?? "",
+    category_name: category?.name ?? "",
+    category_slug: category?.slug ?? "",
+    short_description: (p.short_description as string) ?? "",
+    long_description: (p.long_description as string | null) ?? null,
+    base_price: p.base_price != null ? Number(p.base_price) : null,
+    offer_price: p.offer_price != null ? Number(p.offer_price) : null,
+    diet_type: (p.diet_type as string) ?? "eggless",
+    availability_type: (p.availability_type as string) ?? "daily",
+    is_bestseller: Boolean(p.is_bestseller),
+    is_seasonal: Boolean(p.is_seasonal),
+    is_new: Boolean(p.is_new),
+    is_featured: Boolean(p.is_featured),
+    is_active: Boolean(p.is_active),
+    preparation_time: (p.preparation_time as string | null) ?? null,
+    shelf_life: (p.shelf_life as string | null) ?? null,
+    weight_label: (p.weight_label as string | null) ?? null,
+    display_order: Number(p.display_order ?? 0),
+    stock_total: variants.reduce((s, v) => s + Number(v.stock_quantity), 0),
+    variant_count: variants.length,
+    variants: variants.map((v) => ({
+      id: v.id,
+      name: v.name,
+      sku: v.sku,
+      price: Number(v.price),
+      offer_price: v.offer_price != null ? Number(v.offer_price) : null,
+      stock_quantity: Number(v.stock_quantity),
+      low_stock_threshold: Number(v.low_stock_threshold ?? 5),
+      is_active: Boolean(v.is_active),
+      display_order: Number(v.display_order ?? 0),
+    })),
+  };
+}
+
+const ADMIN_PRODUCT_SELECT = `
+  id, sku, slug, name, category_id, short_description, long_description,
+  base_price, offer_price, diet_type, availability_type,
+  is_bestseller, is_seasonal, is_new, is_featured, is_active,
+  preparation_time, shelf_life, weight_label, display_order,
+  categories(id, name, slug),
+  product_variants(id, name, sku, price, offer_price, stock_quantity, low_stock_threshold, is_active, display_order)
+`;
+
 export async function getAdminProducts(): Promise<AdminProduct[]> {
   const supabase = createServiceClient();
   const { data } = await supabase
     .from("products")
-    .select(
-      `id, slug, name, base_price, is_active,
-       categories(name),
-       product_variants(stock_quantity)`
-    )
+    .select(ADMIN_PRODUCT_SELECT)
     .order("display_order", { ascending: true });
 
-  return (data ?? []).map((p) => {
-    const variants = (p.product_variants as Array<{ stock_quantity: number }>) ?? [];
-    return {
-      id: p.id,
-      slug: p.slug,
-      name: p.name,
-      base_price: p.base_price,
-      is_active: p.is_active,
-      category_name: (p.categories as unknown as { name: string } | null)?.name ?? "",
-      stock_total: variants.reduce((s, v) => s + v.stock_quantity, 0),
-      variant_count: variants.length,
-    };
-  });
+  return (data ?? []).map((p) => mapAdminProduct(p as Record<string, unknown>));
+}
+
+export async function getAdminProductById(id: string): Promise<AdminProduct | null> {
+  const supabase = createServiceClient();
+  const { data, error } = await supabase
+    .from("products")
+    .select(ADMIN_PRODUCT_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  return mapAdminProduct(data as Record<string, unknown>);
+}
+
+export async function updateAdminProduct(
+  productId: string,
+  input: AdminProductUpdateInput
+): Promise<AdminProduct> {
+  const supabase = createServiceClient();
+  const updates: Record<string, unknown> = {};
+
+  if (input.name !== undefined) updates.name = input.name.trim();
+  if (input.slug !== undefined) {
+    updates.slug = input.slug
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+  if (input.category_id !== undefined) updates.category_id = input.category_id;
+  if (input.short_description !== undefined) {
+    updates.short_description = input.short_description.trim();
+  }
+  if (input.long_description !== undefined) {
+    updates.long_description = input.long_description?.trim() || null;
+  }
+  if (input.base_price !== undefined) updates.base_price = input.base_price;
+  if (input.offer_price !== undefined) updates.offer_price = input.offer_price;
+  if (input.diet_type !== undefined) updates.diet_type = input.diet_type;
+  if (input.availability_type !== undefined) {
+    updates.availability_type = input.availability_type;
+  }
+  if (input.is_bestseller !== undefined) updates.is_bestseller = input.is_bestseller;
+  if (input.is_seasonal !== undefined) updates.is_seasonal = input.is_seasonal;
+  if (input.is_new !== undefined) updates.is_new = input.is_new;
+  if (input.is_featured !== undefined) updates.is_featured = input.is_featured;
+  if (input.is_active !== undefined) updates.is_active = input.is_active;
+  if (input.preparation_time !== undefined) {
+    updates.preparation_time = input.preparation_time?.trim() || null;
+  }
+  if (input.shelf_life !== undefined) {
+    updates.shelf_life = input.shelf_life?.trim() || null;
+  }
+  if (input.weight_label !== undefined) {
+    updates.weight_label = input.weight_label?.trim() || null;
+  }
+  if (input.display_order !== undefined) updates.display_order = input.display_order;
+
+  if (Object.keys(updates).length === 0) {
+    const existing = await getAdminProductById(productId);
+    if (!existing) throw new Error("Product not found");
+    return existing;
+  }
+
+  const { error } = await supabase.from("products").update(updates).eq("id", productId);
+  if (error) throw new Error(error.message);
+
+  const updated = await getAdminProductById(productId);
+  if (!updated) throw new Error("Product not found after update");
+  return updated;
+}
+
+export async function updateAdminVariant(
+  variantId: string,
+  input: {
+    name?: string;
+    price?: number;
+    offer_price?: number | null;
+    stock_quantity?: number;
+    low_stock_threshold?: number;
+    is_active?: boolean;
+  },
+  opts?: { adminUserId?: string | null }
+) {
+  const supabase = createServiceClient();
+
+  let previousStock: number | null = null;
+  if (input.stock_quantity !== undefined) {
+    const { data: current } = await supabase
+      .from("product_variants")
+      .select("stock_quantity")
+      .eq("id", variantId)
+      .maybeSingle();
+    previousStock = current?.stock_quantity ?? null;
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (input.name !== undefined) updates.name = input.name.trim();
+  if (input.price !== undefined) updates.price = input.price;
+  if (input.offer_price !== undefined) updates.offer_price = input.offer_price;
+  if (input.stock_quantity !== undefined) updates.stock_quantity = input.stock_quantity;
+  if (input.low_stock_threshold !== undefined) {
+    updates.low_stock_threshold = input.low_stock_threshold;
+  }
+  if (input.is_active !== undefined) updates.is_active = input.is_active;
+
+  const { error } = await supabase
+    .from("product_variants")
+    .update(updates)
+    .eq("id", variantId);
+  if (error) throw new Error(error.message);
+
+  if (
+    input.stock_quantity !== undefined &&
+    previousStock !== null &&
+    previousStock !== input.stock_quantity
+  ) {
+    const { logAdminStockAdjustment } = await import("@/lib/inventory");
+    await logAdminStockAdjustment(supabase, {
+      variantId,
+      previousQty: previousStock,
+      nextQty: input.stock_quantity,
+      adminUserId: opts?.adminUserId,
+    });
+  }
+}
+
+export async function addAdminVariant(input: {
+  product_id: string;
+  name: string;
+  price: number;
+  offer_price?: number | null;
+  stock_quantity?: number;
+  sku?: string;
+}) {
+  const supabase = createServiceClient();
+  const sku =
+    input.sku?.trim() ||
+    `IYLO-V-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+
+  const { data, error } = await supabase
+    .from("product_variants")
+    .insert({
+      product_id: input.product_id,
+      name: input.name.trim(),
+      sku,
+      price: input.price,
+      offer_price: input.offer_price ?? null,
+      stock_quantity: input.stock_quantity ?? 0,
+      is_active: true,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function deleteAdminVariant(variantId: string) {
+  const supabase = createServiceClient();
+  const { error } = await supabase.from("product_variants").delete().eq("id", variantId);
+  if (error) throw new Error(error.message);
 }
 
 export async function getCurrentAdminRole(
