@@ -17,6 +17,22 @@ export const LIGHT = {
   navInactive: "text-maroon/65 hover:bg-light-blue/25 hover:text-maroon",
 } as const;
 
+/**
+ * Standard alert colours used across the site for errors, warnings, and success.
+ * Do not use brand maroon/rosewood for error text — users must notice them clearly.
+ */
+export const ALERT = {
+  error: "text-sm text-red-600",
+  errorSm: "mt-1.5 text-xs text-red-600",
+  errorBox: "rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700",
+  errorBorder: "border-red-500 focus:border-red-500",
+  warning: "text-sm text-amber-700",
+  warningSm: "text-xs text-amber-700",
+  warningBox: "rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800",
+  success: "text-sm text-emerald-700",
+  successBox: "rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800",
+} as const;
+
 /** Dark brand surfaces — maroon background, mist-blue text */
 export const DARK = {
   bg: "bg-maroon",

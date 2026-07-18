@@ -290,7 +290,7 @@ export function ProductDetail({ product, relatedProducts = [] }: ProductDetailPr
               </Button>
             </div>
             {stockLeft !== null && !outOfStock && stockLeft <= 5 && (
-              <p className="mt-2 text-xs text-rosewood">Only {stockLeft} left</p>
+              <p className="mt-2 text-xs text-amber-700">Only {stockLeft} left</p>
             )}
 
             <div className="mt-4 flex gap-3">

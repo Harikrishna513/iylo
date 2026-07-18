@@ -1,5 +1,6 @@
 import { createServiceClient } from "@/lib/supabase";
 import { escapeCsvCell } from "@/lib/csv-products";
+import { slugifyProductName, uniquifySlug } from "@/lib/slug";
 
 export interface DashboardFilters {
   dateFrom?: string | null;
@@ -455,11 +456,13 @@ export async function updateAdminProduct(
 
   if (input.name !== undefined) updates.name = input.name.trim();
   if (input.slug !== undefined) {
-    updates.slug = input.slug
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
+    const base = slugifyProductName(input.slug) || "product";
+    const { data: others } = await supabase
+      .from("products")
+      .select("slug")
+      .neq("id", productId);
+    const used = new Set((others ?? []).map((p) => p.slug as string));
+    updates.slug = uniquifySlug(base, used);
   }
   if (input.category_id !== undefined) updates.category_id = input.category_id;
   if (input.short_description !== undefined) {
@@ -637,23 +640,23 @@ export async function exportProductsCsv(): Promise<string> {
     .from("products")
     .select(
       `sku, slug, name, short_description, base_price, is_active, display_order,
-       categories(slug)`
+       categories(slug, name)`
     )
     .order("display_order", { ascending: true });
 
   const header =
-    "slug,name,category_slug,sku,short_description,base_price,is_active,display_order";
+    "name,category,short_description,base_price,is_active,display_order,slug,sku";
   const lines = (data ?? []).map((p) => {
-    const cat = (p.categories as unknown as { slug: string } | null)?.slug ?? "";
+    const cat = p.categories as unknown as { slug: string; name: string } | null;
     return [
-      escapeCsvCell(p.slug),
       escapeCsvCell(p.name),
-      escapeCsvCell(cat),
-      escapeCsvCell(p.sku),
+      escapeCsvCell(cat?.name || cat?.slug || ""),
       escapeCsvCell(p.short_description ?? ""),
       escapeCsvCell(p.base_price ?? ""),
       escapeCsvCell(p.is_active),
       escapeCsvCell(p.display_order),
+      escapeCsvCell(p.slug),
+      escapeCsvCell(p.sku),
     ].join(",");
   });
   return [header, ...lines].join("\n");

@@ -463,7 +463,11 @@ export function CheckoutModal() {
                 Apply
               </Button>
             </div>
-            {couponError && <p className="text-xs text-red-400">{couponError}</p>}
+            {couponError && (
+              <p className="text-xs text-red-600" role="alert">
+                {couponError}
+              </p>
+            )}
             {couponDiscount > 0 && (
               <p className="text-sm text-gold">
                 Discount applied — {formatPrice(discountAmount || subtotal() * couponDiscount)} off

@@ -8,6 +8,7 @@ import {
   adminInputClass,
   adminSelectClass,
 } from "@/components/admin/admin-ui";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 
 type Tab = "details" | "variants";
 
@@ -34,7 +35,6 @@ export function ProductEditorModal({
   const [product, setProduct] = useState<AdminProduct | null>(null);
 
   const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [longDescription, setLongDescription] = useState("");
@@ -51,6 +51,16 @@ export function ProductEditorModal({
   const [shelfLife, setShelfLife] = useState("");
   const [weightLabel, setWeightLabel] = useState("");
 
+  useBodyScrollLock(true);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   const load = async () => {
     setLoading(true);
     setError("");
@@ -61,7 +71,6 @@ export function ProductEditorModal({
       const p = data.product as AdminProduct;
       setProduct(p);
       setName(p.name);
-      setSlug(p.slug);
       setCategoryId(p.category_id);
       setShortDescription(p.short_description ?? "");
       setLongDescription(p.long_description ?? "");
@@ -99,7 +108,6 @@ export function ProductEditorModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
-          slug,
           category_id: categoryId,
           short_description: shortDescription || name,
           long_description: longDescription,
@@ -138,13 +146,26 @@ export function ProductEditorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-maroon/45 p-4"
+      onWheel={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-product-title"
         className={`${adminCardClass} flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden p-0`}
+        onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between border-b border-maroon/10 px-6 py-4">
+        <div className="flex shrink-0 items-start justify-between border-b border-maroon/10 px-6 py-4">
           <div>
-            <h2 className="editorial-heading text-2xl text-maroon">Edit Product</h2>
+            <h2 id="edit-product-title" className="editorial-heading text-2xl text-maroon">
+              Edit Product
+            </h2>
             <p className="mt-0.5 text-xs text-maroon/50">
               Update catalogue details, pricing, and variants.
             </p>
@@ -176,35 +197,25 @@ export function ProductEditorModal({
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">
           {loading ? (
             <div className="flex justify-center py-16">
               <Loader2 className="h-6 w-6 animate-spin text-maroon/40" />
             </div>
           ) : error && !product ? (
-            <p className="text-sm text-rosewood">{error}</p>
+            <p className="text-sm text-red-600">{error}</p>
           ) : tab === "details" ? (
             <form id="product-details-form" onSubmit={handleSaveDetails} className="space-y-4">
-              {error && <p className="text-sm text-rosewood">{error}</p>}
+              {error && <p className="text-sm text-red-600">{error}</p>}
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Name">
-                  <input
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className={adminInputClass}
-                  />
-                </Field>
-                <Field label="Slug">
-                  <input
-                    required
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    className={adminInputClass}
-                  />
-                </Field>
-              </div>
+              <Field label="Name">
+                <input
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={adminInputClass}
+                />
+              </Field>
 
               <Field label="Category">
                 <select
@@ -488,7 +499,7 @@ function VariantsTab({
 
   return (
     <div className="space-y-5">
-      {error && <p className="text-sm text-rosewood">{error}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
 
       {variants.length === 0 ? (
         <p className="text-sm text-maroon/50">

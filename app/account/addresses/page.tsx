@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { validatePincode, validateIndianPhone } from "@/lib/validation";
-import { LIGHT } from "@/lib/page-theme";
+import { LIGHT, ALERT } from "@/lib/page-theme";
 import { cn } from "@/lib/utils";
 import { Plus, Edit2, Trash2, MapPin, Star, X } from "lucide-react";
 
@@ -145,7 +145,7 @@ export default function AddressesPage() {
           </h3>
 
           {error && (
-            <div className="border border-rosewood/30 bg-rosewood/10 px-4 py-2.5 text-sm text-rosewood">
+            <div className={ALERT.errorBox} role="alert">
               {error}
             </div>
           )}

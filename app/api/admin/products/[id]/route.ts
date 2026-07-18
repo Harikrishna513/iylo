@@ -6,6 +6,7 @@ import {
   type AdminProductUpdateInput,
 } from "@/lib/admin";
 import { createServiceClient } from "@/lib/supabase";
+import { slugifyProductName } from "@/lib/slug";
 
 export async function GET(
   _request: Request,
@@ -60,7 +61,11 @@ export async function PATCH(
   const input: AdminProductUpdateInput = {};
 
   if (body.name !== undefined) input.name = String(body.name);
-  if (body.slug !== undefined) input.slug = String(body.slug);
+  if (body.slug !== undefined && String(body.slug).trim()) {
+    input.slug = slugifyProductName(String(body.slug));
+  } else if (body.name !== undefined) {
+    input.slug = slugifyProductName(String(body.name));
+  }
   if (body.category_id !== undefined) input.category_id = String(body.category_id);
   if (body.short_description !== undefined) {
     input.short_description = String(body.short_description);

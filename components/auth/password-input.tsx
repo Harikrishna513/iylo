@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LIGHT } from "@/lib/page-theme";
+import { LIGHT, ALERT } from "@/lib/page-theme";
 
 interface PasswordInputProps {
   id: string;
@@ -38,7 +38,7 @@ export function PasswordInput({
           onBlur={onBlur}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className={cn(LIGHT.input, "pr-12", error && "border-rosewood/70")}
+          className={cn(LIGHT.input, "pr-12", error && ALERT.errorBorder)}
         />
         <button
           type="button"
@@ -49,7 +49,11 @@ export function PasswordInput({
           {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
-      {error && <p className="mt-1.5 text-xs text-rosewood">{error}</p>}
+      {error && (
+        <p className={ALERT.errorSm} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

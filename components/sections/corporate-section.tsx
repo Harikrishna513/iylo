@@ -6,6 +6,7 @@ import { Building2, Gift, UtensilsCrossed } from "lucide-react";
 import { Reveal } from "@/components/animations/reveal";
 import { Button } from "@/components/ui/button";
 import { ProductImages as img } from "@/lib/product-images";
+import { ALERT } from "@/lib/page-theme";
 
 const services = [
   {
@@ -132,13 +133,13 @@ export function CorporateSection() {
             </p>
 
             {submitted ? (
-              <p className="mt-8 text-rosewood">
+              <p className="mt-8 text-emerald-700">
                 Thank you. Our team will reach out within 24 hours.
               </p>
             ) : (
               <form onSubmit={handleSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
                 {error && (
-                  <div className="border border-rosewood/30 bg-rosewood/10 px-4 py-3 text-sm text-rosewood sm:col-span-2">
+                  <div className={`${ALERT.errorBox} sm:col-span-2`} role="alert">
                     {error}
                   </div>
                 )}
@@ -161,7 +162,7 @@ export function CorporateSection() {
                   <div key={field.key}>
                     <label className="mb-1 block text-[10px] uppercase tracking-widest text-maroon/50">
                       {field.label}
-                      {field.required && <span className="ml-1 text-rosewood">*</span>}
+                      {field.required && <span className="ml-1 text-red-600">*</span>}
                     </label>
                     <input
                       required={field.required}

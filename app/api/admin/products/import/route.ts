@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api-admin-auth";
 import { createServiceClient } from "@/lib/supabase";
+import { slugifyProductName, uniquifySlug } from "@/lib/slug";
 
 function parseCsvLine(line: string): string[] {
   const result: string[] = [];
@@ -27,6 +28,21 @@ function parseCsvLine(line: string): string[] {
   return result;
 }
 
+type CatRow = { id: string; slug: string; name: string };
+
+function resolveCategory(categories: CatRow[], raw: string): CatRow | undefined {
+  const value = raw.trim().toLowerCase();
+  if (!value) return undefined;
+  const asSlug = slugifyProductName(raw);
+  return categories.find(
+    (c) =>
+      c.slug.toLowerCase() === value ||
+      c.name.toLowerCase() === value ||
+      c.slug === asSlug ||
+      slugifyProductName(c.name) === asSlug
+  );
+}
+
 export async function POST(request: Request) {
   const auth = await requireAdmin();
   if (auth.error) {
@@ -42,20 +58,30 @@ export async function POST(request: Request) {
   const text = await file.text();
   const lines = text.split(/\r?\n/).filter((l) => l.trim());
   if (lines.length < 2) {
-    return NextResponse.json({ error: "CSV must include header and at least one row" }, { status: 400 });
+    return NextResponse.json(
+      { error: "CSV must include header and at least one row" },
+      { status: 400 }
+    );
   }
 
   const header = parseCsvLine(lines[0]).map((h) => h.trim().toLowerCase());
-  const required = ["slug", "name", "category_slug"];
-  for (const col of required) {
-    if (!header.includes(col)) {
-      return NextResponse.json({ error: `Missing column: ${col}` }, { status: 400 });
-    }
+  if (!header.includes("name")) {
+    return NextResponse.json({ error: "Missing column: name" }, { status: 400 });
+  }
+  if (!header.includes("category") && !header.includes("category_slug")) {
+    return NextResponse.json(
+      { error: "Missing column: category (or category_slug)" },
+      { status: 400 }
+    );
   }
 
   const supabase = createServiceClient();
-  const { data: categories } = await supabase.from("categories").select("id, slug");
-  const catBySlug = new Map((categories ?? []).map((c) => [c.slug, c.id]));
+  const { data: categories } = await supabase.from("categories").select("id, slug, name");
+  const catRows = (categories ?? []) as CatRow[];
+
+  const { data: existingProducts } = await supabase.from("products").select("id, slug");
+  const slugToId = new Map((existingProducts ?? []).map((p) => [p.slug, p.id as string]));
+  const usedSlugs = new Set((existingProducts ?? []).map((p) => p.slug as string));
 
   let imported = 0;
   let updated = 0;
@@ -68,24 +94,45 @@ export async function POST(request: Request) {
       row[h] = (cols[idx] ?? "").trim();
     });
 
-    const slug = row.slug;
     const name = row.name;
-    const categorySlug = row.category_slug;
-    if (!slug || !name || !categorySlug) {
-      errors.push(`Row ${i + 1}: slug, name, and category_slug are required`);
+    if (!name) {
+      errors.push(`Row ${i + 1}: name is required`);
       continue;
     }
 
-    const categoryId = catBySlug.get(categorySlug);
-    if (!categoryId) {
-      errors.push(`Row ${i + 1}: unknown category "${categorySlug}"`);
+    const categoryRaw = row.category || row.category_slug || "";
+    const category = resolveCategory(catRows, categoryRaw);
+    if (!category) {
+      errors.push(
+        `Row ${i + 1}: unknown category "${categoryRaw}". Use a catalogue category name (e.g. Celebration Cakes).`
+      );
       continue;
+    }
+
+    const baseSlug = slugifyProductName(row.slug || name);
+    if (!baseSlug) {
+      errors.push(`Row ${i + 1}: could not generate a slug from the product name`);
+      continue;
+    }
+
+    // Prefer matching an existing product by explicit slug, else by auto slug from name
+    const existingId =
+      (row.slug && slugToId.get(slugifyProductName(row.slug))) ||
+      slugToId.get(baseSlug) ||
+      null;
+
+    let slug = baseSlug;
+    if (!existingId) {
+      slug = uniquifySlug(baseSlug, usedSlugs);
+      usedSlugs.add(slug);
+    } else if (row.slug) {
+      slug = slugifyProductName(row.slug);
     }
 
     const payload: Record<string, unknown> = {
       slug,
       name,
-      category_id: categoryId,
+      category_id: category.id,
       short_description: row.short_description || name,
       base_price: row.base_price ? Number(row.base_price) : null,
       is_active: row.is_active ? row.is_active.toLowerCase() !== "false" : true,
@@ -93,23 +140,27 @@ export async function POST(request: Request) {
     };
     if (row.sku) payload.sku = row.sku;
 
-    const { data: existing } = await supabase
-      .from("products")
-      .select("id")
-      .eq("slug", slug)
-      .maybeSingle();
-
-    if (existing) {
-      const { error } = await supabase.from("products").update(payload).eq("id", existing.id);
+    if (existingId) {
+      const { error } = await supabase.from("products").update(payload).eq("id", existingId);
       if (error) errors.push(`Row ${i + 1}: ${error.message}`);
-      else updated++;
+      else {
+        updated++;
+        slugToId.set(slug, existingId);
+      }
     } else {
       if (!payload.sku) {
         payload.sku = `IYLO-${slug.toUpperCase().replace(/[^A-Z0-9]+/g, "-").slice(0, 24)}-${i}`;
       }
-      const { error } = await supabase.from("products").insert(payload);
+      const { data: created, error } = await supabase
+        .from("products")
+        .insert(payload)
+        .select("id")
+        .single();
       if (error) errors.push(`Row ${i + 1}: ${error.message}`);
-      else imported++;
+      else {
+        imported++;
+        if (created?.id) slugToId.set(slug, created.id);
+      }
     }
   }
 

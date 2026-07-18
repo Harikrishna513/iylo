@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
         <h2 className="text-sm font-semibold uppercase tracking-widest text-maroon/50">
           Add Admin
         </h2>
-        {error && <p className="mt-3 text-sm text-rosewood">{error}</p>}
+        {error && <p className="mt-3 text-sm text-red-600" role="alert">{error}</p>}
         {message && <p className="mt-3 text-sm text-light-blue">{message}</p>}
         <div className="mt-4 space-y-4">
           <div>

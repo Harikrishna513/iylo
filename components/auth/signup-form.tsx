@@ -13,7 +13,7 @@ import {
   validatePassword,
 } from "@/lib/validation";
 import { cn } from "@/lib/utils";
-import { LIGHT } from "@/lib/page-theme";
+import { LIGHT, ALERT } from "@/lib/page-theme";
 
 type FieldErrors = {
   fullName?: string;
@@ -24,7 +24,7 @@ type FieldErrors = {
 };
 
 const inputClass = (hasError?: boolean) =>
-  cn(LIGHT.input, hasError && "border-rosewood/70");
+  cn(LIGHT.input, hasError && ALERT.errorBorder);
 
 export function SignUpForm() {
   const { signUp } = useAuth();
@@ -121,8 +121,16 @@ export function SignUpForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      {formError && <p className="text-sm text-rosewood">{formError}</p>}
-      {successMessage && <p className="text-sm text-light-blue">{successMessage}</p>}
+      {formError && (
+        <p className={ALERT.error} role="alert">
+          {formError}
+        </p>
+      )}
+      {successMessage && (
+        <p className={ALERT.success} role="status">
+          {successMessage}
+        </p>
+      )}
 
       <div>
         <label htmlFor="fullName" className={cn("mb-2 block", LIGHT.label)}>
@@ -149,7 +157,9 @@ export function SignUpForm() {
           className={inputClass(!!fieldErrors.fullName)}
         />
         {fieldErrors.fullName && (
-          <p className="mt-1.5 text-xs text-rosewood">{fieldErrors.fullName}</p>
+          <p className={ALERT.errorSm} role="alert">
+            {fieldErrors.fullName}
+          </p>
         )}
       </div>
 
@@ -180,7 +190,9 @@ export function SignUpForm() {
           className={inputClass(!!fieldErrors.mobile)}
         />
         {fieldErrors.mobile && (
-          <p className="mt-1.5 text-xs text-rosewood">{fieldErrors.mobile}</p>
+          <p className={ALERT.errorSm} role="alert">
+            {fieldErrors.mobile}
+          </p>
         )}
       </div>
 
@@ -209,7 +221,9 @@ export function SignUpForm() {
           className={inputClass(!!fieldErrors.email)}
         />
         {fieldErrors.email && (
-          <p className="mt-1.5 text-xs text-rosewood">{fieldErrors.email}</p>
+          <p className={ALERT.errorSm} role="alert">
+            {fieldErrors.email}
+          </p>
         )}
       </div>
 

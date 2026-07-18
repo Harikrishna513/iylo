@@ -1,4 +1,4 @@
-/** IYLO product CSV schema — one row per product (variants optional in future). */
+/** IYLO product CSV schema — admin-friendly (no technical fields required). */
 
 export interface ProductCsvColumnDescriptor {
   column: string;
@@ -9,28 +9,17 @@ export interface ProductCsvColumnDescriptor {
 
 export const PRODUCT_CSV_COLUMN_DESCRIPTORS: ProductCsvColumnDescriptor[] = [
   {
-    column: "slug",
-    required: true,
-    description: "URL-safe unique product slug. Used to match existing products on import.",
-    example: "burnt-basque-cheesecake",
-  },
-  {
     column: "name",
     required: true,
-    description: "Product display name.",
+    description: "Product display name (URL is created automatically from this).",
     example: "Burnt Basque Cheesecake",
   },
   {
-    column: "category_slug",
+    column: "category",
     required: true,
-    description: "Must match an existing category slug in the catalogue.",
-    example: "celebration-cakes",
-  },
-  {
-    column: "sku",
-    required: false,
-    description: "Unique stock-keeping unit. Auto-generated from slug if blank on create.",
-    example: "IYLO-BBC-001",
+    description:
+      "Category name as shown in the catalogue (e.g. Celebration Cakes, Viennoiserie).",
+    example: "Celebration Cakes",
   },
   {
     column: "short_description",
@@ -59,11 +48,14 @@ export const PRODUCT_CSV_COLUMN_DESCRIPTORS: ProductCsvColumnDescriptor[] = [
 ];
 
 export function buildCsvTemplate(): string {
-  const header = PRODUCT_CSV_COLUMN_DESCRIPTORS.map((d) => d.column).join(",");
-  const example = PRODUCT_CSV_COLUMN_DESCRIPTORS.map((d) => {
-    const v = d.example;
-    return v.includes(",") || v.includes('"') ? `"${v.replace(/"/g, '""')}"` : v;
-  }).join(",");
+  const cols = PRODUCT_CSV_COLUMN_DESCRIPTORS;
+  const header = cols.map((d) => d.column).join(",");
+  const example = cols
+    .map((d) => {
+      const v = d.example;
+      return v.includes(",") || v.includes('"') ? `"${v.replace(/"/g, '""')}"` : v;
+    })
+    .join(",");
   return `${header}\n${example}\n`;
 }
 

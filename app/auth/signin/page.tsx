@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/auth/password-input";
 import { SITE_HEADER_OFFSET_PX } from "@/lib/brand";
 import { BrandLogo } from "@/components/ui/brand-logo";
-import { LIGHT } from "@/lib/page-theme";
+import { LIGHT, ALERT } from "@/lib/page-theme";
 import { cn } from "@/lib/utils";
 
 function SignInForm() {
@@ -37,7 +37,7 @@ function SignInForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && <p className="text-sm text-rosewood">{error}</p>}
+      {error && <p className={ALERT.error} role="alert">{error}</p>}
       <div>
         <label className={cn("mb-2 block", LIGHT.label)}>Email</label>
         <input

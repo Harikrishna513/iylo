@@ -15,6 +15,7 @@ import {
 } from "@/components/admin/admin-ui";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { ProductEditorModal } from "@/components/admin/product-editor-modal";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 
 interface AdminProductsClientProps {
   initialProducts: AdminProduct[];
@@ -103,7 +104,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-maroon/40" />
         <input
           type="search"
-          placeholder="Search by name, slug, or category…"
+          placeholder="Search by name or category…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className={`${adminInputClass} pl-10`}
@@ -242,12 +243,13 @@ function NewProductModal({
 }) {
   const [categories, setCategories] = useState(initialCategories);
   const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
   const [categoryId, setCategoryId] = useState(initialCategories[0]?.id ?? "");
   const [shortDescription, setShortDescription] = useState("");
   const [basePrice, setBasePrice] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useBodyScrollLock(true);
 
   useEffect(() => {
     if (initialCategories.length) {
@@ -264,16 +266,6 @@ function NewProductModal({
       .catch(() => {});
   }, [initialCategories, categoryId]);
 
-  const syncSlug = (value: string) => {
-    setName(value);
-    setSlug(
-      value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "")
-    );
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -283,7 +275,6 @@ function NewProductModal({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
-        slug,
         category_id: categoryId,
         short_description: shortDescription || name,
         base_price: basePrice,
@@ -299,13 +290,25 @@ function NewProductModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className={`${adminCardClass} w-full max-w-lg`}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-maroon/40 p-4"
+      onWheel={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        className={`${adminCardClass} max-h-[90vh] w-full max-w-lg overflow-y-auto overscroll-contain`}
+        onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+      >
         <h2 className="editorial-heading text-2xl text-maroon">New Product</h2>
         <p className="mt-1 text-xs text-maroon/50">
-          Creates a catalogue entry. Open Edit afterward to set description, variants, and flags.
+          Enter the product name and pick a category. Everything else can be set in Edit.
         </p>
-        {error && <p className="mt-3 text-sm text-rosewood">{error}</p>}
+        {error && <p className="mt-3 text-sm text-red-600" role="alert">{error}</p>}
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
@@ -314,18 +317,7 @@ function NewProductModal({
             <input
               required
               value={name}
-              onChange={(e) => syncSlug(e.target.value)}
-              className={adminInputClass}
-            />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs uppercase tracking-widest text-maroon/50">
-              Slug
-            </label>
-            <input
-              required
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               className={adminInputClass}
             />
           </div>

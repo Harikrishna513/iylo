@@ -126,7 +126,7 @@ export default function ImportProductsPage() {
       </div>
 
       {error && (
-        <p className="mb-4 rounded-lg border border-rosewood/30 bg-rosewood/10 px-4 py-3 text-sm text-rosewood">
+        <p className="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
           {error}
         </p>
       )}
@@ -205,13 +205,13 @@ export default function ImportProductsPage() {
             <div
               className={`rounded-lg border p-4 ${
                 result.errors.length
-                  ? "border-rosewood/30 bg-rosewood/5"
+                  ? "border-red-300 bg-red-50"
                   : "border-light-blue/40 bg-mist-blue"
               }`}
             >
               <div className="flex items-start gap-3">
                 {result.errors.length ? (
-                  <AlertTriangle className="mt-0.5 h-5 w-5 text-rosewood" />
+                  <AlertTriangle className="mt-0.5 h-5 w-5 text-red-600" />
                 ) : (
                   <CheckCircle2 className="mt-0.5 h-5 w-5 text-light-blue" />
                 )}
@@ -223,7 +223,7 @@ export default function ImportProductsPage() {
                       : "."}
                   </p>
                   {result.errors.length > 0 && (
-                    <ul className="mt-2 max-h-40 space-y-1 overflow-y-auto text-xs text-rosewood">
+                    <ul className="mt-2 max-h-40 space-y-1 overflow-y-auto text-xs text-red-700">
                       {result.errors.map((err, i) => (
                         <li key={i}>{err}</li>
                       ))}

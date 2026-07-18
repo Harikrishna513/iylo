@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { validateIndianPhone } from "@/lib/validation";
-import { LIGHT } from "@/lib/page-theme";
+import { LIGHT, ALERT } from "@/lib/page-theme";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -71,7 +71,7 @@ export default function AccountProfilePage() {
 
       <form onSubmit={handleSave} className="space-y-5">
         {error && (
-          <div className="border border-rosewood/30 bg-rosewood/10 px-4 py-3 text-sm text-rosewood">
+          <div className={ALERT.errorBox} role="alert">
             {error}
           </div>
         )}

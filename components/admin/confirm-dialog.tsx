@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -26,6 +27,8 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -38,13 +41,17 @@ export function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      onWheel={(e) => e.stopPropagation()}
+    >
       <div className="absolute inset-0 bg-maroon/40 backdrop-blur-sm" onClick={onCancel} />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-title"
         className="relative w-full max-w-md rounded-lg border border-maroon/10 bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
       >
         <h2 id="confirm-title" className="editorial-heading text-xl text-maroon">
           {title}
