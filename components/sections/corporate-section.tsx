@@ -92,7 +92,7 @@ export function CorporateSection() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/80" />
+        <div className="absolute inset-0 bg-maroon/80" />
       </div>
 
       <div className="section-padding relative mx-auto max-w-7xl">

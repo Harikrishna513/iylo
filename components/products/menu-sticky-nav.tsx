@@ -135,7 +135,7 @@ export function MenuStickyNav({ categories }: { categories: CategoryTab[] }) {
         >
           <div
             className={cn(
-              "relative flex h-16 items-center rounded-full border border-maroon/10 bg-white p-2",
+              "relative flex h-16 items-center rounded-full border border-maroon/10 bg-mist-blue p-2",
               "shadow-[0_4px_24px_rgba(69,21,25,0.1)]"
             )}
           >
@@ -147,7 +147,7 @@ export function MenuStickyNav({ categories }: { categories: CategoryTab[] }) {
             >
               <span
                 aria-hidden
-                className="pointer-events-none absolute top-1 bottom-1 rounded-full bg-mist-blue/80 shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out"
+                className="pointer-events-none absolute top-1 bottom-1 rounded-full bg-light-blue/70 shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out"
                 style={{
                   left: indicator.left,
                   width: indicator.width,

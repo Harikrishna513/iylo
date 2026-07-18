@@ -34,7 +34,7 @@ export function FloatingCTA() {
           transition={{ delay: 1.4, type: "spring", stiffness: 260, damping: 20 }}
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
-          className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#1A73E8] text-white shadow-[0_4px_14px_rgba(26,115,232,0.4)] transition-shadow hover:shadow-[0_6px_20px_rgba(26,115,232,0.5)]"
+          className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-maroon text-mist-blue shadow-[0_4px_14px_rgba(69,21,25,0.35)] transition-shadow hover:bg-rosewood hover:shadow-[0_6px_20px_rgba(69,21,25,0.45)]"
           aria-label="Call us"
         >
           <Phone className="h-6 w-6" strokeWidth={2} />

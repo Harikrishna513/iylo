@@ -17,7 +17,7 @@ export function AllProductsCatalogue({ sections }: { sections: MenuSection[] }) 
 
   return (
     <div
-      className="min-h-screen bg-cream"
+      className="min-h-screen bg-mist-blue"
       style={{ paddingTop: SITE_HEADER_OFFSET_PX }}
     >
       <div className="mx-auto max-w-7xl px-4 pb-6 pt-10 sm:px-6 lg:px-10">

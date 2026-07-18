@@ -72,7 +72,7 @@ function Scene() {
         scale={10}
         blur={2.5}
         far={4}
-        color="#000000"
+        color="#451519"
       />
       <Environment preset="night" />
     </>

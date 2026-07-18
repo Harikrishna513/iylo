@@ -69,7 +69,7 @@ export function HeroBackgroundSlider() {
       ))}
       {HERO_BG_DIM_OPACITY > 0 && (
         <div
-          className="pointer-events-none absolute inset-0 z-20 bg-black"
+          className="pointer-events-none absolute inset-0 z-20 bg-maroon"
           style={{ opacity: HERO_BG_DIM_OPACITY }}
           aria-hidden
         />

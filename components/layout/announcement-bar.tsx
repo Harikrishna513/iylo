@@ -18,7 +18,7 @@ const MESSAGES: { icon: LucideIcon; text: string }[] = [
 
 const ROTATE_MS = 3200;
 const BG_PRIMARY = COLOR_MAROON;
-const TEXT_PRIMARY = "#F7F2EA";
+const TEXT_PRIMARY = "#DCEBF7";
 const ACCENT = COLOR_LIGHT_BLUE;
 
 export function AnnouncementBar() {

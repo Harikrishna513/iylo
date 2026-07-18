@@ -18,7 +18,7 @@ export function MobileBottomNav() {
           initial={{ y: 100 }}
           animate={{ y: 0 }}
           exit={{ y: 100 }}
-          className="fixed bottom-0 left-0 right-0 z-40 border-t border-maroon/10 bg-cream/95 p-4 backdrop-blur-xl lg:hidden"
+          className="fixed bottom-0 left-0 right-0 z-40 border-t border-maroon/10 bg-mist-blue/95 p-4 backdrop-blur-xl lg:hidden"
         >
           <Link
             href="/cart"

@@ -40,7 +40,7 @@ export default async function CategoryPage({ params }: Props) {
   });
 
   return (
-    <div className="min-h-screen bg-cream pt-[128px]">
+    <div className="min-h-screen bg-mist-blue pt-[128px]">
       <div className="relative mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-10">
         <Link
           href="/#categories"

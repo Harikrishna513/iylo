@@ -8,7 +8,7 @@ import { CATEGORY_CARDS } from "@/data/category-cards";
 
 export function CategoryCardsSection() {
   return (
-    <section id="categories" className="bg-cream pb-8 pt-4 sm:pb-10 sm:pt-6">
+    <section id="categories" className="bg-mist-blue pb-8 pt-4 sm:pb-10 sm:pt-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {CATEGORY_CARDS.map((cat, i) => (

@@ -53,17 +53,17 @@ export function ContactSection() {
   }>;
 
   return (
-    <section id="contact" className="section-padding bg-ivory text-black">
+    <section id="contact" className="section-padding bg-mist-blue text-maroon">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-16 text-center">
           <p className="text-[10px] uppercase tracking-[0.4em] text-brown">
             Get in Touch
           </p>
-          <h2 className="editorial-heading mt-4 text-4xl text-black md:text-6xl">
+          <h2 className="editorial-heading mt-4 text-4xl text-maroon md:text-6xl">
             Contact Us
           </h2>
           {contactInfo.founderName && (
-            <p className="mt-4 text-sm text-black/55">
+            <p className="mt-4 text-sm text-maroon/55">
               {contactInfo.founderName} · IYLO Bakehouse
             </p>
           )}
@@ -79,51 +79,51 @@ export function ContactSection() {
                     href={item.href}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}
-                    className="group border border-black/10 p-6 transition-colors hover:border-brown"
+                    className="group border border-maroon/10 p-6 transition-colors hover:border-brown"
                   >
                     <item.icon className="mb-4 h-5 w-5 text-brown" />
-                    <p className="text-[10px] uppercase tracking-widest text-black/40">
+                    <p className="text-[10px] uppercase tracking-widest text-maroon/40">
                       {item.label}
                     </p>
-                    <p className="mt-1 text-sm text-black group-hover:text-brown">
+                    <p className="mt-1 text-sm text-maroon group-hover:text-brown">
                       {item.value}
                     </p>
                   </a>
                 ))}
               </div>
             ) : (
-              <p className="border border-black/10 p-6 text-sm text-black/60">
+              <p className="border border-maroon/10 p-6 text-sm text-maroon/60">
                 Visit us at our Jayanagar store or use the map for directions.
               </p>
             )}
 
-            <div className="mt-8 border border-black/10 p-6">
+            <div className="mt-8 border border-maroon/10 p-6">
               <div className="flex items-start gap-3">
                 <Clock className="mt-0.5 h-5 w-5 text-brown" />
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-black/40">
+                  <p className="text-[10px] uppercase tracking-widest text-maroon/40">
                     Store Timings
                   </p>
                   {contactInfo.storeHours.map((row) => (
-                    <p key={row.label} className="mt-2 text-sm text-black">
+                    <p key={row.label} className="mt-2 text-sm text-maroon">
                       {row.label}: {row.value}
                     </p>
                   ))}
-                  <p className="mt-4 text-[10px] uppercase tracking-widest text-black/40">
+                  <p className="mt-4 text-[10px] uppercase tracking-widest text-maroon/40">
                     Pickup
                   </p>
-                  <p className="text-sm text-black">{contactInfo.pickupHours}</p>
+                  <p className="text-sm text-maroon">{contactInfo.pickupHours}</p>
                 </div>
               </div>
               <div className="mt-6 flex items-start gap-3">
                 <MapPin className="mt-0.5 h-5 w-5 text-brown" />
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-black/40">
+                  <p className="text-[10px] uppercase tracking-widest text-maroon/40">
                     Address
                   </p>
-                  <p className="mt-2 text-sm text-black">{contactInfo.address}</p>
+                  <p className="mt-2 text-sm text-maroon">{contactInfo.address}</p>
                   {contactInfo.landmark && (
-                    <p className="mt-1 text-xs text-black/50">
+                    <p className="mt-1 text-xs text-maroon/50">
                       Landmark: {contactInfo.landmark}
                     </p>
                   )}

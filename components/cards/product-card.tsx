@@ -56,7 +56,7 @@ export function ProductCard({
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-maroon/75 via-transparent to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-80" />
 
           <div className="absolute left-4 top-4 flex flex-col gap-2">
             {product.badge && (

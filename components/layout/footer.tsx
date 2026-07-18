@@ -46,7 +46,7 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block">
-              <BrandLogo height={81} />
+              <BrandLogo variant="circle" height={72} />
             </Link>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-ivory/50">
               A contemporary premium bakehouse specialising in eggless sweet and savoury creations.

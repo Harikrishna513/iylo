@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-light-blue/50 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
         default:
-          "bg-ivory text-black hover:bg-cream hover:scale-[1.02] active:scale-[0.98]",
+          "bg-mist-blue text-maroon hover:bg-light-blue hover:scale-[1.02] active:scale-[0.98]",
         gold:
-          "bg-gold text-brown hover:bg-gold/90 hover:scale-[1.02] active:scale-[0.98]",
+          "bg-light-blue text-maroon hover:bg-light-blue/90 hover:scale-[1.02] active:scale-[0.98]",
         outline:
-          "border border-ivory/30 text-ivory hover:border-gold hover:text-gold bg-transparent",
+          "border border-mist-blue/40 text-mist-blue hover:border-light-blue hover:text-light-blue bg-transparent",
         ghost:
-          "text-ivory/80 hover:text-ivory hover:bg-ivory/5",
+          "text-mist-blue/80 hover:text-mist-blue hover:bg-mist-blue/10",
         brown:
-          "bg-brown text-ivory hover:bg-brown/90 hover:scale-[1.02]",
+          "bg-maroon text-mist-blue hover:bg-rosewood hover:scale-[1.02]",
       },
       size: {
         default: "h-12 px-8 text-sm tracking-wide uppercase",

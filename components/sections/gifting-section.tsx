@@ -9,10 +9,10 @@ import { scrollToSection } from "@/lib/scroll";
 
 export function GiftingSection() {
   return (
-    <section id="gifting" className="section-padding bg-ivory text-black">
+    <section id="gifting" className="section-padding bg-mist-blue text-maroon">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-16 text-center">
-          <h2 className="editorial-heading text-4xl text-black md:text-6xl">
+          <h2 className="editorial-heading text-4xl text-maroon md:text-6xl">
             Thoughtfully Curated
           </h2>
         </Reveal>
@@ -47,10 +47,10 @@ export function GiftingSection() {
                 <span className="text-[10px] uppercase tracking-[0.3em] text-brown/60">
                   0{i + 1}
                 </span>
-                <h3 className="editorial-heading mt-2 text-3xl text-black md:text-5xl">
+                <h3 className="editorial-heading mt-2 text-3xl text-maroon md:text-5xl">
                   {option.title}
                 </h3>
-                <p className="mt-4 max-w-md text-sm leading-relaxed text-black/60">
+                <p className="mt-4 max-w-md text-sm leading-relaxed text-maroon/60">
                   {option.description}
                 </p>
                 <Button

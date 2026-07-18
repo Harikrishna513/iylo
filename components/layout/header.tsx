@@ -118,7 +118,7 @@ export function Header() {
             <button
               type="button"
               onClick={openSearch}
-              className="flex h-9 min-w-9 items-center gap-2 rounded-full border border-maroon/20 bg-white/70 px-3 text-maroon/55 transition-colors hover:border-maroon/35 hover:text-maroon/75 sm:h-10 sm:min-w-[140px] sm:px-4"
+              className="flex h-9 min-w-9 items-center gap-2 rounded-full border border-maroon/20 bg-mist-blue/80 px-3 text-maroon/55 transition-colors hover:border-maroon/35 hover:text-maroon/75 sm:h-10 sm:min-w-[140px] sm:px-4"
               aria-label="Search products"
             >
               <Search className="h-4 w-4 shrink-0" strokeWidth={1.5} />
@@ -212,7 +212,7 @@ export function Header() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="fixed bottom-0 left-0 top-0 z-[80] flex w-[min(100%,320px)] flex-col bg-cream shadow-[8px_0_40px_rgba(69,21,25,0.18)] sm:w-[340px]"
+              className="fixed bottom-0 left-0 top-0 z-[80] flex w-[min(100%,320px)] flex-col bg-mist-blue shadow-[8px_0_40px_rgba(69,21,25,0.18)] sm:w-[340px]"
             >
               <div className="flex items-center justify-between border-b border-maroon/10 px-5 py-4">
                 <BrandLogo variant="circle" height={48} />

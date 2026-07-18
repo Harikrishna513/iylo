@@ -24,16 +24,16 @@ export function TestimonialsSection() {
   }, [next]);
 
   return (
-    <section id="reviews" className="section-padding bg-ivory text-black">
+    <section id="reviews" className="section-padding bg-mist-blue text-maroon">
       <div className="mx-auto max-w-4xl">
         <Reveal className="mb-16 text-center">
           <p className="text-[10px] uppercase tracking-[0.4em] text-brown">
             Kind Words
           </p>
-          <h2 className="editorial-heading mt-4 text-4xl text-black md:text-6xl">
+          <h2 className="editorial-heading mt-4 text-4xl text-maroon md:text-6xl">
             Google Reviews
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-sm text-black/50">
+          <p className="mx-auto mt-4 max-w-md text-sm text-maroon/50">
             Loved by food lovers, event planners, and families across Bangalore
           </p>
         </Reveal>
@@ -57,7 +57,7 @@ export function TestimonialsSection() {
                   )
                 )}
               </div>
-              <blockquote className="editorial-heading text-2xl leading-relaxed text-black md:text-4xl">
+              <blockquote className="editorial-heading text-2xl leading-relaxed text-maroon md:text-4xl">
                 &ldquo;{testimonials[current].content}&rdquo;
               </blockquote>
               <div className="mt-10 flex items-center justify-center gap-4">
@@ -71,10 +71,10 @@ export function TestimonialsSection() {
                   />
                 </div>
                 <div className="text-left">
-                  <p className="font-medium text-black">
+                  <p className="font-medium text-maroon">
                     {testimonials[current].name}
                   </p>
-                  <p className="text-sm text-black/50">
+                  <p className="text-sm text-maroon/50">
                     {testimonials[current].role}
                   </p>
                   {testimonials[current].source === "google" && (
@@ -99,7 +99,7 @@ export function TestimonialsSection() {
                   key={i}
                   onClick={() => setCurrent(i)}
                   className={`h-1.5 transition-all duration-300 ${
-                    i === current ? "w-8 bg-brown" : "w-1.5 bg-black/20"
+                    i === current ? "w-8 bg-brown" : "w-1.5 bg-maroon/20"
                   }`}
                   aria-label={`Go to testimonial ${i + 1}`}
                 />

@@ -10,11 +10,11 @@ import {
 import { BRAND_COLORS } from "@/data/site-content";
 
 const PALETTE = {
-  ivory: "#faf6f0",
-  cream: "#f2eae2",
+  ivory: BRAND_COLORS.mistBlue,
+  cream: BRAND_COLORS.mistBlue,
   gold: BRAND_COLORS.lightBlue,
   brown: BRAND_COLORS.maroon,
-  muted: "#9b8e87",
+  muted: BRAND_COLORS.rosewood,
 } as const;
 
 const transporter = nodemailer.createTransport({

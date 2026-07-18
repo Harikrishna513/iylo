@@ -42,7 +42,7 @@ function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg
             starSize,
             i < Math.floor(rating)
               ? "fill-[#FBBC05] text-[#FBBC05]"
-              : "fill-black/10 text-black/10"
+              : "fill-black/10 text-maroon/10"
           )}
         />
       ))}
@@ -77,7 +77,7 @@ function ReviewCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05, duration: 0.5 }}
-      className="flex h-full w-[320px] shrink-0 flex-col border border-black/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md md:w-[360px]"
+      className="flex h-full w-[320px] shrink-0 flex-col border border-maroon/10 bg-light-blue/25 p-6 shadow-sm transition-shadow hover:shadow-md md:w-[360px]"
     >
       <div className="flex items-start gap-3">
         <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brown/10 text-sm font-medium text-brown">
@@ -94,8 +94,8 @@ function ReviewCard({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-medium text-black">{review.authorName}</p>
-          <p className="text-xs text-black/40">{review.relativeTime}</p>
+          <p className="truncate font-medium text-maroon">{review.authorName}</p>
+          <p className="text-xs text-maroon/40">{review.relativeTime}</p>
         </div>
         <GoogleLogo className="h-5 w-5 shrink-0" />
       </div>
@@ -104,7 +104,7 @@ function ReviewCard({
         <StarRating rating={review.rating} />
       </div>
 
-      <p className="mt-4 flex-1 text-sm leading-relaxed text-black/70">
+      <p className="mt-4 flex-1 text-sm leading-relaxed text-maroon/70">
         {displayText}
       </p>
 
@@ -135,13 +135,13 @@ export function GoogleReviewsSection() {
   const maxCount = Math.max(...Object.values(ratingDistribution));
 
   return (
-    <section id="reviews" className="section-padding bg-ivory text-black">
+    <section id="reviews" className="section-padding bg-mist-blue text-maroon">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-12">
-          <h2 className="editorial-heading text-4xl text-black md:text-5xl">
+          <h2 className="editorial-heading text-4xl text-maroon md:text-5xl">
             What Our Customers Say
           </h2>
-          <p className="mt-3 max-w-lg text-sm text-black/50">
+          <p className="mt-3 max-w-lg text-sm text-maroon/50">
             Real reviews from Google — loved by families, food lovers, and
             corporate clients across Bangalore.
           </p>
@@ -150,9 +150,9 @@ export function GoogleReviewsSection() {
         <div className="grid gap-10 lg:grid-cols-[320px_1fr]">
           {/* Rating summary badge — Cakeday-style */}
           <Reveal delay={0.1}>
-            <div className="border border-black/10 bg-white p-8 shadow-sm">
+            <div className="border border-maroon/10 bg-light-blue/25 p-8 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="relative h-14 w-14 overflow-hidden rounded-full border border-black/10">
+                <div className="relative h-14 w-14 overflow-hidden rounded-full border border-maroon/10">
                   <Image
                     src={googleBusiness.profileImage!}
                     alt={googleBusiness.name}
@@ -162,18 +162,18 @@ export function GoogleReviewsSection() {
                   />
                 </div>
                 <div>
-                  <p className="font-medium text-black">{googleBusiness.name}</p>
-                  <p className="text-xs text-black/40">Jayanagar, Bangalore</p>
+                  <p className="font-medium text-maroon">{googleBusiness.name}</p>
+                  <p className="text-xs text-maroon/40">Jayanagar, Bangalore</p>
                 </div>
               </div>
 
               <div className="mt-6 flex items-end gap-3">
-                <span className="editorial-heading text-5xl text-black">
+                <span className="editorial-heading text-5xl text-maroon">
                   {rating.toFixed(1)}
                 </span>
                 <div className="mb-1">
                   <StarRating rating={rating} size="lg" />
-                  <p className="mt-1 text-xs text-black/50">
+                  <p className="mt-1 text-xs text-maroon/50">
                     {totalReviews} Google reviews
                   </p>
                 </div>
@@ -187,15 +187,15 @@ export function GoogleReviewsSection() {
                   const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
                   return (
                     <div key={stars} className="flex items-center gap-2 text-xs">
-                      <span className="w-3 text-black/50">{stars}</span>
+                      <span className="w-3 text-maroon/50">{stars}</span>
                       <Star className="h-3 w-3 fill-[#FBBC05] text-[#FBBC05]" />
-                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/5">
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-maroon/5">
                         <div
                           className="h-full rounded-full bg-[#FBBC05] transition-all duration-700"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="w-6 text-right text-black/40">{count}</span>
+                      <span className="w-6 text-right text-maroon/40">{count}</span>
                     </div>
                   );
                 })}
@@ -206,7 +206,7 @@ export function GoogleReviewsSection() {
                   href={reviewUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-gold px-4 py-3 text-xs font-medium uppercase tracking-widest text-black transition-opacity hover:opacity-90"
+                  className="flex items-center justify-center gap-2 bg-gold px-4 py-3 text-xs font-medium uppercase tracking-widest text-maroon transition-opacity hover:opacity-90"
                 >
                   <GoogleLogo className="h-4 w-4" />
                   Write a Review
@@ -215,7 +215,7 @@ export function GoogleReviewsSection() {
                   href={mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 border border-black/20 px-4 py-3 text-xs uppercase tracking-widest text-black/70 transition-colors hover:border-brown hover:text-brown"
+                  className="flex items-center justify-center gap-2 border border-maroon/20 px-4 py-3 text-xs uppercase tracking-widest text-maroon/70 transition-colors hover:border-brown hover:text-brown"
                 >
                   View on Google Maps
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -227,20 +227,20 @@ export function GoogleReviewsSection() {
           {/* Reviews carousel */}
           <div className="relative min-w-0">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-xs uppercase tracking-widest text-black/40">
+              <p className="text-xs uppercase tracking-widest text-maroon/40">
                 Recent Google Reviews
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => scroll("left")}
-                  className="flex h-9 w-9 items-center justify-center border border-black/20 transition-colors hover:border-brown hover:text-brown"
+                  className="flex h-9 w-9 items-center justify-center border border-maroon/20 transition-colors hover:border-brown hover:text-brown"
                   aria-label="Previous reviews"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => scroll("right")}
-                  className="flex h-9 w-9 items-center justify-center border border-black/20 transition-colors hover:border-brown hover:text-brown"
+                  className="flex h-9 w-9 items-center justify-center border border-maroon/20 transition-colors hover:border-brown hover:text-brown"
                   aria-label="Next reviews"
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -257,7 +257,7 @@ export function GoogleReviewsSection() {
               ))}
             </div>
 
-            <p className="mt-4 text-center text-xs text-black/40 lg:text-left">
+            <p className="mt-4 text-center text-xs text-maroon/40 lg:text-left">
               Reviews sourced from{" "}
               <a
                 href={reviewUrl}

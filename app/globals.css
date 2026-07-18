@@ -1,19 +1,33 @@
 @import "tailwindcss";
 
+/**
+ * IYLO brand palette (only these colours site-wide)
+ * Primary · Dark Maroon   #451519
+ * Secondary · Powder Blue #99BEE0
+ * Accent · Warm Rosewood  #6B2A31
+ * Accent · Mist Blue      #DCEBF7
+ *
+ * Token aliases (legacy class names keep working):
+ *   --black  → maroon (dark surfaces)
+ *   --ivory  → mist blue (light text / light surfaces)
+ *   --cream  → mist blue (page backgrounds)
+ *   --gold   → powder blue (accents)
+ */
 :root {
-  --background: #050505;
-  --foreground: #f7f2ea;
-  --ivory: #f7f2ea;
-  --black: #050505;
   --maroon: #451519;
   --rosewood: #6b2a31;
   --light-blue: #99bee0;
   --mist-blue: #dcebf7;
+
+  --background: var(--mist-blue);
+  --foreground: var(--maroon);
+  --black: var(--maroon);
+  --ivory: var(--mist-blue);
   --brown: var(--maroon);
   --gold: var(--light-blue);
-  --beige: #e8dfd3;
-  --cream: #faf6f0;
-  --muted: #9a8b7a;
+  --beige: var(--light-blue);
+  --cream: var(--mist-blue);
+  --muted: #8f5c62;
   --muted-on-light: rgba(69, 21, 25, 0.55);
 }
 
@@ -62,33 +76,33 @@ html.lenis body {
 }
 
 body {
-  background: var(--black);
-  color: var(--ivory);
+  background: var(--mist-blue);
+  color: var(--maroon);
   font-family: var(--font-body), system-ui, sans-serif;
   overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(153, 190, 224, 0.35);
-  color: var(--ivory);
+  background: rgba(153, 190, 224, 0.45);
+  color: var(--maroon);
 }
 
 .glass {
-  background: rgba(247, 242, 234, 0.06);
+  background: rgba(220, 235, 247, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(247, 242, 234, 0.1);
+  border: 1px solid rgba(220, 235, 247, 0.22);
 }
 
 .glass-dark {
-  background: rgba(5, 5, 5, 0.7);
+  background: rgba(69, 21, 25, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(247, 242, 234, 0.08);
+  border: 1px solid rgba(220, 235, 247, 0.12);
 }
 
 .text-gradient-gold {
-  background: linear-gradient(135deg, #99bee0 0%, #c5ddf0 50%, #99bee0 100%);
+  background: linear-gradient(135deg, #99bee0 0%, #dcebf7 50%, #99bee0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -134,14 +148,14 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(153, 190, 224, 0.15) 50%,
+    rgba(153, 190, 224, 0.25) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
   animation: shimmer 3s infinite;
 }
 
-/* Admin panel — light theme using brand palette */
+/* Admin panel — brand palette */
 .admin-theme {
   --admin-bg: var(--mist-blue);
   --admin-sidebar: #ffffff;

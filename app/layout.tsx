@@ -103,7 +103,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(getGoogleReviewsSchema()) }}
         />
       </head>
-      <body className="bg-black font-body antialiased">
+      <body className="bg-mist-blue font-body text-maroon antialiased">
         <AppProviders>
           <ChromeShell>{children}</ChromeShell>
           <ProductQuickView />

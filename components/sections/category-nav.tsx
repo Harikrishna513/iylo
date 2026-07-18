@@ -146,8 +146,8 @@ export function CategoryNav() {
         >
           <div
             className={cn(
-              "relative flex h-16 items-center rounded-full border border-gray-200/90 bg-white p-2",
-              "shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
+              "relative flex h-16 items-center rounded-full border border-maroon/10 bg-mist-blue p-2",
+              "shadow-[0_4px_24px_rgba(69,21,25,0.1)]"
             )}
           >
             <div
@@ -158,7 +158,7 @@ export function CategoryNav() {
             >
               <span
                 aria-hidden
-                className="pointer-events-none absolute top-1 bottom-1 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] transition-all duration-300 ease-out"
+                className="pointer-events-none absolute top-1 bottom-1 rounded-full bg-light-blue/70 shadow-[0_2px_8px_rgba(69,21,25,0.08)] transition-all duration-300 ease-out"
                 style={{
                   left: indicator.left,
                   width: indicator.width,
@@ -184,10 +184,10 @@ export function CategoryNav() {
                     onKeyDown={(e) => handleKeyDown(e, cat.id, index)}
                     className={cn(
                       "relative z-10 shrink-0 rounded-full px-3 py-2.5 text-xs font-medium transition-colors duration-300 sm:px-4 sm:text-sm",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown/30 focus-visible:ring-offset-2",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon/30 focus-visible:ring-offset-2",
                       isActive
-                        ? "font-semibold"
-                        : "text-gray-500 hover:text-gray-800"
+                        ? "font-semibold text-maroon"
+                        : "text-maroon/50 hover:text-maroon/80"
                     )}
                     style={{ color: isActive ? BRAND_ACCENT : undefined }}
                   >
