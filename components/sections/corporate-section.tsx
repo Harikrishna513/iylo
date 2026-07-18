@@ -91,17 +91,17 @@ export function CorporateSection() {
           fill
           sizes="100vw"
           className="object-cover"
+          priority={false}
         />
-        <div className="absolute inset-0 bg-maroon/80" />
       </div>
 
       <div className="section-padding relative mx-auto max-w-7xl">
-        <Reveal className="mb-16 max-w-2xl">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-gold">For Business</p>
-          <h2 className="editorial-heading mt-4 text-4xl text-ivory md:text-6xl">
+        <Reveal className="mb-10 max-w-2xl rounded-2xl border border-maroon/10 bg-mist-blue/95 p-8 shadow-[0_12px_40px_rgba(69,21,25,0.18)] backdrop-blur-sm md:p-10">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-rosewood">For Business</p>
+          <h2 className="editorial-heading mt-4 text-4xl text-maroon md:text-6xl">
             Corporate Orders
           </h2>
-          <p className="mt-6 text-sm leading-relaxed text-ivory/60">
+          <p className="mt-6 text-sm leading-relaxed text-maroon/70">
             Elevate your corporate gifting and events with IYLO&apos;s artisan collections. From
             Diwali hampers to boardroom catering and custom packaging, we deliver excellence at
             scale.
@@ -111,31 +111,34 @@ export function CorporateSection() {
         <div className="grid gap-6 md:grid-cols-3">
           {services.map((service, i) => (
             <Reveal key={service.title} delay={i * 0.1}>
-              <div className="glass p-8 transition-colors hover:border-gold/30">
-                <service.icon className="mb-4 h-7 w-7 text-gold" />
-                <h3 className="editorial-heading text-xl text-ivory">{service.title}</h3>
-                <p className="mt-3 text-sm text-ivory/50">{service.description}</p>
+              <div className="h-full rounded-2xl border border-maroon/10 bg-mist-blue/95 p-8 shadow-[0_8px_28px_rgba(69,21,25,0.12)] backdrop-blur-sm transition-colors hover:border-light-blue">
+                <service.icon className="mb-4 h-7 w-7 text-rosewood" />
+                <h3 className="editorial-heading text-xl text-maroon">{service.title}</h3>
+                <p className="mt-3 text-sm text-maroon/65">{service.description}</p>
               </div>
             </Reveal>
           ))}
         </div>
 
-        <Reveal className="mt-16">
-          <div id="corporate-enquiry" className="glass max-w-2xl scroll-mt-28 p-8">
-            <h3 className="editorial-heading text-2xl text-ivory">Corporate / B2B Enquiry</h3>
-            <p className="mt-2 text-sm text-ivory/50">
+        <Reveal className="mt-12">
+          <div
+            id="corporate-enquiry"
+            className="max-w-2xl scroll-mt-28 rounded-2xl border border-maroon/10 bg-mist-blue/95 p-8 shadow-[0_12px_40px_rgba(69,21,25,0.18)] backdrop-blur-sm md:p-10"
+          >
+            <h3 className="editorial-heading text-2xl text-maroon">Corporate / B2B Enquiry</h3>
+            <p className="mt-2 text-sm text-maroon/60">
               Including bulk gifting, hampers, events, and custom packaging. GST invoices available.
               We respond within 24 hours.
             </p>
 
             {submitted ? (
-              <p className="mt-8 text-gold">
+              <p className="mt-8 text-rosewood">
                 Thank you. Our team will reach out within 24 hours.
               </p>
             ) : (
               <form onSubmit={handleSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
                 {error && (
-                  <div className="border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 sm:col-span-2">
+                  <div className="border border-rosewood/30 bg-rosewood/10 px-4 py-3 text-sm text-rosewood sm:col-span-2">
                     {error}
                   </div>
                 )}
@@ -156,22 +159,22 @@ export function CorporateSection() {
                   { key: "budget", label: "Budget (₹)", type: "text", required: false },
                 ].map((field) => (
                   <div key={field.key}>
-                    <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted">
+                    <label className="mb-1 block text-[10px] uppercase tracking-widest text-maroon/50">
                       {field.label}
-                      {field.required && <span className="ml-1 text-gold">*</span>}
+                      {field.required && <span className="ml-1 text-rosewood">*</span>}
                     </label>
                     <input
                       required={field.required}
                       type={field.type}
                       value={form[field.key as keyof typeof form]}
                       onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                      className="w-full border border-ivory/20 bg-transparent px-3 py-2 text-sm text-ivory outline-none focus:border-gold"
+                      className="w-full border border-maroon/15 bg-white/80 px-3 py-2 text-sm text-maroon outline-none placeholder:text-maroon/30 focus:border-light-blue"
                     />
                   </div>
                 ))}
 
                 <div className="sm:col-span-2">
-                  <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted">
+                  <label className="mb-1 block text-[10px] uppercase tracking-widest text-maroon/50">
                     Requirements
                   </label>
                   <textarea
@@ -179,12 +182,12 @@ export function CorporateSection() {
                     value={form.requirements}
                     onChange={(e) => setForm({ ...form, requirements: e.target.value })}
                     placeholder="Include custom packaging needs, branding, or event details…"
-                    className="w-full resize-none border border-ivory/20 bg-transparent px-3 py-2 text-sm text-ivory outline-none placeholder:text-ivory/30 focus:border-gold"
+                    className="w-full resize-none border border-maroon/15 bg-white/80 px-3 py-2 text-sm text-maroon outline-none placeholder:text-maroon/30 focus:border-light-blue"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <Button type="submit" variant="gold" disabled={loading}>
+                  <Button type="submit" variant="brown" disabled={loading}>
                     {loading ? "Submitting…" : "Submit Enquiry"}
                   </Button>
                 </div>

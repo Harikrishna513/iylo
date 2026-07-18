@@ -97,7 +97,7 @@ export function ProductInfoSections() {
         </div>
       </AccordionItem>
 
-      <AccordionItem title={delivery.title} defaultOpen>
+      <AccordionItem title={delivery.title}>
         <div className={cn("space-y-3 leading-relaxed", LIGHT.body)}>
           {delivery.paragraphs.map((p) => (
             <p key={p.slice(0, 40)}>{p}</p>
@@ -105,7 +105,7 @@ export function ProductInfoSections() {
         </div>
       </AccordionItem>
 
-      <AccordionItem title={storage.title} defaultOpen>
+      <AccordionItem title={storage.title}>
         <div className={cn("space-y-3 leading-relaxed", LIGHT.body)}>
           {storage.paragraphs.map((p) => (
             <p key={p.slice(0, 40)}>{p}</p>
